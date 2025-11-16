@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mood Tapper: The Scientific Focus Test</title>
+    
+    <meta property="og:title" content="Mood Tapper: What's Your Brain Speed?" />
+    <meta property="og:description" content="I just took the 30-second focus test and got my scientific mood analysis. Try it!" />
+    <meta property="og:url" content="https://example.com/mood-tapper" /> 
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <style>
+        /* --- GLOBAL STYLES (White Background) --- */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f0f0f0; 
+            color: #000;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            touch-action: manipulation;
+        }
+
+        #game-container {
+            width: 375px; 
+            height: 667px; 
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.2); 
+            border-radius: 18px;
+            overflow: hidden;
+            background-color: #fff; 
+            color: #000;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #ccc;
+            position: relative;
+        }
+
+        .screen {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            padding: 40px 30px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.6s ease, color 0.6s ease;
+            overflow-y: auto;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        button {
+            padding: 14px 30px;
+            font-size: 1.1em;
+            background: #000; 
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 30px;
+            transition: background-color 0.15s, transform 0.1s;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+        
+        button:disabled {
+            background-color: #ccc;
+            color: #666;
+            cursor: not-allowed;
+        }
+
+        /* --- LANDING PAGE STYLES (White/Black) --- */
+        #landing-area {
+            background-color: #fff;
+            color: #000;
+            text-align: center;
+            justify-content: flex-start;
+            padding-top: 30px;
+        }
+
+        #landing-area h1 {
+            font-size: 2.8em;
+            margin-bottom: 0px;
+            letter-spacing: -1px;
+            font-weight: 800;
+            opacity: 0;
+            animation: fadeInDown 0.8s forwards 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        #landing-area h1 span.emoji-large {
+            font-size: 1.2em; /* Ensure the emoji is slightly larger */
+            margin-right: 10px;
+        }
+
+        #landing-area h2 {
+            font-size: 1.2em;
+            font-weight: 300;
+            opacity: 0.8;
+            margin-bottom: 30px;
+            line-height: 1.4;
+            opacity: 0;
+            animation: fadeInDown 0.8s forwards 0.4s;
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        #age-input-group {
+            width: 100%;
+            margin: 20px 0 10px;
+            text-align: left;
+            opacity: 0;
+            animation: fadeIn 0.8s forwards 0.6s;
+        }
+        
+        #age-input-group label {
+            display: block;
+            font-size: 0.9em;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        #user-age {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 1em;
+            color: #000;
+        }
+        
+        .section-title {
+            font-size: 1.1em;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-top: 35px;
+            margin-bottom: 15px;
+            opacity: 0.6;
+            text-align: left;
+            width: 100%;
+        }
+        
+        .research-paper {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            text-align: left;
+            transition: box-shadow 0.2s;
+            animation: fadeIn 0.8s forwards;
+            opacity: 0;
+        }
+        
+        .research-paper:hover {
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .research-paper h3 {
+            font-size: 1em;
+            font-weight: 600;
+            margin-top: 0;
+            margin-bottom: 5px;
+        }
+
+        .research-paper p {
+            font-size: 0.85em;
+            opacity: 0.7;
+            margin-top: 0;
+        }
+
+        .research-paper a {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: 500;
+            display: block;
+            margin-top: 5px;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .quote {
+            font-style: italic;
+            margin-top: 35px;
+            border-left: 2px solid #000;
+            padding-left: 10px;
+            opacity: 0.8;
+            font-size: 0.9em;
+            text-align: left;
+        }
+        
+        #start-landing-button {
+            background: #000;
+            color: #fff;
+            position: sticky;
+            bottom: 0px; 
+            width: 100%;
+            margin-bottom: 0;
+            padding: 20px;
+            border-radius: 0;
+            box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* --- GAME SCREEN STYLES (Black/White for focus) --- */
+        #game-area {
+            background-color: black;
+            color: white;
+            cursor: crosshair;
+        }
+
+        #game-info, #instruction {
+            color: white;
+        }
+        
+        #target {
+            position: absolute;
+            width: 85px; 
+            height: 85px;
+            border-radius: 50%;
+            background-color: white; 
+            border: 6px solid black; 
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
+            display: none; 
+            cursor: pointer;
+            animation: pulse 0.5s infinite alternate; 
+        }
+
+        @keyframes pulse {
+            from { transform: scale(1); }
+            to { transform: scale(1.05); }
+        }
+
+        /* --- RESULT SCREEN STYLES --- */
+        #result-area {
+            text-align: center;
+            justify-content: space-around;
+        }
+        
+        #work-recommendation {
+            font-size: 1.1em;
+            color: #000; 
+            margin-top: 15px;
+            font-weight: 500;
+        }
+
+        #task-text {
+            font-size: 1.3em;
+            max-width: 90%;
+            line-height: 1.5;
+            margin-top: 25px;
+            font-weight: 600;
+        }
+        
+        #share-button {
+            background-color: #007bff;
+            color: white;
+            margin-bottom: 10px;
+        }
+        
+        #restart-button {
+            background-color: #6c757d;
+            color: white;
+            margin-top: 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <div id="landing-area" class="screen">
+            <h1>
+                <span class="emoji-large">🧠</span>
+                FOCUS. VIBE.
+            </h1>
+            <h2>The 30-Second Scientific Focus Test</h2>
+
+            <div id="age-input-group">
+                <label for="user-age">Enter Your Age (Required for Calibration):</label>
+                <input type="number" id="user-age" min="10" max="100" placeholder="e.g., 30" required>
+            </div>
+
+            <p class="section-title">Why It Works: The Science</p>
+            
+            <div id="research-list" style="width: 100%;">
+                </div>
+
+            <p class="section-title">The PVT Principle</p>
+            <p style="text-align: left; font-size: 0.9em; opacity: 0.8; margin-bottom: 0;">
+                Mood Tapper utilizes the <strong>Psychomotor Vigilance Task (PVT)</strong>—a gold standard in cognitive research—to objectively measure sustained attention. Your &bar;R and &sigma; scores reveal your current state of arousal and stability, key factors in workplace productivity and mental clarity.
+            </p>
+
+            <p class="quote">
+                "The important thing is not to stop questioning. Curiosity has its own reason for existence." — Albert Einstein
+            </p>
+
+            <button id="start-landing-button" disabled>BEGIN ANALYSIS</button>
+        </div>
+
+        <div id="game-area" class="screen hidden">
+            <div id="game-info">
+                <span id="timer">TIME: 30</span>
+                <span id="score">SCORE: 0</span>
+            </div>
+            <div id="target"></div>
+            <p id="instruction">Tap the target when it appears!</p>
+        </div>
+
+        <div id="result-area" class="screen hidden">
+            <h2 id="mood-title"></h2>
+            <p id="explanation-text"></p>
+            <p id="work-recommendation"></p>
+            <p id="task-text"></p>
+            <div id="stats-info">
+                <p>Score: <span id="final-score">0</span> points</p>
+                <p>Avg. Reaction Time: <span id="final-art">0ms</span></p>
+                <p>Consistency (&sigma;): <span id="final-sigma">0ms</span></p>
+            </div>
+            <button id="share-button">Share My Vibe 🚀</button>
+            <p id="copy-status" class="">Analysis copied to clipboard!</p>
+            <button id="restart-button">RE-ANALYZE</button>
+        </div>
+    </div>
+    
+    <script>
+        const GAME_DURATION = 30; 
+        const MIN_TAPS_FOR_ANALYSIS = 10;
+        const RELATIVE_ART_FAST_THRESHOLD = 0.9;
+        const RELATIVE_ART_SLOW_THRESHOLD = 1.1; 
+        const T_SIGMA = 70; 
+        
+        let userAge = 0; 
+        let baselineART = 0;
+
+        // --- RESEARCH PAPERS DATA ---
+        const RESEARCH_PAPERS = [
+            {
+                title: "Psychomotor Vigilance Task Demonstrates Impaired Vigilance in Disorders with Excessive Daytime Sleepiness",
+                summary: "This study validates the PVT's sensitivity, showing it can objectively distinguish performance deficits in patients with sleep-wake disorders (like narcolepsy) versus healthy controls. It underscores PVT as a robust measure of alertness.",
+                link: "https://jcsm.aasm.org/doi/abs/10.5664/jcsm.4042"
+            },
+            {
+                title: "Validity and Sensitivity of a Brief Psychomotor Vigilance Test (PVT-B)",
+                summary: "Research confirming that a shorter version (like our 30-second test) maintains sensitivity to cognitive changes caused by sleep loss, offering a practical alternative to the traditional 10-minute test in applied settings.",
+                link: "https://pmc.ncbi.nlm.nih.gov/articles/PMC3197786/"
+            },
+            {
+                title: "The Neural Basis of the Psychomotor Vigilance Task",
+                summary: "Explores brain regions involved: optimal performance relates to sustained attention and motor systems, while poor performance (lapses) is linked to activity in the 'default mode network,' suggesting mental disengagement.",
+                link: "https://www.researchgate.net/publication/7500485_The_Neural_Basis_of_the_Psychomotor_Vigilance_Task"
+            }
+        ];
+        
+        // UI Elements
+        const ageInput = document.getElementById('user-age');
+        const startLandingButton = document.getElementById('start-landing-button');
+        const gameArea = document.getElementById('game-area');
+        const resultArea = document.getElementById('result-area');
+        const researchList = document.getElementById('research-list');
+        const workRecommendation = document.getElementById('work-recommendation');
+        const copyStatus = document.getElementById('copy-status');
+        const target = document.getElementById('target');
+        const timerDisplay = document.getElementById('timer');
+        const scoreDisplay = document.getElementById('score');
+        const instructionText = document.getElementById('instruction');
+
+        // Game State
+        let gameState = {
+            running: false,
+            score: 0,
+            timeRemaining: GAME_DURATION,
+            timerInterval: null,
+            targetTimeout: null,
+            targetAppearanceTime: 0,
+            reactionTimes: []
+        };
+
+        // --- SCIENTIFIC DATA & LOGIC ---
+        function getAgeAdjustedBaselineART(age) {
+            if (age < 25) return 220; 
+            if (age < 40) return 250; 
+            if (age < 60) return 280;
+            return 320; 
+        }
+
+        const MoodMap = {
+            'FOCUSED_FLOWING': {
+                name: 'Focused & Flowing 🚀',
+                color: '#000080', 
+                textColor: 'white',
+                task: 'Tackle the most important item on your to-do list for 30 minutes.',
+                workDelay: 0, 
+                explanation: 'Optimal Arousal & Stability. Your &bar;R is faster than your baseline, indicating <strong>peak cognitive speed</strong>. Low &sigma; confirms <strong>highly stable attention</strong> with minimal lapses. This is your optimal state.'
+            },
+            'EXCITED_ENERGETIC': {
+                name: 'Excited & Energetic ⚡',
+                color: '#FFA500',
+                textColor: 'black',
+                task: 'Go for a 15-minute brisk walk or do 2 minutes of stretching to channel your energy.',
+                workDelay: 15, 
+                explanation: 'High Arousal, Low Stability. Your fast &bar;R indicates high energy. However, high &sigma; shows <strong>erratic attention</strong> and potential impulsivity. Your energy is scattered; it needs structure.'
+            },
+            'CALM_MELLOW': {
+                name: 'Calm & Mellow 🧘',
+                color: '#008080',
+                textColor: 'white',
+                task: 'Read an article about a curious topic, then summarize the main idea in a single sentence.',
+                workDelay: 5, 
+                explanation: 'Low Arousal, High Stability. Your &bar;R is slower than baseline, indicating a <strong>relaxed, unhurried pace</strong>. Low &sigma; confirms <strong>stable, consistent attention</strong>. You are ready for deliberate, detail-oriented work.'
+            },
+            'TIRED_DISPERSED': {
+                name: 'Tired & Dispersed 😴',
+                color: '#C8C8D8',
+                textColor: 'black',
+                task: 'Close your eyes and practice 4-7-8 breathing (4 seconds in, 7 hold, 8 out) 5 times.',
+                workDelay: 20, 
+                explanation: 'Low Arousal & Instability. Your slow &bar;R suggests significant <strong>cognitive slowing</strong> (fatigue). High &sigma; indicates <strong>frequent attentional lapses</strong>. You need a break before starting complex tasks.'
+            }
+        };
+
+        // --- GAME FLOW ---
+        function showScreen(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+            document.getElementById(id).classList.remove('hidden');
+        }
+
+        function startGame() {
+            // CALIBRATION CHECK
+            const age = parseInt(ageInput.value, 10);
+            if (!age || age < 10 || age > 100) {
+                alert("Please enter a valid age (10-100) to calibrate the test.");
+                return;
+            }
+            userAge = age;
+            baselineART = getAgeAdjustedBaselineART(userAge);
+            
+            // Reset game state and UI to start the test
+            gameState.score = 0;
+            gameState.timeRemaining = GAME_DURATION;
+            gameState.reactionTimes = [];
+            gameState.running = true;
+            clearInterval(gameState.timerInterval);
+            clearTimeout(gameState.targetTimeout);
+
+            showScreen('game-area');
+            timerDisplay.textContent = `TIME: ${GAME_DURATION}`;
+            scoreDisplay.textContent = `SCORE: 0`;
+            instructionText.textContent = 'Tap the target when it appears!';
+            
+            startTimer();
+            spawnTarget();
+            gameArea.onclick = handleMissedTap;
+            target.onclick = handleTargetTap;
+        }
+
+        function startTimer() {
+            gameState.timerInterval = setInterval(() => {
+                gameState.timeRemaining--;
+                timerDisplay.textContent = `TIME: ${gameState.timeRemaining}`;
+                if (gameState.timeRemaining <= 0) {
+                    clearInterval(gameState.timerInterval);
+                    endGame();
+                }
+            }, 1000);
+        }
+
+        function spawnTarget() {
+            if (!gameState.running) return;
+            const targetDuration = Math.random() * 1500 + 500; 
+
+            // Positioning logic
+            const targetSize = 85;
+            const padding = 30;
+            const infoHeight = 70;
+            const instructionHeight = 70;
+
+            const max_x = gameArea.clientWidth - targetSize - (2 * padding);
+            const max_y = gameArea.clientHeight - targetSize - infoHeight - instructionHeight; 
+
+            const randomX = Math.random() * max_x + padding;
+            const randomY = Math.random() * max_y + infoHeight; 
+
+            target.style.left = `${randomX}px`;
+            target.style.top = `${randomY}px`;
+            target.style.display = 'block';
+            gameState.targetAppearanceTime = performance.now(); 
+
+            gameState.targetTimeout = setTimeout(() => {
+                if (target.style.display !== 'none') {
+                    instructionText.textContent = 'Too Slow! (-1)';
+                    gameState.score = Math.max(0, gameState.score - 1); 
+                    scoreDisplay.textContent = `SCORE: ${gameState.score}`;
+                    target.style.display = 'none';
+                    setTimeout(spawnTarget, 200); 
+                }
+            }, targetDuration);
+        }
+        
+        function handleTargetTap(event) {
+            event.stopPropagation();
+            if (!gameState.running) return;
+            clearTimeout(gameState.targetTimeout);
+            
+            const tapTime = performance.now();
+            gameState.reactionTimes.push(tapTime - gameState.targetAppearanceTime);
+            
+            gameState.score++;
+            scoreDisplay.textContent = `SCORE: ${gameState.score}`;
+            instructionText.textContent = 'Hit! (+1)';
+            
+            gameArea.classList.add('tap-feedback');
+            setTimeout(() => gameArea.classList.remove('tap-feedback'), 100);
+
+            target.style.display = 'none';
+            setTimeout(spawnTarget, 50); 
+        }
+
+        function handleMissedTap() {
+            if (!gameState.running) return;
+            gameState.score = Math.max(0, gameState.score - 1); 
+            scoreDisplay.textContent = `SCORE: ${gameState.score}`;
+            instructionText.textContent = 'Missed area. (-1)';
+        }
+
+        // --- ANALYSIS LOGIC ---
+        function calculateKPIs() {
+            con
