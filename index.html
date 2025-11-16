@@ -3,26 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Mood Tapper: Your Focus. Decoded.</title>
+    <title>Mood Tapper: Vibe Check</title>
     
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
 
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Oswald:wght@700&display=swap" rel="stylesheet">
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
-
     <style>
-        /* --- CORE STYLES & ANIMATION --- */
+        /* --- CORE STYLES & TYPOGRAPHY --- */
         :root {
-            --color-primary: #4CAF50; /* Optimized Green */
-            --color-text: #1a1a1a; 
-            --color-bg-dark: #333;
+            --color-focused: #000080;
+            --color-excited: #FFA500;
+            --color-calm: #008080;
+            --color-tired: #C8C8D8;
+            --color-text-dark: #1a1a1a;
+            --color-text-light: #fff;
         }
         
         body {
             display: flex; justify-content: center; align-items: stretch; min-height: 100vh; margin: 0;
-            font-family: 'Montserrat', sans-serif; color: var(--color-text); line-height: 1.6;
+            font-family: 'Montserrat', sans-serif; color: var(--color-text-dark); line-height: 1.6;
             -webkit-user-select: none; user-select: none; touch-action: manipulation;
         }
 
@@ -30,77 +31,72 @@
             width: 100%; max-width: 600px; min-height: 100vh;
             background-color: #fff; display: flex; flex-direction: column; position: relative;
         }
+        
+        /* Typography for Headings */
+        h1, h2, h3 { font-family: 'Oswald', sans-serif; letter-spacing: 1px; font-weight: 700; }
 
         .screen {
             width: 100%; height: 100%; min-height: 100vh; position: relative;
             padding: 30px 20px; box-sizing: border-box;
             display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
-            transition: opacity 0.3s ease-in-out; 
-            opacity: 1;
+            transition: background-color 0.5s, color 0.5s, opacity 0.3s ease-in-out; 
             overflow-y: auto;
         }
         .screen.hidden { opacity: 0; position: absolute; visibility: hidden; }
 
-        /* --- TYPOGRAPHY & HEADINGS --- */
-        h1, h2, h3 { font-family: 'Oswald', sans-serif; letter-spacing: 1px; }
-
-        /* --- BUTTONS & CTA --- */
         button {
-            padding: 14px 30px; font-size: 1.1em; background: var(--color-primary); color: white; border-radius: 8px; cursor: pointer;
-            margin-top: 20px; transition: background-color 0.15s, transform 0.1s; font-weight: 600; width: 100%;
+            padding: 14px 30px; font-size: 1.1em; background: var(--color-text-dark); color: var(--color-text-light); border: none; border-radius: 8px; cursor: pointer;
+            margin-top: 20px; transition: background-color 0.15s, transform 0.1s; font-weight: 600; width: 100%; max-width: 300px;
         }
-        button:disabled { background-color: #ccc; color: #666; cursor: not-allowed; }
-
-        .floating-cta {
-            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: calc(100% - 40px); max-width: 400px;
-            z-index: 1000; padding: 18px 30px; font-size: 1.2em; border-radius: 10px;
-            background: var(--color-primary); box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-            margin-top: 0 !important; animation: floatUp 0.5s ease-out;
+        
+        button:active { transform: scale(0.98); }
+        
+        /* --- LANDING PAGE --- */
+        #landing-area { padding-top: 80px; text-align: center; }
+        
+        /* Inputs */
+        input[type="text"], input[type="number"], select { 
+            width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 1em; margin-bottom: 15px; 
+            transition: border-color 0.2s; max-width: 300px;
         }
+        input:focus { border-color: var(--color-primary); outline: none; }
 
-        /* --- INPUTS --- */
-        input:focus { border-color: var(--color-primary); box-shadow: 0 0 5px rgba(76, 175, 80, 0.4); outline: none; }
-
-        /* --- GAME START CUE STYLES --- */
-        #game-area { background-color: black; color: white; cursor: crosshair; }
-        #start-cue-overlay { background: rgba(0, 0, 0, 0.95); z-index: 900; /* Ensure overlay covers game background */ }
-        #target { z-index: 1000; /* Ensure target is above the overlay */ }
+        /* --- GAME PLAY SCREEN (Black & White) --- */
+        #game-area { background-color: black; color: white; cursor: crosshair; justify-content: center; }
+        #game-info { position: absolute; top: 20px; width: calc(100% - 40px); display: flex; justify-content: space-between; font-size: 1.2em; }
+        
+        #target { 
+            position: absolute; width: 85px; height: 85px; border-radius: 50%; background-color: white; border: 6px solid black; 
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.8); display: none; cursor: pointer; 
+            animation: pulse 0.5s infinite alternate; z-index: 2; /* Ensure target is tappable */
+        }
+        #instruction { position: absolute; bottom: 20px; color: white; font-size: 1.1em; }
+        
+        /* Game Start Cue Overlay */
+        #start-cue-overlay { background: rgba(0, 0, 0, 0.95); z-index: 1000; }
         #cue-arrow { font-size: 8em; color: white; animation: bounce 1s infinite; }
         
-        /* --- QUESTIONNAIRE STYLES --- */
-        .mcq-option {
-            background-color: var(--color-bg-dark); color: white; padding: 18px 20px; border-radius: 10px; margin-bottom: 10px; cursor: pointer; border: 2px solid transparent; transition: all 0.2s;
-        }
-        .mcq-option.selected {
-            background-color: var(--color-primary); border-color: #2e7d32; box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
-        }
+        /* --- RESULT SCREEN (Color Reveal) --- */
+        #result-area { text-align: center; justify-content: center; }
+        #result-area h2 { font-size: 2.5em; margin-bottom: 15px; }
         
-        /* --- REPORT STYLES --- */
-        #detailed-report-area { padding-bottom: 50px; }
-        #final-charts-grid { margin-top: 30px; } /* Increased spacing */
-        #final-action-plan { margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; }
+        #explanation-text { padding: 10px; font-size: 1.1em; margin-top: 20px; }
         
-        .section-title { margin-top: 40px; } /* Consistent section spacing */
-        .research-paper { margin-bottom: 20px; padding: 15px; border: 1px solid #ddd; }
+        #stats-info { margin-top: 30px; font-size: 0.9em; opacity: 0.8; }
     </style>
 </head>
 <body>
-    <div id="loading-overlay">
-        <div id="loading-icon">🧠</div>
-        <h3 style="color: var(--color-primary);">Analyzing Your Cognitive Profile...</h3>
-    </div>
-    
     <div id="game-container">
         <div id="landing-area" class="screen">
-            <h1>
-                <span class="emoji-large">🧠</span>
-                FOCUS. VIBE.
-            </h1>
-            <h2>Your Focus. Decoded.</h2>
+            <h1>Mood Tapper 🧠</h1>
+            <h2>Simple Cognitive Vibe Check</h2>
             
+            <p style="margin-top: 30px; margin-bottom: 30px; opacity: 0.8;">
+                Enter your details to calibrate the test (Age is required to set your performance baseline).
+            </p>
+
             <div id="input-group">
-                <h3>1. Personal Calibration</h3>
-                <input type="text" id="user-name" placeholder="Your Name (e.g., Alex)" required>
+                <input type="text" id="user-name" placeholder="Your Name" required>
                 <input type="number" id="user-age" min="10" max="100" placeholder="Your Age (Required)" required>
                 <select id="user-gender">
                     <option value="" disabled selected>Select Gender (Optional)</option>
@@ -110,99 +106,35 @@
                 </select>
             </div>
             
-            <p class="section-title">2. Why You Should Start</p>
-            <div class="steps-container" style="text-align: left; width: 100%;">
-                <div class="step-item"><strong>Objective Data:</strong> PVT-based analysis of speed and stability.</div>
-                <div class="step-item"><strong>Personalized Mood:</strong> Precise cognitive state verified by self-report (MCQ).</div>
-                <div class="step-item"><strong>Action Plan:</strong> Specific task and ideal work start time.</div>
-            </div>
-
-            <p class="section-title">3. The Science</p>
-            <p style="text-align: left; opacity: 0.9;">
-                This test is based on the <strong>Psychomotor Vigilance Task (PVT)</strong>, a clinical gold standard for measuring alertness. We track two main things: 
-                <br>1. <strong>Speed (&bar;R):</strong> How fast your brain is working. 
-                <br>2. <strong>Consistency (&sigma;):</strong> How stable your attention is. 
-                <br>Your final mood combines these objective scores with your personal self-assessment.
-            </p>
-            
-            <div id="research-list" style="width: 100%;">
-                </div>
-            
-            <button id="get-started-button" class="floating-cta" disabled>START ANALYSIS</button>
+            <button id="get-started-button" disabled>START VIBE CHECK</button>
         </div>
 
         <div id="game-area" class="screen hidden">
-            <div id="game-info" style="display: flex; justify-content: space-between; width: 100%; color: white;">
+            <div id="game-info">
                 <span id="timer">TIME: 30</span>
                 <span id="score">SCORE: 0</span>
             </div>
             <div id="target"></div>
-            <p id="instruction" style="position: absolute; bottom: 20px; color: white; font-size: 1.1em;"></p>
+            <p id="instruction"></p>
             
             <div id="start-cue-overlay" class="hidden">
-                <p id="cue-text" style="color: white;">Tap the circle to start the timer!</p>
+                <p id="cue-text">Tap the circle to begin!</p>
                 <div id="cue-arrow">👆</div>
             </div>
         </div>
         
         <div id="result-area" class="screen hidden">
-             <div id="final-report-intro">
-                <h3 style="color: var(--color-primary);">Performance Recorded! One quick check to finalize your Vibe.</h3>
+            <h2 id="mood-title"></h2>
+            
+            <p id="explanation-text"></p>
+            
+            <p id="task-text" style="font-weight: 600; margin-top: 30px;"></p>
+
+            <div id="stats-info">
+                <p>Avg. RT: <span id="final-art">0ms</span> | Consistency (&sigma;): <span id="final-sigma">0ms</span> | Score: <span id="final-score">0</span></p>
             </div>
             
-            <h2 id="mood-title" style="margin-top: 20px;"></h2>
-            <p style="opacity: 0.8;">Based on your **speed and consistency**, your cognitive state appears to be:</p>
-            
-            <div id="stats-info" style="margin-top: 30px; padding: 15px; border: 1px solid #eee; border-radius: 8px; width: 100%; text-align: left;">
-                <p><span id="final-name"></span>'s Performance Summary:</p>
-                <ul>
-                    <li>Avg. RT: <span id="final-art">0ms</span></li>
-                    <li>Consistency (&sigma;): <span id="final-sigma">0ms</span></li>
-                    <li>Total Score: <span id="final-score">0</span></li>
-                </ul>
-            </div>
-            
-            <button id="continue-to-mcq-button" class="floating-cta">CONTINUE TO VIBE CHECK</button>
-        </div>
-
-
-        <div id="questionnaire-area" class="screen hidden">
-            <h2 style="margin-top: 10px;">Vibe Check</h2>
-            <p style="opacity: 0.7; margin-bottom: 30px;">This quiz combines your **cognitive speed** with your **emotional valence** for the most precise analysis.</p>
-
-            <div class="mcq-question" id="q1-goals">
-                <h3>1. What is your primary goal for taking this test?</h3>
-                <label class="mcq-option" data-value="TopForm">Keep my mind in top form</label>
-                <label class="mcq-option" data-value="Potential">Better understand my potential</label>
-                <label class="mcq-option" data-value="DeStress">Chill out and de-stress</label>
-                <label class="mcq-option" data-value="Puzzles">I like puzzles/challenges</label>
-                <label class="mcq-option" data-value="Other">Other</label>
-            </div>
-            
-            <div class="mcq-question" id="q2-valence">
-                <h3>2. How would you describe your overall current emotional state?</h3>
-                <label class="mcq-option" data-value="5"> Highly Positive (Cheerful, Happy)</label>
-                <label class="mcq-option" data-value="3"> Neutral / Mixed</label>
-                <label class="mcq-option" data-value="1"> Highly Negative (Stressed, Frustrated)</label>
-            </div>
-            
-            <button id="submit-mcq-button" disabled>ANALYZE MY VIBE</button>
-        </div>
-
-        <div id="detailed-report-area" class="screen hidden">
-            <h2 id="detailed-mood-title"></h2>
-            <p style="text-align: center; opacity: 0.7;">Your full cognitive and emotional breakdown, based on the scientific PVT test and your self-report.</p>
-
-            <div id="final-charts-grid" style="width: 100%; margin-top: 20px;">
-                </div>
-            
-            <p class="section-title">Key Takeaways</p>
-            <p id="final-explanation-text" style="text-align: left; width: 100%;"></p>
-            
-            <p id="final-action-plan" style="text-align: left; font-size: 1.1em; font-weight: 600; width: 100%; margin-top: 20px; padding-top: 15px; border-top: 1px solid #eee;"></p>
-
-            <button id="share-button" style="margin-top: 40px;">Share My Vibe 🚀</button>
-            <button id="restart-button" style="margin-top: 10px; background: #6c757d;">RE-ANALYZE</button>
+            <button id="restart-button">RE-ANALYZE</button>
         </div>
     </div>
     
@@ -213,17 +145,8 @@
         
         let userName = '';
         let userAge = 0; 
-        let userGender = '';
         let baselineART = 0;
-        let chartInstances = {};
 
-        // --- RESEARCH PAPERS DATA ---
-        const RESEARCH_PAPERS = [
-            { title: "Psychomotor Vigilance Task Demonstrates Impaired Vigilance...", summary: "This study validates the PVT's sensitivity, showing it can objectively distinguish performance deficits in patients with sleep-wake disorders. It underscores PVT as a robust measure of alertness.", link: "https://jcsm.aasm.org/doi/abs/10.5664/jcsm.4042" }, 
-            { title: "Validity and Sensitivity of a Brief Psychomotor Vigilance Test (PVT-B)", summary: "Research confirming that a shorter version (like our 30-second test) maintains sensitivity to cognitive changes caused by sleep loss, offering a practical alternative.", link: "https://pmc.ncbi.nlm.nih.gov/articles/PMC3197786/" },
-            { title: "The Neural Basis of the Psychomotor Vigilance Task", summary: "Explores brain regions involved: optimal performance relates to sustained attention and motor systems, while poor performance (lapses) is linked to mental disengagement.", link: "https://www.researchgate.net/publication/7500485_The_Neural_Basis_of_the_Psychomotor_Vigilance_Task" }
-        ];
-        
         // UI Elements
         const nameInput = document.getElementById('user-name');
         const ageInput = document.getElementById('user-age');
@@ -232,44 +155,25 @@
         const gameArea = document.getElementById('game-area');
         const target = document.getElementById('target');
         const startCueOverlay = document.getElementById('start-cue-overlay');
-        const continueToMcqButton = document.getElementById('continue-to-mcq-button');
-        const submitMcqButton = document.getElementById('submit-mcq-button');
-        const loadingOverlay = document.getElementById('loading-overlay');
-        const researchList = document.getElementById('research-list');
+        const restartButton = document.getElementById('restart-button');
+        const resultArea = document.getElementById('result-area');
 
-        // Game State & Post-Game Metrics
+        // Game State & Metrics
         let gameState = {
-            running: false, score: 0, timeRemaining: GAME_DURATION, timerInterval: null, targetTimeout: null, targetAppearanceTime: 0, reactionTimes: [], performanceData: [], 
-            pvtResults: null, mcqValence: null, mcqGoal: null
+            running: false, score: 0, timeRemaining: GAME_DURATION, timerInterval: null, targetTimeout: null, targetAppearanceTime: 0, reactionTimes: [], pvtResults: null
         };
 
-        // --- CORE LOGIC ---
+        // --- SCIENTIFIC DATA & LOGIC ---
         function getAgeAdjustedBaselineART(age) {
             if (age < 25) return 220; if (age < 40) return 250; if (age < 60) return 280; return 320; 
         }
 
         const MoodMap = {
-            'OPTIMAL_FOCUS': { name: 'Focused & Flowing 🚀', color: '#000080', task: 'Tackle the most important item on your to-do list for 30 minutes.', workDelay: 0, explanation: '<strong>Optimal Arousal & Positive Valence.</strong> Your quick and consistent performance combined with a positive emotional state confirms peak focus and efficiency. You are primed for deep work.' },
-            'PRODUCTIVE_ANXIETY': { name: 'Excited & Productive ⚡', color: '#FFA500', task: 'Go for a 15-minute brisk walk or do 2 minutes of stretching to stabilize your energy.', workDelay: 15, explanation: '<strong>High Arousal & Mixed Valence.</strong> Your fast but erratic taps indicate high energy, but your mixed/negative valence suggests this energy is driven by urgency or anxiety. Channel it deliberately.' },
-            'CALM_EFFICIENT': { name: 'Calm & Efficient 🧘', color: '#008080', task: 'Read an article about a curious topic, then summarize the main idea in a single sentence.', workDelay: 5, explanation: '<strong>Low Arousal & Positive Valence.</strong> Your calm tapping pace and positive valence indicate a relaxed, highly stable, and reflective state. Use this mood for strategic planning or meticulous tasks.' },
-            'FATIGUE_SLUMP': { name: 'Tired & Dispersed 😴', color: '#C8C8D8', task: 'Close your eyes and practice 4-7-8 breathing (4 seconds in, 7 hold, 8 out) 5 times.', workDelay: 20, explanation: '<strong>Low Arousal & Negative Valence.</strong> Your slow, erratic performance coupled with a low valence score is a clear sign of mental fatigue or high stress. Prioritize rest and recovery.' }
+            'FOCUSED_FLOWING': { name: 'Focused & Flowing 🚀', color: 'var(--color-focused)', textColor: 'white', task: 'Tackle the most important item on your to-do list for 30 minutes.', explanation: 'Optimal Focus: Fast & Consistent tapping shows peak alertness.' },
+            'EXCITED_ENERGETIC': { name: 'Excited & Energetic ⚡', color: 'var(--color-excited)', textColor: 'black', task: 'Go for a 15-minute walk to stabilize your energy.', explanation: 'High Arousal: Fast but erratic performance indicates high energy that needs structure.' },
+            'CALM_MELLOW': { name: 'Calm & Mellow 🧘', color: 'var(--color-calm)', textColor: 'white', task: 'Ready for detail work. Read an article to gently activate the mind.', explanation: 'Stable Pace: Slow but consistent performance indicates a deliberate, steady state.' },
+            'TIRED_DISPERSED': { name: 'Tired & Dispersed 😴', color: 'var(--color-tired)', textColor: 'black', task: 'Prioritize recovery. Practice 4-7-8 breathing 5 times.', explanation: 'Fatigue/Stress: Slow and erratic performance suggests significant cognitive load.' }
         };
-
-        function calculateFinalMood() {
-            const pvt = gameState.pvtResults;
-            if (!pvt || !pvt.valid) { return { ...MoodMap.FATIGUE_SLUMP, name: 'Tired & Dispersed (Inconclusive) ⚠️', explanation: 'Insufficient taps recorded. Re-analyze for a full report.' }; }
-            
-            const ART = pvt.ART; const Sigma = pvt.Sigma;
-            const isFast = ART <= (baselineART * 0.95); const isSlow = ART >= (baselineART * 1.05);
-            const isConsistent = Sigma <= T_SIGMA;
-            const valenceScore = gameState.mcqValence;
-            const isPositive = valenceScore >= 4; 
-
-            if (isFast) { if (isConsistent && isPositive) return MoodMap.OPTIMAL_FOCUS; return MoodMap.PRODUCTIVE_ANXIETY; }
-            if (isSlow) { if (isConsistent && isPositive) return MoodMap.CALM_EFFICIENT; return MoodMap.FATIGUE_SLUMP; }
-            if (isPositive) return MoodMap.CALM_EFFICIENT;
-            return MoodMap.FATIGUE_SLUMP;
-        }
 
         function calculateKPIs() {
             const N = gameState.reactionTimes.length;
@@ -282,17 +186,23 @@
             return { ART: Math.round(ART), Sigma: Math.round(Sigma), valid: true };
         }
 
-        function calculateVisualizationScores(ART, Sigma, Score, valid) {
-            if (!valid) return [20, 20, 20];
-            let speedScore = 100 - Math.min(100, Math.max(0, (ART - 150) / 3)); 
-            let attentionScore = 100 - Math.min(100, Math.max(0, (Sigma - 10) * 1.5)); 
-            let stabilityScore = Math.min(100, Math.max(0, Score * 2.5));
+        function mapKPIsToMood(pvt) {
+            if (!pvt.valid) return { ...MoodMap.TIRED_DISPERSED, name: 'Inconclusive Data ⚠️', explanation: 'Insufficient taps recorded. Try again for a full report.' };
+            
+            const ART = pvt.ART; const Sigma = pvt.Sigma;
+            const isFast = ART <= (baselineART * 0.95);
+            const isSlow = ART >= (baselineART * 1.05);
+            const isConsistent = Sigma <= T_SIGMA;
 
-            return [ Math.round(attentionScore), Math.round(speedScore), Math.round(stabilityScore) ];
+            if (isFast && isConsistent) return MoodMap.FOCUSED_FLOWING;
+            if (isFast && !isConsistent) return MoodMap.EXCITED_ENERGETIC;
+            if (isSlow && isConsistent) return MoodMap.CALM_MELLOW;
+            
+            return MoodMap.TIRED_DISPERSED; 
         }
 
 
-        // --- UX / FLOW IMPLEMENTATION ---
+        // --- GAME FLOW / UX IMPLEMENTATION ---
         function showScreen(id) {
             const currentScreen = document.querySelector('.screen:not(.hidden)');
             const nextScreen = document.getElementById(id);
@@ -307,13 +217,6 @@
             } else {
                 nextScreen.classList.remove('hidden');
                 nextScreen.style.opacity = 1;
-            }
-            
-            document.querySelectorAll('.floating-cta').forEach(btn => btn.classList.add('hidden'));
-            if (id === 'landing-area') {
-                document.getElementById('get-started-button').classList.remove('hidden');
-            } else if (id === 'result-area') {
-                document.getElementById('continue-to-mcq-button').classList.remove('hidden');
             }
         }
         
@@ -367,8 +270,6 @@
             const rt = Math.round(tapTime - gameState.targetAppearanceTime);
 
             gameState.reactionTimes.push(rt);
-            const timeElapsed = GAME_DURATION - gameState.timeRemaining;
-            gameState.performanceData.push({ time: timeElapsed, rt: rt });
             
             gameState.score++;
             document.getElementById('score').textContent = `SCORE: ${gameState.score}`;
@@ -385,22 +286,32 @@
             document.getElementById('instruction').textContent = 'Missed area. (-1)';
         }
 
+        function startTestTimer(event) {
+            event.stopPropagation();
+            
+            // Revert UX elements
+            target.removeEventListener('click', startTestTimer);
+            startCueOverlay.classList.add('hidden');
+            
+            gameState.running = true; 
+            
+            // Set main game handlers
+            target.addEventListener('click', handleTargetTap);
+            gameArea.onclick = handleMissedTap;
+            
+            startTimer();
+            spawnTarget();
+        }
+
         function startGame() {
-            // CALIBRATION CHECK
+            // Check & Calibrate
             userName = nameInput.value.trim();
             userAge = parseInt(ageInput.value, 10);
-            userGender = genderSelect.value;
             baselineART = getAgeAdjustedBaselineART(userAge);
             
-            // RESET ALL GAME STATE
-            gameState.score = 0;
-            gameState.timeRemaining = GAME_DURATION;
-            gameState.reactionTimes = [];
-            gameState.performanceData = []; 
-            gameState.running = false; 
-            clearInterval(gameState.timerInterval);
-            clearTimeout(gameState.targetTimeout);
-
+            // Reset state
+            gameState = { running: false, score: 0, timeRemaining: GAME_DURATION, timerInterval: null, targetTimeout: null, targetAppearanceTime: 0, reactionTimes: [], pvtResults: null };
+            
             showScreen('game-area');
             document.getElementById('instruction').textContent = '';
             document.getElementById('timer').textContent = `TIME: ${GAME_DURATION}`;
@@ -410,159 +321,44 @@
             startCueOverlay.classList.remove('hidden');
             target.style.display = 'block'; 
             
-            // --- BUG FIX: Attach listener to target dot for cue phase ---
+            // Attach listener to target dot for the game start cue
             target.addEventListener('click', startTestTimer);
-        }
-
-        function startTestTimer(event) {
-            event.stopPropagation();
-            
-            // Remove temporary listener (This fixes the overlapping function call)
-            target.removeEventListener('click', startTestTimer);
-            startCueOverlay.classList.add('hidden');
-            
-            gameState.running = true; 
-            
-            // Re-bind target listener for the main game loop
-            target.addEventListener('click', handleTargetTap);
-            gameArea.onclick = handleMissedTap;
-            
-            startTimer();
-            spawnTarget();
         }
 
         function endGame() {
             gameState.running = false;
             gameState.pvtResults = calculateKPIs(); 
             
-            const pvt = gameState.pvtResults;
-            const moodPreview = calculateFinalMood();
+            const resultMood = mapKPIsToMood(gameState.pvtResults);
             
-            document.getElementById('final-name').textContent = `${userName}'s Performance Summary:`;
-            document.getElementById('final-art').textContent = `${pvt.ART}ms`;
-            document.getElementById('final-sigma').textContent = `${pvt.Sigma}ms`;
+            // Render Results
+            resultArea.style.backgroundColor = resultMood.color;
+            resultArea.style.color = resultMood.textColor;
+            document.getElementById('mood-title').textContent = resultMood.name;
+            document.getElementById('explanation-text').textContent = resultMood.explanation;
+            document.getElementById('task-text').textContent = `ACTION PLAN: ${resultMood.task}`;
+
+            // Display Stats
+            document.getElementById('final-art').textContent = `${gameState.pvtResults.ART}ms`;
+            document.getElementById('final-sigma').textContent = `${gameState.pvtResults.Sigma}ms`;
             document.getElementById('final-score').textContent = gameState.score;
-            document.getElementById('mood-title').textContent = pvt.valid ? `Likely ${moodPreview.name.split(' ')[0]} Vibe` : "Inconclusive Data ⚠️";
 
             showScreen('result-area');
         }
 
-        // --- DATA VISUALIZATION & FINAL REPORT ---
-        function renderFinalCharts(scores, moodColor) {
-            const grid = document.getElementById('final-charts-grid');
-            grid.innerHTML = `
-                <div id="final-line-chart-container" style="background: #f8f8f8; border-radius: 8px; padding: 10px; margin-bottom: 20px;">
-                    <h4 style="text-align: center;">Response Time Over Session</h4>
-                    <canvas id="final-line-chart"></canvas>
-                </div>
-                <div id="final-doughnut-chart-container" style="height: 300px; background: #f8f8f8; border-radius: 8px; padding: 10px;">
-                    <h4 style="text-align: center;">Cognitive Domain Strength</h4>
-                    <canvas id="final-doughnut-chart"></canvas>
-                </div>
-            `;
-            
-            // Line Chart
-            const lineCtx = document.getElementById('final-line-chart').getContext('2d');
-            if (chartInstances.finalLine) chartInstances.finalLine.destroy();
-            chartInstances.finalLine = new Chart(lineCtx, {
-                type: 'line', data: { labels: gameState.performanceData.map((data, index) => index + 1), datasets: [{ label: 'Response Time (ms)', data: gameState.performanceData.map(data => data.rt), borderColor: moodColor, backgroundColor: 'rgba(0,0,0,0.1)', tension: 0.2, borderWidth: 2, pointRadius: 3 }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, title: { display: false } }, scales: { x: { title: { display: true, text: 'Tap Sequence' } }, y: { title: { display: true, text: 'RT (ms)' }, reverse: true, min: 150, max: Math.max(700, Math.max(...gameState.performanceData.map(data => data.rt)) + 50) } } }
-            });
-
-            // Doughnut Chart
-            const doughnutCtx = document.getElementById('final-doughnut-chart').getContext('2d');
-            if (chartInstances.finalDoughnut) chartInstances.finalDoughnut.destroy();
-            chartInstances.finalDoughnut = new Chart(doughnutCtx, {
-                type: 'doughnut', data: { labels: ['Attention (Consistency)', 'Speed (RT)', 'Stability (Hit Rate)'], datasets: [{ label: 'Performance Score / 100', data: scores, backgroundColor: ['#4285F4', '#DB4437', '#F4B400'], borderColor: '#fff', borderWidth: 2, hoverOffset: 8 }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: false }, legend: { position: 'bottom' } } }
-            });
-        }
-        
-        function renderResultsDashboard() {
-            loadingOverlay.style.display = 'flex';
-            
-            setTimeout(() => {
-                const pvt = gameState.pvtResults;
-                const resultMood = calculateFinalMood();
-                const visualizationScores = calculateVisualizationScores(pvt.ART, pvt.Sigma, gameState.score, pvt.valid);
-                
-                loadingOverlay.style.display = 'none';
-
-                document.getElementById('detailed-mood-title').style.color = resultMood.color;
-                document.getElementById('detailed-mood-title').textContent = resultMood.name;
-                
-                document.getElementById('final-explanation-text').innerHTML = resultMood.explanation.replace(/&bar;R/g, '<strong>&bar;R</strong>').replace(/&sigma;/g, '<strong>&sigma;</strong>');
-
-                let workRecHtml = "";
-                if (resultMood.workDelay === 0) {
-                    workRecHtml = `Work Status: <strong>Optimal.</strong> Start focused work immediately.`;
-                } else {
-                    workRecHtml = `Work Status: <strong>Wait.</strong> Complete the task, then wait <strong>${resultMood.workDelay} minutes</strong> before starting focused work.`;
-                }
-                
-                document.getElementById('final-action-plan').innerHTML = `
-                    <p style="color: ${resultMood.color};">${workRecHtml}</p>
-                    <p>ACTION PLAN: <strong>${resultMood.task}</strong></p>
-                `;
-
-                renderFinalCharts(visualizationScores, resultMood.color);
-                showScreen('detailed-report-area');
-            }, 1000); 
-        }
-
-        // --- EVENT HANDLERS & INITIALIZATION ---
-        function handleRestart() {
-            showScreen('landing-area');
-            document.getElementById('user-name').value = ''; 
-            document.getElementById('user-age').value = ''; 
-            document.getElementById('user-gender').value = '';
-            document.getElementById('get-started-button').disabled = true;
-
-            gameState.running = false;
-            clearInterval(gameState.timerInterval);
-            clearTimeout(gameState.targetTimeout);
-            
-            Object.values(chartInstances).forEach(chart => chart.destroy());
-            chartInstances = {};
-
-            document.querySelectorAll('.mcq-option').forEach(label => label.classList.remove('selected'));
-            document.getElementById('submit-mcq-button').disabled = true;
-        }
-
         function checkInputsCalibration() {
-            const ageValid = parseInt(ageInput.value, 10) >= 10 && parseInt(ageInput.value, 10) <= 100;
+            const ageValid = parseInt(nameInput.value, 10) >= 10 && parseInt(ageInput.value, 10) <= 100;
             const nameValid = nameInput.value.trim().length >= 2;
             getStartedButton.disabled = !(ageValid && nameValid);
         }
 
         function initializeListeners() {
-            document.getElementById('get-started-button').onclick = startGame;
-            document.getElementById('restart-button').onclick = handleRestart;
-            document.getElementById('user-name').addEventListener('input', checkInputsCalibration);
-            document.getElementById('user-age').addEventListener('input', checkInputsCalibration);
-            document.getElementById('user-gender').addEventListener('change', checkInputsCalibration);
-            
-            document.getElementById('continue-to-mcq-button').onclick = () => { showScreen('questionnaire-area'); };
+            getStartedButton.onclick = startGame;
+            restartButton.onclick = () => { showScreen('landing-area'); };
 
-            // Initializing research papers on load
-            const researchList = document.getElementById('research-list');
-            const researchData = [
-                { title: "Psychomotor Vigilance Task Demonstrates Impaired Vigilance...", summary: "This study validates the PVT's sensitivity, showing it can objectively distinguish performance deficits in patients with sleep-wake disorders. It underscores PVT as a robust measure of alertness.", link: "https://jcsm.aasm.org/doi/abs/10.5664/jcsm.4042" }, 
-                { title: "Validity and Sensitivity of a Brief Psychomotor Vigilance Test (PVT-B)", summary: "Research confirming that a shorter version (like our 30-second test) maintains sensitivity to cognitive changes caused by sleep loss, offering a practical alternative.", link: "https://pmc.ncbi.nlm.nih.gov/articles/PMC3197786/" },
-                { title: "The Neural Basis of the Psychomotor Vigilance Task", summary: "Explores brain regions involved: optimal performance relates to sustained attention and motor systems, while poor performance (lapses) is linked to mental disengagement.", link: "https://www.researchgate.net/publication/7500485_The_Neural_Basis_of_the_Psychomotor_Vigilance_Task" }
-            ];
+            nameInput.addEventListener('input', checkInputsCalibration);
+            ageInput.addEventListener('input', checkInputsCalibration);
             
-            researchData.forEach((paper) => {
-                const item = document.createElement('div');
-                item.className = 'research-paper';
-                item.innerHTML = `
-                    <h3>${paper.title}</h3>
-                    <p>${paper.summary}</p>
-                    <a href="${paper.link}" target="_blank">Read Abstract / Source</a>
-                `;
-                researchList.appendChild(item);
-            });
-            setupMcqListeners();
             showScreen('landing-area');
         }
 
