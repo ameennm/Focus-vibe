@@ -46,7 +46,7 @@
 
         /* --- BUTTONS --- */
         button {
-            padding: 14px 30px; font-size: 1.1em; background: var(--color-primary); color: white; border: none; border-radius: 8px; cursor: pointer;
+            padding: 14px 30px; font-size: 1.1em; background: var(--color-primary); color: white; border-radius: 8px; cursor: pointer;
             margin-top: 20px; transition: background-color 0.15s, transform 0.1s; font-weight: 600; width: 100%;
         }
         
@@ -60,22 +60,17 @@
             margin-top: 0 !important;
             animation: floatUp 0.5s ease-out;
         }
+        @keyframes floatUp { from { opacity: 0; transform: translate(-50%, 20px); } to { transform: translate(-50%, 0); } }
 
-        /* --- LANDING & CALIBRATION STYLES (Merged) --- */
-        #landing-area { padding-bottom: 120px; } 
-
-        /* Inputs */
-        input[type="text"], input[type="number"], select { 
-            width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 1em; margin-bottom: 15px; 
-            transition: border-color 0.2s, box-shadow 0.2s; 
-        }
+        /* --- INPUTS --- */
         input:focus { border-color: var(--color-primary); box-shadow: 0 0 5px rgba(76, 175, 80, 0.4); outline: none; }
 
         /* --- GAME START CUE STYLES --- */
         #game-area { background-color: black; color: white; cursor: crosshair; }
         #cue-arrow { font-size: 8em; color: white; animation: bounce 1s infinite; }
         #start-cue-overlay { background: rgba(0, 0, 0, 0.95); }
-        
+        #target { position: absolute; width: 85px; height: 85px; border-radius: 50%; background-color: white; border: 6px solid black; box-shadow: 0 0 15px rgba(255, 255, 255, 0.8); display: none; cursor: pointer; animation: pulse 0.5s infinite alternate; }
+
         /* --- QUESTIONNAIRE STYLES (Dark Cards) --- */
         .mcq-option {
             background-color: var(--color-bg-dark); color: white; padding: 18px 20px; border-radius: 10px; margin-bottom: 10px; cursor: pointer; border: 2px solid transparent; transition: all 0.2s;
@@ -118,11 +113,11 @@
                 <div class="step-item"><strong>Action Plan:</strong> Specific task and ideal work start time.</div>
             </div>
 
-            <p class="section-title">3. The Science (Simplified)</p>
+            <p class="section-title">3. The Science</p>
             <p style="text-align: left; opacity: 0.9;">
-                This test is based on the **Psychomotor Vigilance Task (PVT)**, a clinical gold standard for measuring alertness. We track two main things: 
-                <br>1. **Speed ($\bar{R}$):** How fast your brain is working. 
-                <br>2. **Consistency ($\sigma$):** How stable your attention is. 
+                This test is based on the <strong>Psychomotor Vigilance Task (PVT)</strong>, a clinical gold standard for measuring alertness. We track two main things: 
+                <br>1. <strong>Speed (&bar;R):</strong> How fast your brain is working. 
+                <br>2. <strong>Consistency (&sigma;):</strong> How stable your attention is. 
                 <br>Your final mood combines these objective scores with your personal self-assessment.
             </p>
             
@@ -236,7 +231,7 @@
         const continueToMcqButton = document.getElementById('continue-to-mcq-button');
         const submitMcqButton = document.getElementById('submit-mcq-button');
         const loadingOverlay = document.getElementById('loading-overlay');
-
+        const researchList = document.getElementById('research-list');
 
         // Game State & Post-Game Metrics
         let gameState = {
@@ -393,7 +388,7 @@
             userGender = genderSelect.value;
 
             if (!userName || userName.length < 2 || !userAge || userAge < 10 || userAge > 100) {
-                return; // Button should be disabled anyway, but this is safety.
+                return;
             }
             
             baselineART = getAgeAdjustedBaselineART(userAge);
@@ -416,18 +411,20 @@
             startCueOverlay.classList.remove('hidden');
             target.style.display = 'block'; 
             
-            // --- BUG FIX: Use event listener correctly on target for cue phase ---
+            // --- BUG FIX: Attach listener to target dot ---
             target.addEventListener('click', startTestTimer);
         }
 
         function startTestTimer(event) {
             event.stopPropagation();
             
+            // Remove temporary listener
             target.removeEventListener('click', startTestTimer);
             startCueOverlay.classList.add('hidden');
             
             gameState.running = true; 
             
+            // Re-bind target listener now that the test is running (handleTargetTap is already defined)
             target.addEventListener('click', handleTargetTap);
             gameArea.onclick = handleMissedTap;
             
@@ -477,7 +474,6 @@
                 label.addEventListener('click', () => {
                     q2Labels.forEach(l => l.classList.remove('selected'));
                     label.classList.add('selected');
-                    // BUG FIX: Ensure numerical value is stored
                     gameState.mcqValence = parseInt(label.getAttribute('data-value')); 
                     q2Selected = true;
                     checkCompletion();
@@ -492,6 +488,7 @@
                 renderResultsDashboard();
             };
         }
+
 
         function renderResultsDashboard() {
             loadingOverlay.style.display = 'flex';
@@ -559,8 +556,10 @@
         // --- EVENT HANDLERS ---
         function handleRestart() {
             showScreen('landing-area');
-            nameInput.value = ''; ageInput.value = ''; genderSelect.value = '';
-            getStartedButton.disabled = true;
+            document.getElementById('user-name').value = ''; 
+            document.getElementById('user-age').value = ''; 
+            document.getElementById('user-gender').value = '';
+            document.getElementById('get-started-button').disabled = true;
 
             gameState.running = false;
             clearInterval(gameState.timerInterval);
@@ -582,11 +581,11 @@
         function initializeListeners() {
             getStartedButton.onclick = startGame;
             document.getElementById('restart-button').onclick = handleRestart;
-            nameInput.addEventListener('input', checkInputsCalibration);
-            ageInput.addEventListener('input', checkInputsCalibration);
-            genderSelect.addEventListener('change', checkInputsCalibration);
+            document.getElementById('user-name').addEventListener('input', checkInputsCalibration);
+            document.getElementById('user-age').addEventListener('input', checkInputsCalibration);
+            document.getElementById('user-gender').addEventListener('change', checkInputsCalibration);
             
-            continueToMcqButton.onclick = () => { showScreen('questionnaire-area'); };
+            document.getElementById('continue-to-mcq-button').onclick = () => { showScreen('questionnaire-area'); };
 
             // Initializing research papers on load
             const researchList = document.getElementById('research-list');
