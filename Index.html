@@ -9,10 +9,13 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"> 
     <meta name="apple-mobile-web-app-title" content="Mood Tapper">
+
     <meta property="og:title" content="Mood Tapper: What's Your Brain Speed?" />
     <meta property="og:description" content="I just took the 30-second focus test and got my scientific mood analysis. Try it!" />
     <meta property="og:url" content="https://your-vercel-domain.vercel.app" /> 
     <meta name="twitter:card" content="summary_large_image" />
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 
     <style>
         /* --- GLOBAL STYLES (White Background) --- */
@@ -89,7 +92,7 @@
             cursor: not-allowed;
         }
 
-        /* --- LANDING PAGE STYLES (White/Black) --- */
+        /* --- LANDING PAGE STYLES --- */
         #landing-area {
             background-color: #fff;
             color: #000;
@@ -177,21 +180,11 @@
             opacity: 0;
         }
         
-        .research-paper:hover {
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        }
-
         .research-paper h3 {
             font-size: 1em;
             font-weight: 600;
             margin-top: 0;
             margin-bottom: 5px;
-        }
-
-        .research-paper p {
-            font-size: 0.85em;
-            opacity: 0.7;
-            margin-top: 0;
         }
 
         .research-paper a {
@@ -258,37 +251,83 @@
             to { transform: scale(1.05); }
         }
 
-        /* --- RESULT SCREEN STYLES --- */
+        /* --- RESULT SCREEN STYLES (Dashboard) --- */
         #result-area {
             text-align: center;
-            justify-content: space-around;
+            justify-content: flex-start;
+            padding-top: 20px;
+            overflow-y: auto;
+            background-color: #fff;
+            color: #000;
+        }
+        
+        #mood-title {
+            font-size: 2.2em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        #chart-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            margin-top: 15px;
+            padding-bottom: 10px;
+        }
+
+        #radar-chart, #pie-chart {
+            width: 95% !important;
+            height: auto !important;
+            margin-bottom: 20px;
+        }
+
+        #analysis-summary {
+            background: #f8f8f8;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+            text-align: left;
+            border: 1px solid #eee;
+        }
+        
+        #explanation-text {
+            font-size: 0.95em;
+            line-height: 1.4;
+            margin-bottom: 15px;
         }
         
         #work-recommendation {
             font-size: 1.1em;
-            color: #000; 
-            margin-top: 15px;
-            font-weight: 500;
+            font-weight: 600;
+            color: #000;
+            margin-top: 10px;
         }
 
         #task-text {
-            font-size: 1.3em;
-            max-width: 90%;
+            font-size: 1.2em;
             line-height: 1.5;
-            margin-top: 25px;
-            font-weight: 600;
+            margin-top: 15px;
+            padding: 10px 0;
+            font-weight: 700;
+            border-top: 1px solid #eee;
         }
-        
-        #share-button {
-            background-color: #007bff;
-            color: white;
-            margin-bottom: 10px;
+
+        #stats-info {
+            font-size: 0.9em;
+            opacity: 0.9;
+            margin-top: 15px;
+            line-height: 1.6;
+            padding-top: 10px;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            width: 100%;
         }
-        
-        #restart-button {
-            background-color: #6c757d;
-            color: white;
-            margin-top: 0;
+
+        #result-buttons {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            margin-top: 20px;
         }
     </style>
 </head>
@@ -334,17 +373,26 @@
 
         <div id="result-area" class="screen hidden">
             <h2 id="mood-title"></h2>
-            <p id="explanation-text"></p>
-            <p id="work-recommendation"></p>
-            <p id="task-text"></p>
-            <div id="stats-info">
-                <p>Score: <span id="final-score">0</span> points</p>
-                <p>Avg. Reaction Time: <span id="final-art">0ms</span></p>
-                <p>Consistency (&sigma;): <span id="final-sigma">0ms</span></p>
+            
+            <div id="chart-container">
+                <canvas id="radar-chart"></canvas>
             </div>
-            <button id="share-button">Share My Vibe 🚀</button>
-            <p id="copy-status" class="">Analysis copied to clipboard!</p>
-            <button id="restart-button">RE-ANALYZE</button>
+
+            <div id="analysis-summary">
+                <p id="explanation-text"></p>
+                <p id="work-recommendation"></p>
+                <p id="task-text"></p>
+            </div>
+
+            <div id="stats-info">
+                <p>Score: <span id="final-score">0</span> points | Avg. RT: <span id="final-art">0ms</span> | Consistency (&sigma;): <span id="final-sigma">0ms</span></p>
+            </div>
+            
+            <div id="result-buttons">
+                <button id="share-button">Share My Vibe 🚀</button>
+                <p id="copy-status" class="">Analysis copied to clipboard!</p>
+                <button id="restart-button">RE-ANALYZE</button>
+            </div>
         </div>
     </div>
     
@@ -357,8 +405,9 @@
         
         let userAge = 0; 
         let baselineART = 0;
+        let myRadarChart;
 
-        // --- RESEARCH PAPERS DATA ---
+        // --- RESEARCH PAPERS DATA (UNCHANGED) ---
         const RESEARCH_PAPERS = [
             {
                 title: "Psychomotor Vigilance Task Demonstrates Impaired Vigilance in Disorders with Excessive Daytime Sleepiness",
@@ -444,14 +493,13 @@
             }
         };
 
-        // --- GAME FLOW ---
+        // --- GAME FLOW & MECHANICS (UNCHANGED) ---
         function showScreen(id) {
             document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
             document.getElementById(id).classList.remove('hidden');
         }
 
         function startGame() {
-            // CALIBRATION CHECK
             const age = parseInt(ageInput.value, 10);
             if (!age || age < 10 || age > 100) {
                 alert("Please enter a valid age (10-100) to calibrate the test.");
@@ -460,7 +508,6 @@
             userAge = age;
             baselineART = getAgeAdjustedBaselineART(userAge);
             
-            // Reset game state and UI to start the test
             gameState.score = 0;
             gameState.timeRemaining = GAME_DURATION;
             gameState.reactionTimes = [];
@@ -494,7 +541,6 @@
             if (!gameState.running) return;
             const targetDuration = Math.random() * 1500 + 500; 
 
-            // Positioning logic
             const targetSize = 85;
             const padding = 30;
             const infoHeight = 70;
@@ -548,7 +594,7 @@
             instructionText.textContent = 'Missed area. (-1)';
         }
 
-        // --- ANALYSIS LOGIC ---
+        // --- ANALYSIS LOGIC (UNCHANGED) ---
         function calculateKPIs() {
             const N = gameState.reactionTimes.length;
             if (N < MIN_TAPS_FOR_ANALYSIS) { 
@@ -585,23 +631,99 @@
             return MoodMap.TIRED_DISPERSED; 
         }
 
+        // --- DATA VISUALIZATION FUNCTIONS ---
+        function calculateVisualizationScores(ART, Sigma, Score, valid) {
+            if (!valid) return [20, 20, 20]; // Default low score if invalid
+
+            // Normalize Speed (0-100): Faster is better. Baseline ART (250ms) is 50/100.
+            let speedScore = 100 - Math.min(100, Math.max(0, (ART - 150) / 3)); 
+
+            // Normalize Attention (0-100): Lower Sigma is better. Sigma 70ms is 50/100.
+            let attentionScore = 100 - Math.min(100, Math.max(0, (Sigma - 10) * 1.5)); 
+            
+            // Normalize Stability/Problem Solving (Score/Hit Rate): Based on number of successful taps.
+            let stabilityScore = Math.min(100, Math.max(0, Score * 2.5)); // Max score approx 40 successful taps
+
+            return [
+                Math.round(attentionScore),
+                Math.round(speedScore),
+                Math.round(stabilityScore)
+            ];
+        }
+
+        function renderRadarChart(scores, moodColor) {
+            const ctx = document.getElementById('radar-chart').getContext('2d');
+            
+            if (myRadarChart) myRadarChart.destroy(); // Destroy previous chart instance
+
+            myRadarChart = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['Attention (Consistency)', 'Speed (Reaction Time)', 'Stability (Hit Rate)'],
+                    datasets: [{
+                        label: 'Your Current Vibe',
+                        data: scores,
+                        backgroundColor: `${moodColor}70`, // 70 is for alpha transparency
+                        borderColor: moodColor,
+                        borderWidth: 2,
+                        pointBackgroundColor: moodColor,
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: moodColor,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    scales: {
+                        r: {
+                            angleLines: { color: 'rgba(0, 0, 0, 0.1)' },
+                            grid: { color: 'rgba(0, 0, 0, 0.1)' },
+                            pointLabels: { font: { size: 12 } },
+                            min: 0,
+                            max: 100,
+                            ticks: { display: false } // Hide score labels on axis
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    return label + context.raw + ' / 100';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+
         // --- END GAME & DISPLAY ---
         function endGame() {
             gameState.running = false;
             const { ART, Sigma, valid } = calculateKPIs();
             const resultMood = mapKPIsToMood(ART, Sigma, valid);
+            const visualizationScores = calculateVisualizationScores(ART, Sigma, gameState.score, valid);
 
             showScreen('result-area');
-
+            
             // Set UI based on mood
-            resultArea.style.backgroundColor = resultMood.color;
-            resultArea.style.color = resultMood.textColor;
+            resultArea.style.backgroundColor = '#fff'; // Keep result area white
+            resultArea.style.color = '#000';
             document.getElementById('mood-title').textContent = resultMood.name;
             
-            // Use innerHTML to process the HTML bold tags in explanation text
+            // Render Charts
+            renderRadarChart(visualizationScores, resultMood.color);
+
+            // Set text content
             document.getElementById('explanation-text').innerHTML = resultMood.explanation.replace(/&bar;R/g, '<strong>&bar;R</strong>').replace(/&sigma;/g, '<strong>&sigma;</strong>');
 
-            // Set work recommendation
             if (valid) {
                  if (resultMood.workDelay === 0) {
                     workRecommendation.innerHTML = `Work Status: <strong>Optimal.</strong> Start focused work immediately.`;
@@ -614,8 +736,6 @@
                 document.getElementById('task-text').innerHTML = `ACTION PLAN: <strong>Take a short break and try the test again for better data.</strong>`;
             }
            
-            workRecommendation.style.color = resultMood.textColor; 
-
             // Display Stats
             document.getElementById('final-score').textContent = gameState.score;
             document.getElementById('final-art').textContent = `${ART}ms`;
@@ -688,19 +808,17 @@
             });
         }
         
-        // --- FIX: REANALYZE BUTTON LOGIC ---
+        // --- REANALYZE BUTTON LOGIC ---
         const restartButton = document.getElementById('restart-button');
         
         function handleRestart() {
-            // 1. Show Landing Page
             showScreen('landing-area');
-            // 2. Reset input and disable Start button for new calibration
             ageInput.value = '';
             startLandingButton.disabled = true;
-            // 3. Clear any residual game state in the background
             gameState.running = false;
             clearInterval(gameState.timerInterval);
             clearTimeout(gameState.targetTimeout);
+            if (myRadarChart) myRadarChart.destroy(); // Clean up chart on reset
         }
 
         document.getElementById('start-landing-button').addEventListener('click', startGame);
