@@ -17,14 +17,12 @@
         :root {
             --color-primary: #4CAF50; /* Optimized Green */
             --color-text: #1a1a1a; /* Near Black */
-            --color-bg-light: #f9f9f9;
             --color-bg-dark: #333;
         }
         
         body {
             display: flex; justify-content: center; align-items: stretch; min-height: 100vh; margin: 0;
-            font-family: 'Montserrat', sans-serif; /* Professional Body Font */
-            background-color: #f0f0f0; color: var(--color-text); line-height: 1.6;
+            font-family: 'Montserrat', sans-serif; color: var(--color-text); line-height: 1.6;
             -webkit-user-select: none; user-select: none; touch-action: manipulation;
         }
 
@@ -37,49 +35,51 @@
             width: 100%; height: 100%; min-height: 100vh; position: relative;
             padding: 30px 20px; box-sizing: border-box;
             display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
-            overflow-y: auto;
-            /* UI Fix: Smooth Transition between screens */
             transition: opacity 0.3s ease-in-out; 
             opacity: 1;
+            overflow-y: auto;
         }
         .screen.hidden { opacity: 0; position: absolute; visibility: hidden; }
 
         /* --- TYPOGRAPHY --- */
         h1, h2, h3 { font-family: 'Oswald', sans-serif; letter-spacing: 1px; }
 
-        #landing-area h1 { font-size: 3em; font-weight: 700; }
-        #landing-area h2 { font-size: 1.5em; font-weight: 400; opacity: 0.9; }
-
         /* --- BUTTONS --- */
         button {
-            background: var(--color-primary); color: white; border-radius: 8px; /* Slightly more modern button */
-            transition: background-color 0.15s, transform 0.1s;
+            padding: 14px 30px; font-size: 1.1em; background: var(--color-primary); color: white; border: none; border-radius: 8px; cursor: pointer;
+            margin-top: 20px; transition: background-color 0.15s, transform 0.1s; font-weight: 600; width: 100%;
         }
-        button:hover:not(:disabled) { background-color: #43a047; }
         
+        button:disabled { background-color: #ccc; color: #666; cursor: not-allowed; }
+
         /* --- FLOATING CTA BUTTON --- */
         .floating-cta {
             position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: calc(100% - 40px); max-width: 400px;
             z-index: 1000; padding: 18px 30px; font-size: 1.2em; border-radius: 10px;
+            background: var(--color-primary); box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            margin-top: 0 !important;
+            animation: floatUp 0.5s ease-out;
         }
-        
-        /* --- CALIBRATION/INPUT STYLES --- */
+        @keyframes floatUp { from { opacity: 0; transform: translate(-50%, 20px); } to { opacity: 1; transform: translate(-50%, 0); } }
+
+        /* --- INPUTS --- */
         input[type="text"], input[type="number"], select { 
             width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 1em; margin-bottom: 15px; 
-            transition: border-color 0.2s, box-shadow 0.2s; /* Micro-animation on focus */
+            transition: border-color 0.2s, box-shadow 0.2s;
         }
         input:focus { border-color: var(--color-primary); box-shadow: 0 0 5px rgba(76, 175, 80, 0.4); outline: none; }
 
         /* --- GAME START CUE STYLES --- */
         #game-area { background-color: black; color: white; cursor: crosshair; }
         #cue-arrow { font-size: 8em; color: white; animation: bounce 1s infinite; }
-        
+        #start-cue-overlay { background: rgba(0, 0, 0, 0.95); }
+        #target { position: absolute; width: 85px; height: 85px; border-radius: 50%; background-color: white; border: 6px solid black; box-shadow: 0 0 15px rgba(255, 255, 255, 0.8); display: none; cursor: pointer; animation: pulse 0.5s infinite alternate; }
+
         /* --- QUESTIONNAIRE STYLES (Dark Cards) --- */
         #questionnaire-area { padding-bottom: 100px; }
         .mcq-option {
             background-color: var(--color-bg-dark); color: white; padding: 18px 20px; border-radius: 10px; margin-bottom: 10px; cursor: pointer; border: 2px solid transparent; transition: all 0.2s;
         }
-        .mcq-option:hover { background-color: #555; }
         .mcq-option.selected {
             background-color: var(--color-primary); border-color: #2e7d32; box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
         }
@@ -94,22 +94,15 @@
             from { transform: scale(0.9); opacity: 0.8; }
             to { transform: scale(1.1); opacity: 1; }
         }
-
-        /* --- CHART STYLING (Simplification) --- */
-        /* Reduce clutter in charts */
-        .chart-container canvas {
-            margin-bottom: 20px;
-        }
     </style>
 </head>
 <body>
+    <div id="loading-overlay">
+        <div id="loading-icon">🧠</div>
+        <h3 style="color: var(--color-primary);">Analyzing Your Cognitive Profile...</h3>
+    </div>
+    
     <div id="game-container">
-        
-        <div id="loading-overlay">
-            <div id="loading-icon">🧠</div>
-            <h3 style="color: var(--color-primary);">Analyzing Your Cognitive Profile...</h3>
-        </div>
-
         <div id="landing-area" class="screen">
             <h1>
                 <span class="emoji-large">🧠</span>
@@ -198,7 +191,7 @@
                 <label class="mcq-option" data-value="1"> Highly Negative (Stressed, Frustrated)</label>
             </div>
             
-            <button id="submit-mcq-button">ANALYZE MY VIBE</button>
+            <button id="submit-mcq-button" disabled>ANALYZE MY VIBE</button>
         </div>
 
         <div id="detailed-report-area" class="screen hidden">
@@ -222,22 +215,21 @@
         const GAME_DURATION = 30; 
         const MIN_TAPS_FOR_ANALYSIS = 10;
         const T_SIGMA = 70; 
-        const LOADING_TIME_MS = 2500; // Simulated loading time
-
+        
         let userName = '';
         let userAge = 0; 
         let userGender = '';
         let baselineART = 0;
         let chartInstances = {};
 
-        // --- RESEARCH PAPERS DATA ---
+        // --- RESEARCH PAPERS DATA (UNCHANGED) ---
         const RESEARCH_PAPERS = [
             { title: "Psychomotor Vigilance Task Demonstrates Impaired Vigilance...", summary: "This study validates the PVT's sensitivity, showing it can objectively distinguish performance deficits in patients with sleep-wake disorders. It underscores PVT as a robust measure of alertness.", link: "#" }, 
             { title: "Validity and Sensitivity of a Brief Psychomotor Vigilance Test (PVT-B)", summary: "Research confirming that a shorter version (like our 30-second test) maintains sensitivity to cognitive changes caused by sleep loss, offering a practical alternative.", link: "#" },
             { title: "The Neural Basis of the Psychomotor Vigilance Task", summary: "Explores brain regions involved: optimal performance relates to sustained attention and motor systems, while poor performance (lapses) is linked to mental disengagement.", link: "#" }
         ];
         
-        // UI Elements
+        // UI Elements (Selected for re-use)
         const nameInput = document.getElementById('user-name');
         const ageInput = document.getElementById('user-age');
         const genderSelect = document.getElementById('user-gender');
@@ -248,7 +240,7 @@
         const continueToMcqButton = document.getElementById('continue-to-mcq-button');
         const submitMcqButton = document.getElementById('submit-mcq-button');
         const loadingOverlay = document.getElementById('loading-overlay');
-        const loadingProgress = document.getElementById('loading-progress');
+
 
         // Game State & Post-Game Metrics
         let gameState = {
@@ -273,21 +265,14 @@
             if (!pvt || !pvt.valid) {
                  return { ...MoodMap.FATIGUE_SLUMP, name: 'Tired & Dispersed (Inconclusive) ⚠️', explanation: 'Insufficient taps recorded. Re-analyze for a full report.' };
             }
-            // Use the mapKPIsToMood logic from previous step
             const ART = pvt.ART; const Sigma = pvt.Sigma;
             const isFast = ART <= (baselineART * 0.95); const isSlow = ART >= (baselineART * 1.05);
             const isConsistent = Sigma <= T_SIGMA;
             const valenceScore = gameState.mcqValence;
             const isPositive = valenceScore >= 4; 
 
-            if (isFast) {
-                if (isConsistent && isPositive) return MoodMap.OPTIMAL_FOCUS; 
-                return MoodMap.PRODUCTIVE_ANXIETY; 
-            }
-            if (isSlow) {
-                if (isConsistent && isPositive) return MoodMap.CALM_EFFICIENT; 
-                return MoodMap.FATIGUE_SLUMP; 
-            }
+            if (isFast) { if (isConsistent && isPositive) return MoodMap.OPTIMAL_FOCUS; return MoodMap.PRODUCTIVE_ANXIETY; }
+            if (isSlow) { if (isConsistent && isPositive) return MoodMap.CALM_EFFICIENT; return MoodMap.FATIGUE_SLUMP; }
             if (isPositive) return MoodMap.CALM_EFFICIENT;
             return MoodMap.FATIGUE_SLUMP;
         }
@@ -315,7 +300,6 @@
 
         // --- UX / FLOW IMPLEMENTATION ---
         function showScreen(id) {
-            // Apply fade transition
             const currentScreen = document.querySelector('.screen:not(.hidden)');
             const nextScreen = document.getElementById(id);
 
@@ -331,12 +315,11 @@
                 nextScreen.style.opacity = 1;
             }
             
-            // Manage floating buttons
             document.querySelectorAll('.floating-cta').forEach(btn => btn.classList.add('hidden'));
             if (id === 'landing-area') {
-                getStartedButton.classList.remove('hidden');
+                document.getElementById('get-started-button').classList.remove('hidden');
             } else if (id === 'result-area') {
-                continueToMcqButton.classList.remove('hidden');
+                document.getElementById('continue-to-mcq-button').classList.remove('hidden');
             }
         }
         
@@ -354,7 +337,6 @@
         function spawnTarget() {
             if (!gameState.running) return;
             const targetDuration = Math.random() * 1500 + 500; 
-
             const targetSize = 85;
             const padding = 30;
             const infoHeight = 70;
@@ -407,22 +389,15 @@
             document.getElementById('score').textContent = `SCORE: ${gameState.score}`;
             document.getElementById('instruction').textContent = 'Missed area. (-1)';
         }
-        
+
         function startGame() {
-            // CALIBRATION CHECK
+            // CALIBRATION CHECK & DATA ASSIGNMENT
             userName = nameInput.value.trim();
             userAge = parseInt(ageInput.value, 10);
             userGender = genderSelect.value;
-
-            if (!userName || userName.length < 2 || !userAge || userAge < 10 || userAge > 100) {
-                // Should not happen if button is disabled, but for safety:
-                alert("Please complete the required fields.");
-                return;
-            }
-            
             baselineART = getAgeAdjustedBaselineART(userAge);
             
-            // Reset game state
+            // RESET ALL GAME STATE
             gameState.score = 0;
             gameState.timeRemaining = GAME_DURATION;
             gameState.reactionTimes = [];
@@ -438,22 +413,23 @@
 
             // Display Animated Cue
             startCueOverlay.classList.remove('hidden');
-            target.style.display = 'block'; // Show target for the cue
+            target.style.display = 'block'; 
             
-            // Set up the single tap listener to start the test
-            // --- BUG FIX IMPLEMENTATION ---
-            // Temporarily remove handleTargetTap from target to ensure the tap registers on the overlay/cue
-            target.removeEventListener('click', handleTargetTap);
-            startCueOverlay.addEventListener('click', startTestTimer); 
+            // --- BUG FIX: Use event listener correctly on target for cue phase ---
+            target.addEventListener('click', startTestTimer);
         }
 
-        function startTestTimer() {
-            // Re-bind target listener now that the cue is dismissed
+        function startTestTimer(event) {
+            event.stopPropagation(); // Prevent the click from triggering handleTargetTap immediately
+            
+            // --- BUG FIX: Remove temporary listener and start test ---
+            target.removeEventListener('click', startTestTimer);
+            startCueOverlay.classList.add('hidden');
+            
+            gameState.running = true; 
+            
+            // Re-bind target listener now that the test is running
             target.addEventListener('click', handleTargetTap);
-            startCueOverlay.removeEventListener('click', startTestTimer);
-
-            startCueOverlay.classList.add('hidden'); // Remove cue
-            gameState.running = true; // Unpause game
 
             gameArea.onclick = handleMissedTap;
             
@@ -504,7 +480,8 @@
                 label.addEventListener('click', () => {
                     q2Labels.forEach(l => l.classList.remove('selected'));
                     label.classList.add('selected');
-                    gameState.mcqValence = parseInt(label.getAttribute('data-value'));
+                    // BUG FIX: Ensure numerical value is stored
+                    gameState.mcqValence = parseInt(label.getAttribute('data-value')); 
                     q2Selected = true;
                     checkCompletion();
                 });
@@ -518,6 +495,7 @@
                 renderResultsDashboard();
             };
         }
+
 
         function renderResultsDashboard() {
             loadingOverlay.style.display = 'flex';
@@ -553,6 +531,7 @@
         }
 
         function renderFinalCharts(scores, moodColor) {
+            // Functionality to render charts in the detailed report area
             const grid = document.getElementById('final-charts-grid');
             grid.innerHTML = `
                 <div id="final-line-chart-container" style="background: #f8f8f8; border-radius: 8px; padding: 10px; margin-bottom: 20px;">
@@ -595,20 +574,23 @@
             Object.values(chartInstances).forEach(chart => chart.destroy());
             chartInstances = {};
 
-            // Reset MCQ state
             document.querySelectorAll('.mcq-option').forEach(label => label.classList.remove('selected'));
             document.getElementById('submit-mcq-button').disabled = true;
         }
 
+        function checkInputsCalibration() {
+            const ageValid = parseInt(ageInput.value, 10) >= 10 && parseInt(ageInput.value, 10) <= 100;
+            const nameValid = nameInput.value.trim().length >= 2;
+            getStartedButton.disabled = !(ageValid && nameValid);
+        }
+
         function initializeListeners() {
-            // Event Listeners
             getStartedButton.onclick = startGame;
             document.getElementById('restart-button').onclick = handleRestart;
             nameInput.addEventListener('input', checkInputsCalibration);
             ageInput.addEventListener('input', checkInputsCalibration);
             genderSelect.addEventListener('change', checkInputsCalibration);
             
-            // Flow handlers
             continueToMcqButton.onclick = () => { showScreen('questionnaire-area'); };
 
             // Initializing research papers on load
