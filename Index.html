@@ -546,4 +546,176 @@
 
         // --- ANALYSIS LOGIC ---
         function calculateKPIs() {
-            con
+            const N = gameState.reactionTimes.length;
+            if (N < MIN_TAPS_FOR_ANALYSIS) { 
+                return { ART: 0, Sigma: Infinity, valid: false };
+            }
+
+            const sumR = gameState.reactionTimes.reduce((acc, R_i) => acc + R_i, 0);
+            const ART = sumR / N;
+
+            const sumSquaredDiffs = gameState.reactionTimes.reduce((acc, R_i) => acc + (R_i - ART) ** 2, 0);
+            const variance = sumSquaredDiffs / N;
+            const Sigma = Math.sqrt(variance);
+
+            return {
+                ART: Math.round(ART),
+                Sigma: Math.round(Sigma),
+                valid: true
+            };
+        }
+
+        function mapKPIsToMood(ART, Sigma, valid) {
+            if (!valid || ART === 0 || Sigma === Infinity) {
+                 return { ...MoodMap.TIRED_DISPERSED, name: 'Tired & Dispersed (Inconclusive) ⚠️', explanation: 'Insufficient valid taps (less than 10) were recorded to perform a stable scientific analysis. Please try again with greater focus.' };
+            }
+
+            const isFast = ART <= (baselineART * RELATIVE_ART_FAST_THRESHOLD);
+            const isSlow = ART >= (baselineART * RELATIVE_ART_SLOW_THRESHOLD);
+            const isConsistent = Sigma <= T_SIGMA;
+
+            if (isFast && isConsistent) return MoodMap.FOCUSED_FLOWING;
+            if (isFast && !isConsistent) return MoodMap.EXCITED_ENERGETIC;
+            if (isSlow && isConsistent) return MoodMap.CALM_MELLOW;
+            
+            return MoodMap.TIRED_DISPERSED; 
+        }
+
+        // --- END GAME & DISPLAY ---
+        function endGame() {
+            gameState.running = false;
+            const { ART, Sigma, valid } = calculateKPIs();
+            const resultMood = mapKPIsToMood(ART, Sigma, valid);
+
+            showScreen('result-area');
+
+            // Set UI based on mood
+            resultArea.style.backgroundColor = resultMood.color;
+            resultArea.style.color = resultMood.textColor;
+            document.getElementById('mood-title').textContent = resultMood.name;
+            
+            // Use innerHTML to process the HTML bold tags in explanation text
+            document.getElementById('explanation-text').innerHTML = resultMood.explanation.replace(/&bar;R/g, '<strong>&bar;R</strong>').replace(/&sigma;/g, '<strong>&sigma;</strong>');
+
+            // Set work recommendation
+            if (valid) {
+                 if (resultMood.workDelay === 0) {
+                    workRecommendation.innerHTML = `Work Status: <strong>Optimal.</strong> Start focused work immediately.`;
+                } else {
+                    workRecommendation.innerHTML = `Work Status: <strong>Wait.</strong> Complete the task, then wait <strong>${resultMood.workDelay} minutes</strong> before starting focused work.`;
+                }
+                document.getElementById('task-text').innerHTML = `ACTION PLAN: <strong>${resultMood.task}</strong>`;
+            } else {
+                workRecommendation.innerHTML = "Work Status: <strong>Inconclusive.</strong> Cannot determine optimal work timing.";
+                document.getElementById('task-text').innerHTML = `ACTION PLAN: <strong>Take a short break and try the test again for better data.</strong>`;
+            }
+           
+            workRecommendation.style.color = resultMood.textColor; 
+
+            // Display Stats
+            document.getElementById('final-score').textContent = gameState.score;
+            document.getElementById('final-art').textContent = `${ART}ms`;
+            document.getElementById('final-sigma').textContent = `${Sigma}ms`;
+        }
+
+        // --- ENHANCED VIRAL SHARING FEATURE (UNCHANGED) ---
+        const shareButton = document.getElementById('share-button');
+
+        shareButton.addEventListener('click', async () => {
+            const currentMoodName = document.getElementById('mood-title').textContent.trim();
+            const finalArt = document.getElementById('final-art').textContent;
+            const finalSigma = document.getElementById('final-sigma').textContent;
+            const workRec = workRecommendation.textContent;
+            const actionPlan = document.getElementById('task-text').textContent;
+            const shareUrl = window.location.href; 
+            
+            const shareText = `My Vibe: ${currentMoodName}\n`
+                               + `\n[SCIENTIFIC ANALYSIS]\n`
+                               + `Avg. Reaction Time (ART): ${finalArt}\n`
+                               + `Consistency (σ): ${finalSigma}\n`
+                               + `${workRec}\n`
+                               + `${actionPlan}\n`
+                               + `\nWhat's your brain speed? Find out on Mood Tapper: ${shareUrl}`;
+
+            if (navigator.share) {
+                try {
+                    await navigator.share({
+                        title: 'Mood Tapper Vibe Analysis!',
+                        text: shareText,
+                        url: shareUrl
+                    });
+                } catch (error) {
+                    fallbackCopyToClipboard(shareText);
+                }
+            } else {
+                fallbackCopyToClipboard(shareText);
+            }
+        });
+
+        function fallbackCopyToClipboard(text) {
+             const copyStatus = document.getElementById('copy-status');
+             if (navigator.clipboard) {
+                navigator.clipboard.writeText(text).then(() => {
+                    copyStatus.textContent = 'Full analysis copied to clipboard!';
+                    copyStatus.classList.add('visible');
+                    setTimeout(() => copyStatus.classList.remove('visible'), 3000);
+                }).catch(err => {
+                    alert('Could not copy to clipboard. Please manually copy the following text:\n' + text);
+                });
+            } else {
+                prompt('Copy this to share your mood:', text);
+            }
+        }
+
+
+        // --- INITIALIZATION ---
+        function initializeLandingPage() {
+            // Insert research papers dynamically
+            RESEARCH_PAPERS.forEach((paper, index) => {
+                const item = document.createElement('div');
+                item.className = 'research-paper';
+                item.style.animationDelay = `${0.6 + index * 0.15}s`;
+                item.innerHTML = `
+                    <h3>${paper.title}</h3>
+                    <p>${paper.summary}</p>
+                    <a href="${paper.link}" target="_blank">Read Abstract / Source</a>
+                `;
+                researchList.appendChild(item);
+            });
+        }
+        
+        // --- FIX: REANALYZE BUTTON LOGIC ---
+        const restartButton = document.getElementById('restart-button');
+        
+        function handleRestart() {
+            // 1. Show Landing Page
+            showScreen('landing-area');
+            // 2. Reset input and disable Start button for new calibration
+            ageInput.value = '';
+            startLandingButton.disabled = true;
+            // 3. Clear any residual game state in the background
+            gameState.running = false;
+            clearInterval(gameState.timerInterval);
+            clearTimeout(gameState.targetTimeout);
+        }
+
+        document.getElementById('start-landing-button').addEventListener('click', startGame);
+        restartButton.addEventListener('click', handleRestart); 
+        
+        // AGE INPUT VALIDATION
+        ageInput.addEventListener('input', () => {
+            const age = parseInt(ageInput.value, 10);
+            if (age >= 10 && age <= 100) {
+                startLandingButton.disabled = false;
+            } else {
+                startLandingButton.disabled = true;
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeLandingPage();
+            showScreen('landing-area');
+        });
+    </script>
+</body>
+</html>
