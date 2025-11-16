@@ -60,12 +60,14 @@
             margin-top: 0 !important;
             animation: floatUp 0.5s ease-out;
         }
-        @keyframes floatUp { from { opacity: 0; transform: translate(-50%, 20px); } to { opacity: 1; transform: translate(-50%, 0); } }
 
-        /* --- INPUTS --- */
+        /* --- LANDING & CALIBRATION STYLES (Merged) --- */
+        #landing-area { padding-bottom: 120px; } 
+
+        /* Inputs */
         input[type="text"], input[type="number"], select { 
             width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 1em; margin-bottom: 15px; 
-            transition: border-color 0.2s, box-shadow 0.2s;
+            transition: border-color 0.2s, box-shadow 0.2s; 
         }
         input:focus { border-color: var(--color-primary); box-shadow: 0 0 5px rgba(76, 175, 80, 0.4); outline: none; }
 
@@ -73,26 +75,13 @@
         #game-area { background-color: black; color: white; cursor: crosshair; }
         #cue-arrow { font-size: 8em; color: white; animation: bounce 1s infinite; }
         #start-cue-overlay { background: rgba(0, 0, 0, 0.95); }
-        #target { position: absolute; width: 85px; height: 85px; border-radius: 50%; background-color: white; border: 6px solid black; box-shadow: 0 0 15px rgba(255, 255, 255, 0.8); display: none; cursor: pointer; animation: pulse 0.5s infinite alternate; }
-
+        
         /* --- QUESTIONNAIRE STYLES (Dark Cards) --- */
-        #questionnaire-area { padding-bottom: 100px; }
         .mcq-option {
             background-color: var(--color-bg-dark); color: white; padding: 18px 20px; border-radius: 10px; margin-bottom: 10px; cursor: pointer; border: 2px solid transparent; transition: all 0.2s;
         }
         .mcq-option.selected {
             background-color: var(--color-primary); border-color: #2e7d32; box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
-        }
-        
-        /* --- LOADING ANIMATION (Premium Pulse) --- */
-        #loading-overlay {
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: white; z-index: 2000;
-            display: none; flex-direction: column; justify-content: center; align-items: center;
-        }
-        #loading-icon { font-size: 5em; color: var(--color-primary); animation: pulse-scale 1s infinite alternate ease-in-out; }
-        @keyframes pulse-scale {
-            from { transform: scale(0.9); opacity: 0.8; }
-            to { transform: scale(1.1); opacity: 1; }
         }
     </style>
 </head>
@@ -111,7 +100,7 @@
             <h2>Your Focus. Decoded.</h2>
             
             <div id="input-group">
-                <h3>1. Calibration Data</h3>
+                <h3>1. Personal Calibration</h3>
                 <input type="text" id="user-name" placeholder="Your Name (e.g., Alex)" required>
                 <input type="number" id="user-age" min="10" max="100" placeholder="Your Age (Required)" required>
                 <select id="user-gender">
@@ -129,7 +118,14 @@
                 <div class="step-item"><strong>Action Plan:</strong> Specific task and ideal work start time.</div>
             </div>
 
-            <p class="section-title">3. The Science</p>
+            <p class="section-title">3. The Science (Simplified)</p>
+            <p style="text-align: left; opacity: 0.9;">
+                This test is based on the **Psychomotor Vigilance Task (PVT)**, a clinical gold standard for measuring alertness. We track two main things: 
+                <br>1. **Speed ($\bar{R}$):** How fast your brain is working. 
+                <br>2. **Consistency ($\sigma$):** How stable your attention is. 
+                <br>Your final mood combines these objective scores with your personal self-assessment.
+            </p>
+            
             <div id="research-list" style="width: 100%;">
                 </div>
             
@@ -222,14 +218,14 @@
         let baselineART = 0;
         let chartInstances = {};
 
-        // --- RESEARCH PAPERS DATA (UNCHANGED) ---
+        // --- RESEARCH PAPERS DATA ---
         const RESEARCH_PAPERS = [
-            { title: "Psychomotor Vigilance Task Demonstrates Impaired Vigilance...", summary: "This study validates the PVT's sensitivity, showing it can objectively distinguish performance deficits in patients with sleep-wake disorders. It underscores PVT as a robust measure of alertness.", link: "#" }, 
-            { title: "Validity and Sensitivity of a Brief Psychomotor Vigilance Test (PVT-B)", summary: "Research confirming that a shorter version (like our 30-second test) maintains sensitivity to cognitive changes caused by sleep loss, offering a practical alternative.", link: "#" },
-            { title: "The Neural Basis of the Psychomotor Vigilance Task", summary: "Explores brain regions involved: optimal performance relates to sustained attention and motor systems, while poor performance (lapses) is linked to mental disengagement.", link: "#" }
+            { title: "Psychomotor Vigilance Task Demonstrates Impaired Vigilance...", summary: "This study validates the PVT's sensitivity, showing it can objectively distinguish performance deficits in patients with sleep-wake disorders. It underscores PVT as a robust measure of alertness.", link: "https://jcsm.aasm.org/doi/abs/10.5664/jcsm.4042" }, 
+            { title: "Validity and Sensitivity of a Brief Psychomotor Vigilance Test (PVT-B)", summary: "Research confirming that a shorter version (like our 30-second test) maintains sensitivity to cognitive changes caused by sleep loss, offering a practical alternative.", link: "https://pmc.ncbi.nlm.nih.gov/articles/PMC3197786/" },
+            { title: "The Neural Basis of the Psychomotor Vigilance Task", summary: "Explores brain regions involved: optimal performance relates to sustained attention and motor systems, while poor performance (lapses) is linked to mental disengagement.", link: "https://www.researchgate.net/publication/7500485_The_Neural_Basis_of_the_Psychomotor_Vigilance_Task" }
         ];
         
-        // UI Elements (Selected for re-use)
+        // UI Elements
         const nameInput = document.getElementById('user-name');
         const ageInput = document.getElementById('user-age');
         const genderSelect = document.getElementById('user-gender');
@@ -262,9 +258,8 @@
 
         function calculateFinalMood() {
             const pvt = gameState.pvtResults;
-            if (!pvt || !pvt.valid) {
-                 return { ...MoodMap.FATIGUE_SLUMP, name: 'Tired & Dispersed (Inconclusive) ⚠️', explanation: 'Insufficient taps recorded. Re-analyze for a full report.' };
-            }
+            if (!pvt || !pvt.valid) { return { ...MoodMap.FATIGUE_SLUMP, name: 'Tired & Dispersed (Inconclusive) ⚠️', explanation: 'Insufficient taps recorded. Re-analyze for a full report.' }; }
+            
             const ART = pvt.ART; const Sigma = pvt.Sigma;
             const isFast = ART <= (baselineART * 0.95); const isSlow = ART >= (baselineART * 1.05);
             const isConsistent = Sigma <= T_SIGMA;
@@ -317,9 +312,9 @@
             
             document.querySelectorAll('.floating-cta').forEach(btn => btn.classList.add('hidden'));
             if (id === 'landing-area') {
-                document.getElementById('get-started-button').classList.remove('hidden');
+                getStartedButton.classList.remove('hidden');
             } else if (id === 'result-area') {
-                document.getElementById('continue-to-mcq-button').classList.remove('hidden');
+                continueToMcqButton.classList.remove('hidden');
             }
         }
         
@@ -337,6 +332,7 @@
         function spawnTarget() {
             if (!gameState.running) return;
             const targetDuration = Math.random() * 1500 + 500; 
+
             const targetSize = 85;
             const padding = 30;
             const infoHeight = 70;
@@ -391,10 +387,15 @@
         }
 
         function startGame() {
-            // CALIBRATION CHECK & DATA ASSIGNMENT
+            // CALIBRATION CHECK
             userName = nameInput.value.trim();
             userAge = parseInt(ageInput.value, 10);
             userGender = genderSelect.value;
+
+            if (!userName || userName.length < 2 || !userAge || userAge < 10 || userAge > 100) {
+                return; // Button should be disabled anyway, but this is safety.
+            }
+            
             baselineART = getAgeAdjustedBaselineART(userAge);
             
             // RESET ALL GAME STATE
@@ -420,17 +421,14 @@
         }
 
         function startTestTimer(event) {
-            event.stopPropagation(); // Prevent the click from triggering handleTargetTap immediately
+            event.stopPropagation();
             
-            // --- BUG FIX: Remove temporary listener and start test ---
             target.removeEventListener('click', startTestTimer);
             startCueOverlay.classList.add('hidden');
             
             gameState.running = true; 
             
-            // Re-bind target listener now that the test is running
             target.addEventListener('click', handleTargetTap);
-
             gameArea.onclick = handleMissedTap;
             
             startTimer();
@@ -441,7 +439,6 @@
             gameState.running = false;
             gameState.pvtResults = calculateKPIs(); 
             
-            // Render the results preview
             const pvt = gameState.pvtResults;
             const moodPreview = calculateFinalMood();
             
@@ -496,7 +493,6 @@
             };
         }
 
-
         function renderResultsDashboard() {
             loadingOverlay.style.display = 'flex';
             
@@ -531,7 +527,6 @@
         }
 
         function renderFinalCharts(scores, moodColor) {
-            // Functionality to render charts in the detailed report area
             const grid = document.getElementById('final-charts-grid');
             grid.innerHTML = `
                 <div id="final-line-chart-container" style="background: #f8f8f8; border-radius: 8px; padding: 10px; margin-bottom: 20px;">
