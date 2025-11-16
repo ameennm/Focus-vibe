@@ -16,7 +16,7 @@
         /* --- CORE STYLES & ANIMATION --- */
         :root {
             --color-primary: #4CAF50; /* Optimized Green */
-            --color-text: #1a1a1a; /* Near Black */
+            --color-text: #1a1a1a; 
             --color-bg-dark: #333;
         }
         
@@ -41,43 +41,47 @@
         }
         .screen.hidden { opacity: 0; position: absolute; visibility: hidden; }
 
-        /* --- TYPOGRAPHY --- */
+        /* --- TYPOGRAPHY & HEADINGS --- */
         h1, h2, h3 { font-family: 'Oswald', sans-serif; letter-spacing: 1px; }
 
-        /* --- BUTTONS --- */
+        /* --- BUTTONS & CTA --- */
         button {
             padding: 14px 30px; font-size: 1.1em; background: var(--color-primary); color: white; border-radius: 8px; cursor: pointer;
             margin-top: 20px; transition: background-color 0.15s, transform 0.1s; font-weight: 600; width: 100%;
         }
-        
         button:disabled { background-color: #ccc; color: #666; cursor: not-allowed; }
 
-        /* --- FLOATING CTA BUTTON --- */
         .floating-cta {
             position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: calc(100% - 40px); max-width: 400px;
             z-index: 1000; padding: 18px 30px; font-size: 1.2em; border-radius: 10px;
             background: var(--color-primary); box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-            margin-top: 0 !important;
-            animation: floatUp 0.5s ease-out;
+            margin-top: 0 !important; animation: floatUp 0.5s ease-out;
         }
-        @keyframes floatUp { from { opacity: 0; transform: translate(-50%, 20px); } to { transform: translate(-50%, 0); } }
 
         /* --- INPUTS --- */
         input:focus { border-color: var(--color-primary); box-shadow: 0 0 5px rgba(76, 175, 80, 0.4); outline: none; }
 
         /* --- GAME START CUE STYLES --- */
         #game-area { background-color: black; color: white; cursor: crosshair; }
+        #start-cue-overlay { background: rgba(0, 0, 0, 0.95); z-index: 900; /* Ensure overlay covers game background */ }
+        #target { z-index: 1000; /* Ensure target is above the overlay */ }
         #cue-arrow { font-size: 8em; color: white; animation: bounce 1s infinite; }
-        #start-cue-overlay { background: rgba(0, 0, 0, 0.95); }
-        #target { position: absolute; width: 85px; height: 85px; border-radius: 50%; background-color: white; border: 6px solid black; box-shadow: 0 0 15px rgba(255, 255, 255, 0.8); display: none; cursor: pointer; animation: pulse 0.5s infinite alternate; }
-
-        /* --- QUESTIONNAIRE STYLES (Dark Cards) --- */
+        
+        /* --- QUESTIONNAIRE STYLES --- */
         .mcq-option {
             background-color: var(--color-bg-dark); color: white; padding: 18px 20px; border-radius: 10px; margin-bottom: 10px; cursor: pointer; border: 2px solid transparent; transition: all 0.2s;
         }
         .mcq-option.selected {
             background-color: var(--color-primary); border-color: #2e7d32; box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
         }
+        
+        /* --- REPORT STYLES --- */
+        #detailed-report-area { padding-bottom: 50px; }
+        #final-charts-grid { margin-top: 30px; } /* Increased spacing */
+        #final-action-plan { margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; }
+        
+        .section-title { margin-top: 40px; } /* Consistent section spacing */
+        .research-paper { margin-bottom: 20px; padding: 15px; border: 1px solid #ddd; }
     </style>
 </head>
 <body>
@@ -135,7 +139,7 @@
             <div id="target"></div>
             <p id="instruction" style="position: absolute; bottom: 20px; color: white; font-size: 1.1em;"></p>
             
-            <div id="start-cue-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 50;" class="hidden">
+            <div id="start-cue-overlay" class="hidden">
                 <p id="cue-text" style="color: white;">Tap the circle to start the timer!</p>
                 <div id="cue-arrow">👆</div>
             </div>
@@ -239,7 +243,7 @@
             pvtResults: null, mcqValence: null, mcqGoal: null
         };
 
-        // --- SCIENTIFIC DATA & LOGIC ---
+        // --- CORE LOGIC ---
         function getAgeAdjustedBaselineART(age) {
             if (age < 25) return 220; if (age < 40) return 250; if (age < 60) return 280; return 320; 
         }
@@ -307,9 +311,9 @@
             
             document.querySelectorAll('.floating-cta').forEach(btn => btn.classList.add('hidden'));
             if (id === 'landing-area') {
-                getStartedButton.classList.remove('hidden');
+                document.getElementById('get-started-button').classList.remove('hidden');
             } else if (id === 'result-area') {
-                continueToMcqButton.classList.remove('hidden');
+                document.getElementById('continue-to-mcq-button').classList.remove('hidden');
             }
         }
         
@@ -386,11 +390,6 @@
             userName = nameInput.value.trim();
             userAge = parseInt(ageInput.value, 10);
             userGender = genderSelect.value;
-
-            if (!userName || userName.length < 2 || !userAge || userAge < 10 || userAge > 100) {
-                return;
-            }
-            
             baselineART = getAgeAdjustedBaselineART(userAge);
             
             // RESET ALL GAME STATE
@@ -411,20 +410,20 @@
             startCueOverlay.classList.remove('hidden');
             target.style.display = 'block'; 
             
-            // --- BUG FIX: Attach listener to target dot ---
+            // --- BUG FIX: Attach listener to target dot for cue phase ---
             target.addEventListener('click', startTestTimer);
         }
 
         function startTestTimer(event) {
             event.stopPropagation();
             
-            // Remove temporary listener
+            // Remove temporary listener (This fixes the overlapping function call)
             target.removeEventListener('click', startTestTimer);
             startCueOverlay.classList.add('hidden');
             
             gameState.running = true; 
             
-            // Re-bind target listener now that the test is running (handleTargetTap is already defined)
+            // Re-bind target listener for the main game loop
             target.addEventListener('click', handleTargetTap);
             gameArea.onclick = handleMissedTap;
             
@@ -448,81 +447,7 @@
             showScreen('result-area');
         }
 
-        // --- MCQ Logic ---
-        function setupMcqListeners() {
-            const q1Labels = document.querySelectorAll('#q1-goals label');
-            const q2Labels = document.querySelectorAll('#q2-valence label');
-            
-            let q1Selected = false;
-            let q2Selected = false;
-
-            function checkCompletion() { submitMcqButton.disabled = !(q1Selected && q2Selected); }
-            
-            // Q1: Goal Selection
-            q1Labels.forEach(label => {
-                label.addEventListener('click', () => {
-                    q1Labels.forEach(l => l.classList.remove('selected'));
-                    label.classList.add('selected');
-                    gameState.mcqGoal = label.getAttribute('data-value');
-                    q1Selected = true;
-                    checkCompletion();
-                });
-            });
-
-            // Q2: Valence
-            q2Labels.forEach(label => {
-                label.addEventListener('click', () => {
-                    q2Labels.forEach(l => l.classList.remove('selected'));
-                    label.classList.add('selected');
-                    gameState.mcqValence = parseInt(label.getAttribute('data-value')); 
-                    q2Selected = true;
-                    checkCompletion();
-                });
-            });
-
-            submitMcqButton.onclick = () => {
-                if (!gameState.pvtResults || !gameState.pvtResults.valid) {
-                     alert("Inconclusive data. Please try the game again.");
-                     return;
-                }
-                renderResultsDashboard();
-            };
-        }
-
-
-        function renderResultsDashboard() {
-            loadingOverlay.style.display = 'flex';
-            
-            setTimeout(() => {
-                const pvt = gameState.pvtResults;
-                const resultMood = calculateFinalMood();
-                const visualizationScores = calculateVisualizationScores(pvt.ART, pvt.Sigma, gameState.score, pvt.valid);
-                
-                loadingOverlay.style.display = 'none';
-
-                // --- FINAL RENDER ---
-                document.getElementById('detailed-mood-title').style.color = resultMood.color;
-                document.getElementById('detailed-mood-title').textContent = resultMood.name;
-                
-                document.getElementById('final-explanation-text').innerHTML = resultMood.explanation.replace(/&bar;R/g, '<strong>&bar;R</strong>').replace(/&sigma;/g, '<strong>&sigma;</strong>');
-
-                let workRecHtml = "";
-                if (resultMood.workDelay === 0) {
-                    workRecHtml = `Work Status: <strong>Optimal.</strong> Start focused work immediately.`;
-                } else {
-                    workRecHtml = `Work Status: <strong>Wait.</strong> Complete the task, then wait <strong>${resultMood.workDelay} minutes</strong> before starting focused work.`;
-                }
-                
-                document.getElementById('final-action-plan').innerHTML = `
-                    <p style="color: ${resultMood.color};">${workRecHtml}</p>
-                    <p>ACTION PLAN: <strong>${resultMood.task}</strong></p>
-                `;
-
-                renderFinalCharts(visualizationScores, resultMood.color);
-                showScreen('detailed-report-area');
-            }, 1000); 
-        }
-
+        // --- DATA VISUALIZATION & FINAL REPORT ---
         function renderFinalCharts(scores, moodColor) {
             const grid = document.getElementById('final-charts-grid');
             grid.innerHTML = `
@@ -553,7 +478,39 @@
             });
         }
         
-        // --- EVENT HANDLERS ---
+        function renderResultsDashboard() {
+            loadingOverlay.style.display = 'flex';
+            
+            setTimeout(() => {
+                const pvt = gameState.pvtResults;
+                const resultMood = calculateFinalMood();
+                const visualizationScores = calculateVisualizationScores(pvt.ART, pvt.Sigma, gameState.score, pvt.valid);
+                
+                loadingOverlay.style.display = 'none';
+
+                document.getElementById('detailed-mood-title').style.color = resultMood.color;
+                document.getElementById('detailed-mood-title').textContent = resultMood.name;
+                
+                document.getElementById('final-explanation-text').innerHTML = resultMood.explanation.replace(/&bar;R/g, '<strong>&bar;R</strong>').replace(/&sigma;/g, '<strong>&sigma;</strong>');
+
+                let workRecHtml = "";
+                if (resultMood.workDelay === 0) {
+                    workRecHtml = `Work Status: <strong>Optimal.</strong> Start focused work immediately.`;
+                } else {
+                    workRecHtml = `Work Status: <strong>Wait.</strong> Complete the task, then wait <strong>${resultMood.workDelay} minutes</strong> before starting focused work.`;
+                }
+                
+                document.getElementById('final-action-plan').innerHTML = `
+                    <p style="color: ${resultMood.color};">${workRecHtml}</p>
+                    <p>ACTION PLAN: <strong>${resultMood.task}</strong></p>
+                `;
+
+                renderFinalCharts(visualizationScores, resultMood.color);
+                showScreen('detailed-report-area');
+            }, 1000); 
+        }
+
+        // --- EVENT HANDLERS & INITIALIZATION ---
         function handleRestart() {
             showScreen('landing-area');
             document.getElementById('user-name').value = ''; 
@@ -579,7 +536,7 @@
         }
 
         function initializeListeners() {
-            getStartedButton.onclick = startGame;
+            document.getElementById('get-started-button').onclick = startGame;
             document.getElementById('restart-button').onclick = handleRestart;
             document.getElementById('user-name').addEventListener('input', checkInputsCalibration);
             document.getElementById('user-age').addEventListener('input', checkInputsCalibration);
@@ -589,7 +546,13 @@
 
             // Initializing research papers on load
             const researchList = document.getElementById('research-list');
-            RESEARCH_PAPERS.forEach((paper) => {
+            const researchData = [
+                { title: "Psychomotor Vigilance Task Demonstrates Impaired Vigilance...", summary: "This study validates the PVT's sensitivity, showing it can objectively distinguish performance deficits in patients with sleep-wake disorders. It underscores PVT as a robust measure of alertness.", link: "https://jcsm.aasm.org/doi/abs/10.5664/jcsm.4042" }, 
+                { title: "Validity and Sensitivity of a Brief Psychomotor Vigilance Test (PVT-B)", summary: "Research confirming that a shorter version (like our 30-second test) maintains sensitivity to cognitive changes caused by sleep loss, offering a practical alternative.", link: "https://pmc.ncbi.nlm.nih.gov/articles/PMC3197786/" },
+                { title: "The Neural Basis of the Psychomotor Vigilance Task", summary: "Explores brain regions involved: optimal performance relates to sustained attention and motor systems, while poor performance (lapses) is linked to mental disengagement.", link: "https://www.researchgate.net/publication/7500485_The_Neural_Basis_of_the_Psychomotor_Vigilance_Task" }
+            ];
+            
+            researchData.forEach((paper) => {
                 const item = document.createElement('div');
                 item.className = 'research-paper';
                 item.innerHTML = `
