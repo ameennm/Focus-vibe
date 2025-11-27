@@ -3,340 +3,518 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D Crush & Stack City (Three.js + Cannon.js)</title>
+    <title>Responsive 2D Crush & Stack City</title>
     <style>
-        body { margin: 0; overflow: hidden; background-color: #2e3b5e; }
-        #game-info {
-            position: absolute;
-            top: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            color: white;
-            font-family: Arial, sans-serif;
-            text-align: center;
-            z-index: 10;
+        /* --- Base & Variables --- */
+        :root {
+            --bg-color: #1a1a2e;
+            --ui-color: #e94560;
+            --text-color: #f7f7f7;
+            --block-color: #337f7f;
+            --impact-color: #ff9900;
+            --mobile-font-size: 1em;
+            --mobile-heading-size: 1.8em;
         }
-        #score-display { font-size: 2em; font-weight: bold; color: #ff9900; }
-        #tap-message {
+
+        /* Base Body and Container for Full Responsiveness */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        #game-container {
+            width: 100%;
+            max-width: 500px; /* Slightly wider max-width for tablets/desktop preview */
+            height: 100%;
+            max-height: 850px;
+            background-color: #2e3b5e;
+            position: relative;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* --- UI Elements --- */
+        #top-bar {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 10px 5px; /* Reduced padding for smaller screens */
+            background-color: #0f3460;
+            z-index: 10;
+            border-bottom: 2px solid var(--ui-color);
+            font-size: 0.9em; /* Smaller font on top bar for small screens */
+        }
+        .currency {
+            font-weight: bold;
+        }
+        #top-bar button {
+            padding: 8px 12px !important;
+        }
+
+        #score-display {
             position: absolute;
-            bottom: 20px;
+            top: 60px;
             width: 100%;
             text-align: center;
-            color: #e94560;
-            font-size: 1.2em;
+            font-size: 1.8em; /* Adjusted for responsive viewing */
             font-weight: bold;
-            z-index: 10;
+            color: var(--impact-color);
+            z-index: 5;
+            text-shadow: 1px 1px 5px #000;
+        }
+
+        /* --- Game Area --- */
+        #game-area {
+            flex-grow: 1;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column-reverse; 
+        }
+
+        .building-level {
+            position: absolute;
+            height: 40px;
+            width: 100%;
+            background-color: #4a5c9a;
+            border-top: 1px solid #2e3b5e;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-sizing: border-box;
+            transition: bottom 0.2s ease-out;
+        }
+
+        .building-block {
+            width: 80%;
+            height: 30px;
+            background-color: var(--block-color);
+            border: 2px solid #5a5a5a;
+            box-shadow: 0 4px 0 rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+        
+        .target-block {
+            border-color: var(--impact-color);
+            border-width: 3px;
+        }
+
+        /* --- Pendulum / Wrecking Ball --- */
+        #pendulum-line {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 2px;
+            height: 100%;
+            background-color: #aaa;
+            transform-origin: top center;
+            transition: transform 0.02s linear;
+        }
+
+        #wrecking-ball {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #cc0000;
+            border: 3px solid #ff0000;
+            transform-origin: center;
+            transition: transform 0.02s linear, background-color 0.1s;
+        }
+        
+        .perfect-impact {
+            background-color: var(--impact-color) !important;
+            box-shadow: 0 0 20px var(--impact-color);
+        }
+
+        /* --- Game Over / UI Panels --- */
+        #game-state-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 20;
+            text-align: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        #game-state-overlay h1 {
+            font-size: var(--mobile-heading-size);
+        }
+
+        .button {
+            padding: 15px 30px;
+            margin-top: 20px;
+            font-size: var(--mobile-font-size);
+            font-weight: bold;
+            color: var(--text-color);
+            background-color: var(--ui-color);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 5px #a6263b;
+            transition: background-color 0.2s, transform 0.2s;
+        }
+        .button:active {
+            box-shadow: 0 2px #a6263b;
+            transform: translateY(3px);
+        }
+
+        /* --- Hybrid-Casual Upgrade Shop --- */
+        #shop-panel {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(46, 59, 94, 0.95);
+            z-index: 30;
+            display: none;
+            padding: 20px;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
+        
+        .upgrade-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px dashed #4a5c9a;
+            margin-bottom: 15px;
+            flex-wrap: wrap; /* Allows wrapping on very small screens */
+        }
+
+        .upgrade-details {
+            flex-basis: 60%; /* Takes up most space */
+        }
+        .upgrade-details h4 { margin: 0; font-size: 1.1em; }
+        .upgrade-details p { margin: 5px 0 0; font-size: 0.8em; color: #aaa; }
+        .upgrade-item button {
+            flex-basis: 35%; /* Button takes remaining space */
+            margin-top: 5px; /* Space for wrap */
+        }
+
+        /* --- Media Queries for Tablets/Desktops --- */
+        @media (min-width: 450px) {
+            :root {
+                --mobile-font-size: 1.1em;
+                --mobile-heading-size: 2.2em;
+            }
+            #top-bar {
+                font-size: 1em;
+            }
+            .upgrade-item button {
+                margin-top: 0;
+                flex-basis: auto; /* Reset to auto-width */
+            }
+            .upgrade-details {
+                flex-basis: auto;
+            }
         }
     </style>
 </head>
 <body>
-    <div id="game-info">
-        <div>Score: <span id="score-display">0</span></div>
-        <div id="level-display">Level: 1</div>
-    </div>
-    <div id="tap-message">TAP ANYWHERE TO SWING THE BALL!</div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/cannon-es@0.20.0/dist/cannon-es.min.js"></script>
+    <div id="game-container">
+        
+        <div id="top-bar">
+            <div class="currency">💰 Scrap: <span id="scrap-count">0</span></div>
+            <div class="currency">💎 Girders: <span id="girder-count">0</span></div>
+            <button class="button" onclick="toggleShop()">SHOP</button>
+        </div>
+
+        <div id="score-display">LEVEL: 0</div>
+
+        <div id="game-area" onclick="handleTap()">
+            <div id="pendulum-line"></div>
+            <div id="wrecking-ball"></div>
+        </div>
+
+        <div id="game-state-overlay">
+            <h1>CRUSH & STACK CITY</h1>
+            <p id="game-message">Tap to swing the ball and crush the targeted block!</p>
+            <button class="button" onclick="startGame()">START CRUSH</button>
+        </div>
+
+        <div id="shop-panel">
+            <h2>Upgrades & Blueprints</h2>
+            <button class="button" onclick="toggleShop()" style="float: right; margin-top: -5px; padding: 8px 15px;">Close</button>
+            <hr style="clear: both; margin-bottom: 20px;">
+
+            <div class="upgrade-item">
+                <div class="upgrade-details">
+                    <h4>Wrecking Ball Material</h4>
+                    <p>Increases impact area (makes timing easier). Current: Lvl <span id="ball-level">1</span></p>
+                </div>
+                <button class="button" onclick="buyUpgrade('ball')" style="padding: 10px 20px;">Buy (<span id="ball-cost">100</span> Scrap)</button>
+            </div>
+
+            <div class="upgrade-item">
+                <div class="upgrade-details">
+                    <h4>Crane Speed</h4>
+                    <p>Increases pendulum speed, making timing harder. Current: Lvl <span id="crane-level">1</span></p>
+                </div>
+                <button class="button" onclick="buyUpgrade('crane')" style="padding: 10px 20px;">Buy (<span id="crane-cost">250</span> Scrap)</button>
+            </div>
+            
+            <div class="upgrade-item">
+                <div class="upgrade-details">
+                    <h4>City Blueprint: Factory</h4>
+                    <p>Permanent: +10% Idle Scrap Income.</p>
+                </div>
+                <button class="button" onclick="buyUpgrade('blueprint')" style="padding: 10px 20px; background-color: #2b7d5e;">Buy (5 Girders)</button>
+            </div>
+        </div>
+
+    </div>
 
     <script>
-        // --- Game Setup & State ---
-        let scene, camera, renderer, world;
-        let pendulumLine, wreckingBallMesh, wreckingBallBody;
-        let blocks = [];
+        // --- DOM Elements ---
+        const GAME_AREA = document.getElementById('game-area');
+        const PENDULUM_LINE = document.getElementById('pendulum-line');
+        const WRECKING_BALL = document.getElementById('wrecking-ball');
+        const SCRAP_COUNT_EL = document.getElementById('scrap-count');
+        const GIRDER_COUNT_EL = document.getElementById('girder-count');
+        const SCORE_DISPLAY_EL = document.getElementById('score-display');
+        const OVERLAY_EL = document.getElementById('game-state-overlay');
+        const MESSAGE_EL = document.getElementById('game-message');
+
+        // --- GAME STATE ---
         let gameState = {
+            running: false,
+            level: 0,
             score: 0,
-            level: 1,
-            buildingHeight: 0,
-            isSwinging: false,
             pendulumTimer: 0,
-            ballHitCooldown: false,
-            blockRemovalQueue: []
+            pendulumSpeed: 0.05, 
+            currentBlock: null,
+            ballHitX: 0, 
+            blockWidthRatio: 0.8,
         };
-        
-        // ADJUSTED CONSTANTS FOR BETTER MOBILE VISIBILITY
-        const BLOCK_SIZE = 0.8; 
-        const BLOCK_HEIGHT = 0.4;
-        const PENDULUM_LENGTH = 10; // Shorter pendulum
-        const MAX_SWING_ANGLE = Math.PI / 4; 
-        const CAMERA_DISTANCE = PENDULUM_LENGTH * 1.5; // Closer camera
 
-        // --- Utility Functions ---
+        // --- HYBRID PROGRESSION STATE (PERSISTENT DATA) ---
+        let playerStats = {
+            scrap: 0,
+            girders: 0,
+            ballLevel: 1,
+            craneLevel: 1,
+            idleBonus: 0
+        };
 
-        function updateUI() {
-            document.getElementById('score-display').textContent = gameState.score;
-            document.getElementById('level-display').textContent = `Level: ${gameState.level}`;
-        }
+        // --- GAME LOGIC FUNCTIONS ---
 
-        function createBlock(x, y, z) {
-            // Three.js Mesh
-            const geometry = new THREE.BoxGeometry(BLOCK_SIZE * 2, BLOCK_HEIGHT, BLOCK_SIZE);
-            const material = new THREE.MeshPhongMaterial({ color: 0x337f7f, shininess: 30 });
-            const mesh = new THREE.Mesh(geometry, material);
-            mesh.position.set(x, y, z);
-            scene.add(mesh);
-
-            // Cannon.js Body
-            const shape = new CANNON.Box(new CANNON.Vec3(BLOCK_SIZE, BLOCK_HEIGHT / 2, BLOCK_SIZE / 2));
-            const body = new CANNON.Body({
-                mass: 1,
-                shape: shape,
-                position: new CANNON.Vec3(x, y, z),
-                material: new CANNON.Material({ friction: 0.5, restitution: 0.2 })
-            });
-            body.allowSleep = true;
-            world.addBody(body);
-
-            blocks.push({ mesh, body });
-            return { mesh, body };
-        }
-
-        function buildNewLevel() {
-            const blockY = gameState.buildingHeight + BLOCK_HEIGHT / 2;
-            createBlock(0, blockY, 0);
-            gameState.buildingHeight += BLOCK_HEIGHT;
-            gameState.level++;
-            updateUI();
-        }
-
-        // --- Core Setup ---
-
-        function init() {
-            // Scene
-            scene = new THREE.Scene();
-            scene.background = new THREE.Color(0x2e3b5e);
-
-            // Camera (Adjusted position)
-            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100);
-            camera.position.set(0, PENDULUM_LENGTH * 0.5, CAMERA_DISTANCE);
-            camera.lookAt(0, PENDULUM_LENGTH * 0.5, 0); // Look towards the center
-
-            // Renderer
-            renderer = new THREE.WebGLRenderer({ antialias: true });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            document.body.appendChild(renderer.domElement);
-
-            // Lighting
-            const ambient = new THREE.AmbientLight(0x404040, 5);
-            scene.add(ambient);
-            const directionalLight = new THREE.DirectionalLight(0xffffff, 2);
-            directionalLight.position.set(5, 10, 5);
-            scene.add(directionalLight);
+        function loadStats() {
+            SCRAP_COUNT_EL.textContent = playerStats.scrap;
+            GIRDER_COUNT_EL.textContent = playerStats.girders;
             
-            // Ground Plane (Important for visual reference)
-            const groundMesh = new THREE.Mesh(
-                new THREE.PlaneGeometry(50, 50),
-                new THREE.MeshPhongMaterial({ color: 0x1a1a2e, side: THREE.DoubleSide })
-            );
-            groundMesh.rotation.x = -Math.PI / 2;
-            groundMesh.position.y = -BLOCK_HEIGHT / 2; // Below the lowest block
-            scene.add(groundMesh);
+            // Apply upgrades to game state
+            gameState.pendulumSpeed = 0.05 * (1 + playerStats.craneLevel * 0.15);
+            gameState.blockWidthRatio = 0.8 * (1 + playerStats.ballLevel * 0.1); 
 
-            const groundBody = new CANNON.Body({
-                mass: 0,
-                shape: new CANNON.Plane(),
-                position: new CANNON.Vec3(0, -BLOCK_HEIGHT / 2, 0)
-            });
-            groundBody.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), -Math.PI / 2);
-            world.addBody(groundBody);
-
-            // Cannon.js World
-            world = new CANNON.World({
-                gravity: new CANNON.Vec3(0, -9.82, 0)
-            });
-            world.broadphase = new CANNON.SAPBroadphase(world);
-
-            // Wrecking Ball (The Pendulum)
-            const ballRadius = 0.5;
-            wreckingBallMesh = new THREE.Mesh(
-                new THREE.SphereGeometry(ballRadius, 32, 32),
-                new THREE.MeshPhongMaterial({ color: 0xcc0000, shininess: 100 })
-            );
-            scene.add(wreckingBallMesh);
-
-            const ballShape = new CANNON.Sphere(ballRadius);
-            wreckingBallBody = new CANNON.Body({
-                mass: 5,
-                shape: ballShape,
-                position: new CANNON.Vec3(0, PENDULUM_LENGTH, 0),
-                type: CANNON.Body.KINEMATIC 
-            });
-            world.addBody(wreckingBallBody);
-
-            // Pendulum Pivot (fixed point in space) - Centered higher up
-            const pivotY = PENDULUM_LENGTH + (PENDULUM_LENGTH * 0.5);
-            const pivotBody = new CANNON.Body({ mass: 0 }); 
-            pivotBody.position.set(0, pivotY, 0);
-            world.addBody(pivotBody);
-
-            // Pendulum Constraint (hinge at the top)
-            const constraint = new CANNON.PointToPointConstraint(
-                wreckingBallBody, new CANNON.Vec3(0, 0, 0),
-                pivotBody, new CANNON.Vec3(0, 0, 0)
-            );
-            world.addConstraint(constraint);
-
-            // Line/Rope Visual
-            const linePoints = [new THREE.Vector3(0, pivotY, 0), new THREE.Vector3(0, 0, 0)];
-            pendulumLine = new THREE.Line(
-                new THREE.BufferGeometry().setFromPoints(linePoints),
-                new THREE.LineBasicMaterial({ color: 0xaaaaaa })
-            );
-            scene.add(pendulumLine);
-
-            // Initial Building (Start with a few base blocks)
-            for (let i = 0; i < 5; i++) {
-                buildNewLevel();
-            }
-            gameState.buildingHeight = 0; // Reset height after initial build
-
-            // Event Listeners
-            window.addEventListener('resize', onWindowResize);
-            renderer.domElement.addEventListener('click', handleTap);
+            // Update shop UI
+            document.getElementById('ball-level').textContent = playerStats.ballLevel;
+            document.getElementById('crane-level').textContent = playerStats.craneLevel;
+            document.getElementById('ball-cost').textContent = 100 * playerStats.ballLevel;
+            document.getElementById('crane-cost').textContent = 250 * playerStats.craneLevel;
         }
 
-        // --- Game Logic ---
+        function saveStats() {
+            SCRAP_COUNT_EL.textContent = playerStats.scrap;
+            GIRDER_COUNT_EL.textContent = playerStats.girders;
+        }
+
+        function startGame() {
+            gameState.level = 0;
+            gameState.score = 0;
+            gameState.running = true;
+            OVERLAY_EL.style.display = 'none';
+            
+            // Ensure pendulum elements are in the game area after clearing
+            GAME_AREA.innerHTML = ''; 
+            GAME_AREA.appendChild(PENDULUM_LINE);
+            GAME_AREA.appendChild(WRECKING_BALL);
+            
+            createNewLevel(true); 
+            gameLoop();
+        }
+
+        function endGame(message) {
+            gameState.running = false;
+            
+            const scrapEarned = gameState.level * 10;
+            playerStats.scrap += scrapEarned;
+            saveStats();
+            
+            MESSAGE_EL.textContent = `${message} You crushed ${gameState.level} blocks and earned ${scrapEarned} Scrap!`;
+            OVERLAY_EL.style.display = 'flex';
+        }
+
+        function createNewLevel(isFirstLevel = false) {
+            if (!isFirstLevel) {
+                gameState.level++;
+            }
+            SCORE_DISPLAY_EL.textContent = `LEVEL: ${gameState.level}`;
+
+            // 1. Move all existing blocks up
+            const allLevels = GAME_AREA.querySelectorAll('.building-level');
+            const blockHeight = 40; 
+            
+            allLevels.forEach((level, index) => {
+                const newBottom = parseInt(level.style.bottom || 0) + blockHeight;
+                level.style.bottom = `${newBottom}px`;
+                
+                if (newBottom > GAME_AREA.offsetHeight) {
+                    level.remove();
+                }
+            });
+
+            // 2. Create the container for the new block at the bottom (bottom: 0)
+            const levelDiv = document.createElement('div');
+            levelDiv.className = 'building-level';
+            levelDiv.style.bottom = '0px'; 
+            GAME_AREA.appendChild(levelDiv);
+
+            // 3. Create the block element inside
+            const blockDiv = document.createElement('div');
+            blockDiv.className = 'building-block target-block'; 
+            blockDiv.style.width = `${gameState.blockWidthRatio * 100}%`;
+            levelDiv.appendChild(blockDiv);
+            
+            gameState.currentBlock = blockDiv;
+        }
 
         function handleTap() {
-            if (gameState.ballHitCooldown) return;
-            
-            // 1. Convert the ball to a dynamic body (Massive change in state!)
-            wreckingBallBody.type = CANNON.Body.DYNAMIC;
-            wreckingBallBody.mass = 5; 
-            wreckingBallBody.wakeUp();
+            if (!gameState.running || !gameState.currentBlock) return;
 
-            // 2. Apply a strong impulse (the swing)
-            const impulseStrength = 50;
-            
-            // Calculate direction of current swing to apply impulse *against* it
-            const swingDirection = wreckingBallBody.position.x > 0 ? -1 : 1; 
+            const blockCenter = 0.5;
+            // Hit area increases with Ball Material upgrade
+            const hitArea = 0.25 / (1 + (playerStats.ballLevel * 0.1)); 
 
-            const velocityVector = new CANNON.Vec3(
-                swingDirection * impulseStrength, 
-                0,
-                0
-            );
-            // Apply impulse at the ball's current position
-            wreckingBallBody.applyImpulse(velocityVector, wreckingBallBody.position);
-
-            gameState.isSwinging = true;
-            gameState.ballHitCooldown = true; 
-            document.getElementById('tap-message').style.display = 'none';
-
-            // Reset the ball's kinematic state after a short period (for the next turn)
-            setTimeout(() => {
-                wreckingBallBody.type = CANNON.Body.KINEMATIC;
-                // Reset position to the top of the swing 
-                wreckingBallBody.position.set(0, PENDULUM_LENGTH + (PENDULUM_LENGTH * 0.5), 0);
-                wreckingBallBody.velocity.set(0, 0, 0);
-                wreckingBallBody.angularVelocity.set(0, 0, 0);
-                wreckingBallBody.sleep();
-                gameState.isSwinging = false;
-                gameState.ballHitCooldown = false;
-                document.getElementById('tap-message').style.display = 'block';
-            }, 3000); 
-        }
-        
-        // --- Collision Logic (The Crush Mechanic) ---
-        wreckingBallBody.addEventListener('collide', (e) => {
-            const collidedBody = e.body;
-            const targetBlock = blocks[0]; // Always target the lowest block
-
-            if (!targetBlock || collidedBody !== targetBlock.body) return; // Only process collision with the target
-
-            // Check if the collision was strong enough (Impulse check)
-            const impulseMagnitude = e.contact.getImpactVelocityAlongNormal();
-            const CRUSH_THRESHOLD = 0.5; // Minimum velocity required for a crush
-
-            if (impulseMagnitude > CRUSH_THRESHOLD && gameState.isSwinging) { 
-                
+            if (Math.abs(gameState.ballHitX - blockCenter) <= hitArea) {
                 // --- SUCCESSFUL CRUSH! ---
-                gameState.score += 100;
-                updateUI();
+                gameState.currentBlock.classList.remove('target-block');
                 
-                // 1. Make the crushed block highly dynamic and give it an explosion impulse
-                targetBlock.body.mass = 0.1; // Make it light
-                targetBlock.body.type = CANNON.Body.DYNAMIC;
-                targetBlock.body.collisionFilterGroup = 0; // Disable further main collisions
-                
-                targetBlock.body.applyImpulse(
-                    new CANNON.Vec3(Math.random() * 5 - 2.5, 5, Math.random() * 5 - 2.5), 
-                    targetBlock.body.position
-                );
-                
-                // 2. Add to removal queue
-                gameState.blockRemovalQueue.push(targetBlock);
-                blocks.shift(); // Remove the target block from the active list
+                WRECKING_BALL.classList.add('perfect-impact');
+                setTimeout(() => WRECKING_BALL.classList.remove('perfect-impact'), 100);
 
-                // 3. Prepare next level
-                buildNewLevel();
+                gameState.currentBlock = null; 
+                setTimeout(createNewLevel, 100); 
 
             } else {
-                 // Missed/Weak Hit - In a full game, this would be a CRASH/Fail state
+                // --- CRASH! ---
+                gameState.currentBlock.style.backgroundColor = 'red';
+                endGame(`CRASH! You missed the target.`);
             }
-        });
-
-        // --- Rendering Loop ---
-
-        function animate() {
-            requestAnimationFrame(animate);
-
-            const dt = 1/60; 
-            world.step(dt);
-
-            // Update Cannon.js object positions to Three.js meshes
-            for (const { mesh, body } of blocks) {
-                mesh.position.copy(body.position);
-                mesh.quaternion.copy(body.quaternion);
-            }
-            
-            // Handle Ball Movement (Kinematic when not swinging)
-            if (!gameState.isSwinging && !gameState.ballHitCooldown) {
-                // Simple sine wave for visual 'ready' swing
-                gameState.pendulumTimer += 0.05;
-                const angle = MAX_SWING_ANGLE * Math.sin(gameState.pendulumTimer);
-                const pivotY = PENDULUM_LENGTH + (PENDULUM_LENGTH * 0.5);
-
-                // Calculate position of the ball using the pivot point
-                const ballX = PENDULUM_LENGTH * Math.sin(angle);
-                const ballY = pivotY - PENDULUM_LENGTH * Math.cos(angle);
-
-                wreckingBallBody.position.set(ballX, ballY, 0);
-                wreckingBallMesh.position.copy(wreckingBallBody.position);
-                
-                // Update the visual line
-                pendulumLine.geometry.setFromPoints([
-                    new THREE.Vector3(0, pivotY, 0), 
-                    wreckingBallMesh.position
-                ]);
-                pendulumLine.geometry.attributes.position.needsUpdate = true;
-            } else {
-                // When dynamic, update mesh from body position
-                wreckingBallMesh.position.copy(wreckingBallBody.position);
-            }
-
-            // Cleanup blocks that have fallen out of view
-            gameState.blockRemovalQueue = gameState.blockRemovalQueue.filter(item => {
-                if (item.body.position.y < -5) {
-                    scene.remove(item.mesh);
-                    world.removeBody(item.body);
-                    return false; 
-                }
-                return true; 
-            });
-
-            renderer.render(scene, camera);
         }
 
-        function onWindowResize() {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
+        // --- GAME LOOP & RENDERING ---
+
+        function updatePendulum() {
+            const maxAngle = 60; // Degrees
+            
+            const angle = maxAngle * Math.sin(Date.now() * gameState.pendulumSpeed);
+
+            PENDULUM_LINE.style.transform = `rotate(${angle}deg)`;
+
+            const gameAreaHeight = GAME_AREA.offsetHeight;
+            const lineLength = gameAreaHeight * 0.8; 
+            
+            const angleRad = angle * (Math.PI / 180);
+            const ballXOffset = Math.sin(angleRad) * lineLength;
+            const ballY = Math.cos(angleRad) * lineLength;
+            
+            WRECKING_BALL.style.transform = `translate(-50%, -50%) translate(0, ${ballY}px) rotate(${-angle}deg)`; 
+            WRECKING_BALL.style.left = `calc(50% + ${ballXOffset}px)`;
+            
+            // Calculate and store the normalized horizontal position of the ball
+            gameState.ballHitX = (ballXOffset + (GAME_AREA.offsetWidth / 2)) / GAME_AREA.offsetWidth;
+        }
+
+        function gameLoop() {
+            if (!gameState.running) return;
+
+            updatePendulum();
+            
+            requestAnimationFrame(gameLoop);
         }
         
-        // --- Start the App ---
-        init();
-        animate();
+        // --- SHOP & UPGRADE LOGIC ---
+
+        function toggleShop() {
+            const shop = document.getElementById('shop-panel');
+            const isShopOpen = shop.style.display === 'flex';
+            
+            shop.style.display = isShopOpen ? 'none' : 'flex';
+            gameState.running = isShopOpen; 
+            
+            if (gameState.running) {
+                gameLoop();
+            }
+        }
+
+        function buyUpgrade(type) {
+            let cost = 0;
+            let currency = 'scrap';
+            let success = false;
+            
+            if (type === 'ball') {
+                cost = 100 * playerStats.ballLevel;
+                if (playerStats.scrap >= cost) {
+                    playerStats.scrap -= cost;
+                    playerStats.ballLevel++;
+                    success = true;
+                }
+            } else if (type === 'crane') {
+                cost = 250 * playerStats.craneLevel;
+                if (playerStats.scrap >= cost) {
+                    playerStats.scrap -= cost;
+                    playerStats.craneLevel++;
+                    success = true;
+                }
+            } else if (type === 'blueprint') {
+                cost = 5; 
+                currency = 'girders';
+                const btn = event.target;
+                if (!btn.disabled && playerStats.girders >= cost) {
+                    playerStats.girders -= cost;
+                    playerStats.idleBonus += 0.10; 
+                    success = true;
+                    btn.textContent = 'Purchased!';
+                    btn.disabled = true;
+                }
+            }
+
+            if (success) {
+                loadStats(); 
+                alert(`Upgrade successful! ${type} is now improved.`);
+            } else {
+                alert(`Not enough ${currency}!`);
+            }
+        }
+
+
+        // --- INITIALIZATION ---
+        document.addEventListener('DOMContentLoaded', () => {
+            loadStats();
+            OVERLAY_EL.style.display = 'flex';
+        });
     </script>
 </body>
 </html>
