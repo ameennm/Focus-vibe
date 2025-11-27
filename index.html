@@ -37,7 +37,7 @@
     <div id="tap-message">TAP ANYWHERE TO SWING THE BALL!</div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/cannon-es@0.17.0/dist/cannon-es.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/cannon-es@0.20.0/dist/cannon-es.min.js"></script>
 
     <script>
         // --- Game Setup & State ---
@@ -53,10 +53,13 @@
             ballHitCooldown: false,
             blockRemovalQueue: []
         };
-        const BLOCK_SIZE = 1;
-        const BLOCK_HEIGHT = 0.5;
-        const PENDULUM_LENGTH = 15;
-        const MAX_SWING_ANGLE = Math.PI / 4; // 45 degrees
+        
+        // ADJUSTED CONSTANTS FOR BETTER MOBILE VISIBILITY
+        const BLOCK_SIZE = 0.8; 
+        const BLOCK_HEIGHT = 0.4;
+        const PENDULUM_LENGTH = 10; // Shorter pendulum
+        const MAX_SWING_ANGLE = Math.PI / 4; 
+        const CAMERA_DISTANCE = PENDULUM_LENGTH * 1.5; // Closer camera
 
         // --- Utility Functions ---
 
@@ -103,10 +106,10 @@
             scene = new THREE.Scene();
             scene.background = new THREE.Color(0x2e3b5e);
 
-            // Camera (Mobile-friendly perspective)
+            // Camera (Adjusted position)
             camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100);
-            camera.position.set(0, PENDULUM_LENGTH / 2, PENDULUM_LENGTH * 0.8);
-            camera.lookAt(0, PENDULUM_LENGTH / 2, 0);
+            camera.position.set(0, PENDULUM_LENGTH * 0.5, CAMERA_DISTANCE);
+            camera.lookAt(0, PENDULUM_LENGTH * 0.5, 0); // Look towards the center
 
             // Renderer
             renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -119,6 +122,23 @@
             const directionalLight = new THREE.DirectionalLight(0xffffff, 2);
             directionalLight.position.set(5, 10, 5);
             scene.add(directionalLight);
+            
+            // Ground Plane (Important for visual reference)
+            const groundMesh = new THREE.Mesh(
+                new THREE.PlaneGeometry(50, 50),
+                new THREE.MeshPhongMaterial({ color: 0x1a1a2e, side: THREE.DoubleSide })
+            );
+            groundMesh.rotation.x = -Math.PI / 2;
+            groundMesh.position.y = -BLOCK_HEIGHT / 2; // Below the lowest block
+            scene.add(groundMesh);
+
+            const groundBody = new CANNON.Body({
+                mass: 0,
+                shape: new CANNON.Plane(),
+                position: new CANNON.Vec3(0, -BLOCK_HEIGHT / 2, 0)
+            });
+            groundBody.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), -Math.PI / 2);
+            world.addBody(groundBody);
 
             // Cannon.js World
             world = new CANNON.World({
@@ -139,13 +159,14 @@
                 mass: 5,
                 shape: ballShape,
                 position: new CANNON.Vec3(0, PENDULUM_LENGTH, 0),
-                type: CANNON.Body.KINEMATIC // Starts as kinematic (controlled by code)
+                type: CANNON.Body.KINEMATIC 
             });
             world.addBody(wreckingBallBody);
 
-            // Pendulum Pivot (fixed point in space)
-            const pivotBody = new CANNON.Body({ mass: 0 }); // Immovable
-            pivotBody.position.set(0, PENDULUM_LENGTH, 0);
+            // Pendulum Pivot (fixed point in space) - Centered higher up
+            const pivotY = PENDULUM_LENGTH + (PENDULUM_LENGTH * 0.5);
+            const pivotBody = new CANNON.Body({ mass: 0 }); 
+            pivotBody.position.set(0, pivotY, 0);
             world.addBody(pivotBody);
 
             // Pendulum Constraint (hinge at the top)
@@ -155,9 +176,10 @@
             );
             world.addConstraint(constraint);
 
-            // Line/Rope Visual (Simplified)
+            // Line/Rope Visual
+            const linePoints = [new THREE.Vector3(0, pivotY, 0), new THREE.Vector3(0, 0, 0)];
             pendulumLine = new THREE.Line(
-                new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, PENDULUM_LENGTH, 0), new THREE.Vector3(0, 0, 0)]),
+                new THREE.BufferGeometry().setFromPoints(linePoints),
                 new THREE.LineBasicMaterial({ color: 0xaaaaaa })
             );
             scene.add(pendulumLine);
@@ -166,6 +188,7 @@
             for (let i = 0; i < 5; i++) {
                 buildNewLevel();
             }
+            gameState.buildingHeight = 0; // Reset height after initial build
 
             // Event Listeners
             window.addEventListener('resize', onWindowResize);
@@ -176,78 +199,80 @@
 
         function handleTap() {
             if (gameState.ballHitCooldown) return;
-
+            
             // 1. Convert the ball to a dynamic body (Massive change in state!)
-            // This is the "release" or "swing" action, giving it velocity.
             wreckingBallBody.type = CANNON.Body.DYNAMIC;
-            wreckingBallBody.mass = 5; // Give it a real mass
+            wreckingBallBody.mass = 5; 
             wreckingBallBody.wakeUp();
 
             // 2. Apply a strong impulse (the swing)
             const impulseStrength = 50;
+            
+            // Calculate direction of current swing to apply impulse *against* it
+            const swingDirection = wreckingBallBody.position.x > 0 ? -1 : 1; 
+
             const velocityVector = new CANNON.Vec3(
-                Math.cos(gameState.pendulumTimer * 0.05) * impulseStrength, // Swing component
+                swingDirection * impulseStrength, 
                 0,
                 0
             );
+            // Apply impulse at the ball's current position
             wreckingBallBody.applyImpulse(velocityVector, wreckingBallBody.position);
 
             gameState.isSwinging = true;
-            gameState.ballHitCooldown = true; // Prevent immediate re-swinging
+            gameState.ballHitCooldown = true; 
             document.getElementById('tap-message').style.display = 'none';
 
             // Reset the ball's kinematic state after a short period (for the next turn)
             setTimeout(() => {
                 wreckingBallBody.type = CANNON.Body.KINEMATIC;
-                wreckingBallBody.position.set(0, PENDULUM_LENGTH, 0);
+                // Reset position to the top of the swing 
+                wreckingBallBody.position.set(0, PENDULUM_LENGTH + (PENDULUM_LENGTH * 0.5), 0);
                 wreckingBallBody.velocity.set(0, 0, 0);
                 wreckingBallBody.angularVelocity.set(0, 0, 0);
                 wreckingBallBody.sleep();
                 gameState.isSwinging = false;
                 gameState.ballHitCooldown = false;
                 document.getElementById('tap-message').style.display = 'block';
-            }, 3000); // 3 seconds to complete the swing and reset
+            }, 3000); 
         }
         
         // --- Collision Logic (The Crush Mechanic) ---
         wreckingBallBody.addEventListener('collide', (e) => {
-            if (gameState.ballHitCooldown) {
-                const collidedBody = e.body;
-                const blockToCrush = blocks.find(b => b.body === collidedBody);
+            const collidedBody = e.body;
+            const targetBlock = blocks[0]; // Always target the lowest block
 
-                if (blockToCrush) {
-                    // Simple Crush Condition: If the collision velocity is high
-                    const impulseMagnitude = e.contact.getImpactVelocityAlongNormal();
-                    
-                    // Critical Velocity for a Crush
-                    if (impulseMagnitude > 0.5) { 
-                        // Target the lowest block currently in play (for game flow)
-                        const targetBlock = blocks[0]; 
+            if (!targetBlock || collidedBody !== targetBlock.body) return; // Only process collision with the target
 
-                        if (blockToCrush.body === targetBlock.body) {
-                            
-                            // Success: Remove the block and award score
-                            gameState.score += 100;
-                            updateUI();
-                            
-                            // 1. Convert the crushed block to be highly dynamic and explode
-                            targetBlock.body.mass = 0.5;
-                            targetBlock.body.type = CANNON.Body.DYNAMIC;
-                            targetBlock.body.applyImpulse(new CANNON.Vec3(Math.random() * 5 - 2.5, 5, Math.random() * 5 - 2.5), targetBlock.body.position);
-                            
-                            // 2. Add to removal queue
-                            gameState.blockRemovalQueue.push(targetBlock);
-                            blocks.shift(); // Remove the target block from the active list
+            // Check if the collision was strong enough (Impulse check)
+            const impulseMagnitude = e.contact.getImpactVelocityAlongNormal();
+            const CRUSH_THRESHOLD = 0.5; // Minimum velocity required for a crush
 
-                            // 3. Prepare next level
-                            buildNewLevel();
-                        } else {
-                            // Hit a block that wasn't the target (CRASH!)
-                            // In a full game, this would stop the swing and end the game.
-                            wreckingBallBody.velocity.set(0,0,0); // Stop the ball
-                        }
-                    }
-                }
+            if (impulseMagnitude > CRUSH_THRESHOLD && gameState.isSwinging) { 
+                
+                // --- SUCCESSFUL CRUSH! ---
+                gameState.score += 100;
+                updateUI();
+                
+                // 1. Make the crushed block highly dynamic and give it an explosion impulse
+                targetBlock.body.mass = 0.1; // Make it light
+                targetBlock.body.type = CANNON.Body.DYNAMIC;
+                targetBlock.body.collisionFilterGroup = 0; // Disable further main collisions
+                
+                targetBlock.body.applyImpulse(
+                    new CANNON.Vec3(Math.random() * 5 - 2.5, 5, Math.random() * 5 - 2.5), 
+                    targetBlock.body.position
+                );
+                
+                // 2. Add to removal queue
+                gameState.blockRemovalQueue.push(targetBlock);
+                blocks.shift(); // Remove the target block from the active list
+
+                // 3. Prepare next level
+                buildNewLevel();
+
+            } else {
+                 // Missed/Weak Hit - In a full game, this would be a CRASH/Fail state
             }
         });
 
@@ -256,7 +281,7 @@
         function animate() {
             requestAnimationFrame(animate);
 
-            const dt = 1/60; // Fixed timestep for physics
+            const dt = 1/60; 
             world.step(dt);
 
             // Update Cannon.js object positions to Three.js meshes
@@ -270,17 +295,18 @@
                 // Simple sine wave for visual 'ready' swing
                 gameState.pendulumTimer += 0.05;
                 const angle = MAX_SWING_ANGLE * Math.sin(gameState.pendulumTimer);
+                const pivotY = PENDULUM_LENGTH + (PENDULUM_LENGTH * 0.5);
 
-                // Calculate X/Y position of the ball using polar coordinates
+                // Calculate position of the ball using the pivot point
                 const ballX = PENDULUM_LENGTH * Math.sin(angle);
-                const ballY = PENDULUM_LENGTH * (1 - Math.cos(angle)) + (PENDULUM_LENGTH/2); // Center the pivot point visually
+                const ballY = pivotY - PENDULUM_LENGTH * Math.cos(angle);
 
                 wreckingBallBody.position.set(ballX, ballY, 0);
                 wreckingBallMesh.position.copy(wreckingBallBody.position);
                 
                 // Update the visual line
                 pendulumLine.geometry.setFromPoints([
-                    new THREE.Vector3(0, PENDULUM_LENGTH, 0), 
+                    new THREE.Vector3(0, pivotY, 0), 
                     wreckingBallMesh.position
                 ]);
                 pendulumLine.geometry.attributes.position.needsUpdate = true;
@@ -294,9 +320,9 @@
                 if (item.body.position.y < -5) {
                     scene.remove(item.mesh);
                     world.removeBody(item.body);
-                    return false; // Remove from queue
+                    return false; 
                 }
-                return true; // Keep in queue
+                return true; 
             });
 
             renderer.render(scene, camera);
