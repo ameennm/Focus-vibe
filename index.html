@@ -9,11 +9,11 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         :root {
-            /* BRAND IDENTITY */
+            /* BRAND COLORS */
             --primary-green: #2C7A62;
             --dark-green: #1B4D3E;
             --primary-gold: #C5A059;
-            --gold-hover: #b08d45;
+            --star-yellow: #DE7921; /* Amazon Star Color */
             
             --bg-color: #f4f6f8;
             --white: #ffffff;
@@ -21,15 +21,16 @@
             --text-gray: #6B7280;
             --border-color: #E5E7EB;
             
-            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
+            --transition: all 0.2s ease;
         }
 
         body {
             font-family: 'Inter', sans-serif;
             color: var(--text-dark);
             background: var(--bg-color);
-            padding-bottom: 90px; /* Mobile Nav Space */
+            padding-bottom: 90px;
             -webkit-font-smoothing: antialiased;
         }
 
@@ -38,136 +39,129 @@
         .page { display: none; animation: fadeIn 0.3s ease-out; }
         .page.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        button { cursor: pointer; transition: all 0.2s; font-family: inherit; }
-        
-        /* --- TOAST NOTIFICATIONS (Restored) --- */
-        .toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
+        button { cursor: pointer; font-family: inherit; }
+
+        /* --- TOAST --- */
+        .toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; }
         .toast {
-            background: var(--white);
-            padding: 16px 24px;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            display: flex; align-items: center; gap: 15px;
-            min-width: 320px;
-            border-left: 5px solid var(--primary-green);
-            animation: slideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            background: white; padding: 16px 24px; border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15); border-left: 5px solid var(--primary-green);
+            display: flex; gap: 15px; align-items: center; margin-bottom: 10px;
+            animation: slideIn 0.4s;
         }
-        .toast-icon { font-size: 20px; color: var(--primary-green); }
-        .toast-content div:first-child { font-weight: 700; font-size: 14px; margin-bottom: 2px; }
-        .toast-content div:last-child { font-size: 13px; color: var(--text-gray); }
-        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
 
         /* --- HEADER --- */
-        header { background: var(--white); position: sticky; top: 0; z-index: 1000; box-shadow: var(--shadow-sm); padding: 15px 0; }
+        header { background: white; position: sticky; top: 0; z-index: 1000; box-shadow: var(--shadow-sm); padding: 12px 0; }
         nav { display: flex; align-items: center; justify-content: space-between; }
-        
-        .logo-svg { height: 45px; width: auto; }
-        
-        .nav-icons { display: flex; gap: 25px; align-items: center; }
-        .icon-btn { position: relative; font-size: 28px; color: var(--text-dark); cursor: pointer; display: flex; align-items: center; }
+        .logo-svg { height: 42px; width: auto; }
+        .nav-links span { margin-left: 20px; font-weight: 600; cursor: pointer; font-size: 14px; }
+        .nav-links span:hover { color: var(--primary-green); }
+        .cart-icon { position: relative; font-size: 26px; margin-left: 20px; cursor: pointer; }
         .cart-badge { 
-            position: absolute; top: -5px; right: -8px; 
-            background: var(--primary-gold); color: white; 
-            font-size: 11px; font-weight: 700; 
-            width: 20px; height: 20px; 
+            position: absolute; top: -5px; right: -8px; background: var(--primary-gold); 
+            color: white; font-size: 10px; font-weight: 800; width: 18px; height: 18px; 
             border-radius: 50%; display: flex; align-items: center; justify-content: center;
         }
 
         /* --- HERO --- */
         .hero { 
             background: linear-gradient(135deg, var(--dark-green), var(--primary-green)); 
-            color: white; padding: 5rem 1rem; text-align: center; 
-            border-bottom-left-radius: 30px; border-bottom-right-radius: 30px;
-            box-shadow: var(--shadow-md);
+            color: white; padding: 4rem 1rem; text-align: center; border-radius: 0 0 30px 30px; 
         }
-        .flash-sale { 
-            background: rgba(255,255,255,0.15); backdrop-filter: blur(5px);
-            border: 1px solid var(--primary-gold); color: var(--primary-gold);
-            padding: 8px 20px; border-radius: 50px; display: inline-block; 
-            margin-bottom: 20px; font-weight: 600; letter-spacing: 0.5px;
+        .hero h1 { font-size: 2.5rem; font-weight: 800; margin-bottom: 1rem; }
+        .flash-badge { 
+            background: rgba(255,255,255,0.1); border: 1px solid var(--primary-gold); 
+            color: var(--primary-gold); padding: 6px 16px; border-radius: 20px; 
+            display: inline-block; margin-bottom: 15px; font-weight: 600; font-size: 13px;
         }
-        .hero h1 { font-size: 3rem; font-weight: 800; margin-bottom: 15px; letter-spacing: -1px; }
         .hero-btn { 
-            background: var(--white); color: var(--primary-green); 
-            padding: 14px 40px; border-radius: 50px; border: none; 
-            font-weight: 700; font-size: 16px; margin-top: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            background: white; color: var(--primary-green); padding: 12px 32px; 
+            border-radius: 50px; border: none; font-weight: 700; margin-top: 15px; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2); 
         }
-        .hero-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.3); }
 
-        /* --- PRODUCT CARDS (Grid) --- */
+        /* --- PRODUCT CARD --- */
         .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1.5rem; padding: 2rem 0; }
         .product-card { 
-            background: var(--white); border-radius: 16px; overflow: hidden; 
-            border: 1px solid var(--border-color); transition: transform 0.2s;
-            display: flex; flex-direction: column;
+            background: white; border-radius: 12px; overflow: hidden; border: 1px solid var(--border-color); 
+            transition: transform 0.2s; cursor: pointer; display: flex; flex-direction: column;
         }
         .product-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-md); border-color: var(--primary-gold); }
-        
-        .p-img-wrapper { position: relative; height: 200px; background: #f9fafb; cursor: pointer; }
+        .p-img-wrapper { height: 180px; position: relative; background: #f9f9f9; }
         .p-img { width: 100%; height: 100%; object-fit: cover; }
-        
-        .p-info { padding: 15px; flex: 1; display: flex; flex-direction: column; }
-        .p-cat { font-size: 10px; text-transform: uppercase; color: var(--primary-green); font-weight: 700; margin-bottom: 5px; }
-        .p-title { font-weight: 600; font-size: 15px; margin-bottom: 5px; line-height: 1.3; color: var(--text-dark); cursor: pointer; }
-        .p-price { font-size: 18px; font-weight: 800; color: var(--dark-green); margin-bottom: 12px; }
-        
-        /* Direct Add to Cart Button on Card */
-        .btn-card-add {
-            margin-top: auto;
-            width: 100%;
-            padding: 10px;
-            background: var(--bg-color);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            color: var(--text-dark);
-            font-weight: 600;
-            font-size: 13px;
-            display: flex; align-items: center; justify-content: center; gap: 5px;
+        .p-info { padding: 12px; flex: 1; display: flex; flex-direction: column; }
+        .p-title { font-weight: 600; font-size: 14px; margin-bottom: 4px; line-height: 1.3; }
+        .p-price { font-weight: 800; font-size: 16px; color: var(--text-dark); margin-bottom: 10px; }
+        .btn-card-add { 
+            margin-top: auto; width: 100%; padding: 8px; background: white; 
+            border: 1px solid var(--border-color); border-radius: 6px; font-weight: 600; font-size: 12px;
         }
         .btn-card-add:hover { background: var(--primary-green); color: white; border-color: var(--primary-green); }
 
-        /* --- PRODUCT DETAIL PAGE (PDP) --- */
-        .pdp-layout { display: grid; grid-template-columns: 1.2fr 1fr; gap: 3rem; background: var(--white); padding: 2rem; border-radius: 20px; box-shadow: var(--shadow-sm); }
-        .pdp-img { width: 100%; border-radius: 12px; max-height: 500px; object-fit: cover; }
-        .pdp-info h2 { font-size: 32px; font-weight: 800; color: var(--dark-green); margin-bottom: 10px; }
-        .pdp-price { font-size: 28px; color: var(--primary-gold); font-weight: 700; margin-bottom: 20px; }
-        .pdp-desc { line-height: 1.8; color: var(--text-gray); margin-bottom: 30px; }
-        
-        .pdp-actions { background: var(--bg-color); padding: 20px; border-radius: 12px; border: 1px solid var(--border-color); }
-        .qty-selector { padding: 10px; border-radius: 8px; border: 1px solid #ccc; font-size: 16px; margin-bottom: 15px; width: 100px; }
-        
-        .btn-pdp-add { width: 100%; background: var(--primary-green); color: white; padding: 16px; border-radius: 12px; border: none; font-weight: 700; font-size: 16px; margin-bottom: 10px; }
-        .btn-pdp-buy { width: 100%; background: var(--primary-gold); color: white; padding: 16px; border-radius: 12px; border: none; font-weight: 700; font-size: 16px; }
+        /* --- VISUAL REVIEW BARS (Social Proof) --- */
+        .review-section { margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--border-color); }
+        .review-row { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; font-size: 13px; color: var(--text-link); }
+        .bar-bg { flex: 1; height: 18px; background: #F0F2F2; border-radius: 4px; box-shadow: inset 0 1px 2px rgba(0,0,0,0.1); overflow: hidden; }
+        .bar-fill { height: 100%; background: linear-gradient(to bottom, #FFCE00, #DE7921); border-radius: 4px; }
+        .star-link { color: #007185; text-decoration: none; min-width: 50px; }
+        .star-link:hover { text-decoration: underline; color: #C7511F; }
 
-        /* --- CART (Features Only, Clean Design) --- */
-        .cart-layout { display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; }
-        .cart-item { background: var(--white); padding: 1.5rem; border-radius: 12px; display: flex; gap: 20px; margin-bottom: 1rem; box-shadow: var(--shadow-sm); }
-        .cart-img-thumb { width: 100px; height: 100px; border-radius: 8px; object-fit: cover; }
-        .cart-details { flex: 1; }
-        .qty-select { padding: 5px 10px; border-radius: 6px; border: 1px solid #ddd; background: #f9f9f9; margin-right: 15px; }
-        .cart-remove { color: #ef4444; font-size: 13px; font-weight: 600; cursor: pointer; }
+        /* --- VISUAL ORDER TRACKING (Anxiety Killer) --- */
+        .track-container { display: flex; align-items: center; margin-top: 15px; position: relative; padding: 0 10px; }
+        .track-step { flex: 1; text-align: center; position: relative; z-index: 2; }
+        .track-dot { 
+            width: 14px; height: 14px; background: #ddd; border-radius: 50%; margin: 0 auto 5px; 
+            border: 2px solid white; box-shadow: 0 0 0 1px #ddd;
+        }
+        .track-step.active .track-dot { background: var(--primary-green); box-shadow: 0 0 0 1px var(--primary-green); }
+        .track-label { font-size: 10px; color: var(--text-gray); font-weight: 500; }
+        .track-step.active .track-label { color: var(--primary-green); font-weight: 700; }
         
-        .cart-summary { background: var(--white); padding: 2rem; border-radius: 12px; height: fit-content; box-shadow: var(--shadow-sm); }
+        .track-line-bg { position: absolute; top: 7px; left: 10%; right: 10%; height: 2px; background: #ddd; z-index: 1; }
+        .track-line-fill { position: absolute; top: 7px; left: 10%; height: 2px; background: var(--primary-green); z-index: 1; transition: width 1s ease; }
 
-        /* --- PROFILE (Dummy Data) --- */
-        .profile-header { background: var(--white); padding: 2rem; border-radius: 12px; display: flex; gap: 20px; align-items: center; margin-bottom: 2rem; box-shadow: var(--shadow-sm); }
-        .avatar { width: 80px; height: 80px; background: var(--primary-gold); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: 700; }
-        .order-card { background: var(--white); padding: 1.5rem; border-radius: 12px; margin-bottom: 1rem; border-left: 5px solid var(--primary-green); box-shadow: var(--shadow-sm); }
+        /* --- CHECKOUT MODAL (Simulation) --- */
+        .modal-overlay { 
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.5); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(3px);
+        }
+        .modal-content { 
+            background: white; width: 90%; max-width: 400px; padding: 25px; 
+            border-radius: 12px; box-shadow: 0 20px 50px rgba(0,0,0,0.2); animation: popIn 0.3s;
+        }
+        @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        
+        .pay-option { 
+            display: flex; align-items: center; gap: 10px; padding: 12px; 
+            border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 10px; cursor: pointer;
+        }
+        .pay-option.selected { border-color: var(--primary-green); background: rgba(44, 122, 98, 0.05); }
+        .spinner { 
+            width: 24px; height: 24px; border: 3px solid #f3f3f3; border-top: 3px solid var(--primary-green); 
+            border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto; display: none;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         /* --- MOBILE NAV --- */
-        .mobile-nav { display: none; position: fixed; bottom: 0; width: 100%; background: var(--white); border-top: 1px solid var(--border-color); padding: 12px 0; justify-content: space-around; z-index: 999; }
-        .mn-item { display: flex; flex-direction: column; align-items: center; text-decoration: none; color: var(--text-gray); font-size: 11px; gap: 4px; }
+        .mobile-nav { 
+            display: none; position: fixed; bottom: 0; width: 100%; background: white; 
+            border-top: 1px solid var(--border-color); padding: 10px 0; justify-content: space-around; z-index: 999; 
+        }
+        .mn-item { display: flex; flex-direction: column; align-items: center; font-size: 10px; color: var(--text-gray); gap: 4px; }
         .mn-item.active { color: var(--primary-green); font-weight: 700; }
-        .mn-icon { font-size: 24px; }
 
+        /* --- PDP LAYOUT --- */
+        .pdp-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; background: white; padding: 2rem; border-radius: 12px; margin-top: 1rem; }
+        .pdp-img { width: 100%; border-radius: 8px; }
+
+        /* --- RESPONSIVE --- */
         @media (max-width: 768px) {
             .mobile-nav { display: flex; }
-            .nav-icons span:not(.cart-icon) { display: none; } /* Hide text links */
-            .pdp-layout { grid-template-columns: 1fr; gap: 1rem; padding: 1rem; }
+            .nav-links { display: none; } /* Hide desktop links */
+            .pdp-layout { grid-template-columns: 1fr; padding: 1rem; }
             .cart-layout { grid-template-columns: 1fr; }
-            .product-grid { grid-template-columns: 1fr 1fr; }
+            .product-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
         }
     </style>
 </head>
@@ -175,10 +169,33 @@
 
     <div class="toast-container" id="toastContainer"></div>
 
+    <div class="modal-overlay" id="checkoutModal">
+        <div class="modal-content">
+            <h2 style="margin-bottom: 15px;">Secure Checkout</h2>
+            <p style="margin-bottom: 20px; color: var(--text-gray); font-size: 14px;">Total to Pay: <strong id="modalTotal" style="color: var(--text-dark);">₹0</strong></p>
+            
+            <div class="pay-option selected" onclick="selectPayment(this)">
+                <input type="radio" name="payment" checked> <span>UPI / GPay / PhonePe</span>
+            </div>
+            <div class="pay-option" onclick="selectPayment(this)">
+                <input type="radio" name="payment"> <span>Credit / Debit Card</span>
+            </div>
+            <div class="pay-option" onclick="selectPayment(this)">
+                <input type="radio" name="payment"> <span>Cash on Delivery</span>
+            </div>
+
+            <div style="margin-top: 20px;">
+                <button id="payBtn" onclick="processPayment()" style="width: 100%; background: var(--primary-gold); color: white; border: none; padding: 14px; border-radius: 8px; font-weight: 700; font-size: 16px;">Place Your Order</button>
+                <div id="paySpinner" class="spinner"></div>
+            </div>
+            <div style="text-align: center; margin-top: 15px; font-size: 12px; color: var(--text-gray); cursor: pointer;" onclick="closeCheckout()">Cancel</div>
+        </div>
+    </div>
+
     <header>
         <div class="container">
             <nav>
-                <div class="logo-container" onclick="showPage('home')" style="cursor: pointer;">
+                <div onclick="showPage('home')" style="cursor: pointer;">
                     <svg class="logo-svg" viewBox="0 0 300 80" xmlns="http://www.w3.org/2000/svg">
                         <path d="M40,10 C20,10 10,30 10,40 C10,55 25,65 40,65 C55,65 70,55 70,40 C70,20 55,10 40,10 Z M40,65 L40,75" fill="none" stroke="#C5A059" stroke-width="4"/>
                         <path d="M40,10 C40,10 55,25 55,40 C55,50 45,60 40,65" fill="#C5A059" opacity="0.8"/>
@@ -186,12 +203,12 @@
                         <text x="85" y="52" font-family="Inter" font-weight="800" font-size="42" fill="#1B4D3E">TROVDAW</text>
                     </svg>
                 </div>
-                <div class="nav-icons">
-                    <span onclick="showPage('home')" style="cursor:pointer; font-weight:600;">Home</span>
-                    <span onclick="showPage('products')" style="cursor:pointer; font-weight:600;">Marketplace</span>
-                    <span onclick="showPage('account')" style="cursor:pointer; font-weight:600;">Account</span>
-                    <div class="icon-btn cart-icon" onclick="showPage('cart')">
-                        🛒 <span class="cart-badge" id="cartBadge">0</span>
+                <div class="nav-links">
+                    <span onclick="showPage('home')">Home</span>
+                    <span onclick="showPage('products')">Products</span>
+                    <span onclick="showPage('account')">Account</span>
+                    <div class="cart-icon" onclick="showPage('cart')">
+                        🛒 <div class="cart-badge" id="cartBadge">0</div>
                     </div>
                 </div>
             </nav>
@@ -199,53 +216,66 @@
     </header>
 
     <div class="mobile-nav">
-        <a href="#" class="mn-item active" onclick="showPage('home')"><span class="mn-icon">🏠</span>Home</a>
-        <a href="#" class="mn-item" onclick="showPage('products')"><span class="mn-icon">📦</span>Shop</a>
-        <a href="#" class="mn-item" onclick="showPage('cart')"><span class="mn-icon">🛒</span>Cart</a>
-        <a href="#" class="mn-item" onclick="showPage('account')"><span class="mn-icon">👤</span>Profile</a>
+        <div class="mn-item active" onclick="showPage('home')"><span style="font-size: 20px;">🏠</span>Home</div>
+        <div class="mn-item" onclick="showPage('products')"><span style="font-size: 20px;">📦</span>Shop</div>
+        <div class="mn-item" onclick="showPage('cart')"><span style="font-size: 20px;">🛒</span>Cart</div>
+        <div class="mn-item" onclick="showPage('account')"><span style="font-size: 20px;">👤</span>Me</div>
     </div>
 
     <div id="home" class="page active">
         <div class="hero">
-            <div class="flash-sale">⚡ Flash Deal Ends: <span id="timer">04:23:15</span></div>
-            <h1>Premium Global Food Trading</h1>
-            <p>Authentic Dates, Grains & Dairy from Global Farms.</p>
-            <button class="hero-btn" onclick="showPage('products')">Explore Marketplace</button>
+            <div class="flash-badge">⚡ Deal Ends: <span id="timer">04:23:15</span></div>
+            <h1>Premium Food Trading</h1>
+            <p style="opacity: 0.9; margin-bottom: 20px;">Sourcing Authentic Dates, Grains & Dairy.</p>
+            <button class="hero-btn" onclick="showPage('products')">Start Trading</button>
         </div>
-        <div class="container" style="margin-top: 3rem;">
-            <h2 style="margin-bottom: 1rem; color: var(--text-dark);">Trending Commodities</h2>
+        <div class="container" style="padding-top: 2rem;">
+            <h2>Trending Now</h2>
             <div class="product-grid" id="featuredGrid"></div>
         </div>
     </div>
 
     <div id="products" class="page">
-        <div class="container" style="padding-top: 2rem;">
-            <div style="background: white; padding: 15px; border-radius: 12px; margin-bottom: 2rem; box-shadow: var(--shadow-sm);">
-                <input type="text" id="search" placeholder="Search products (e.g., Dates, Rice)..." style="width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 16px;" onkeyup="searchProducts()">
+        <div class="container" style="padding-top: 1.5rem;">
+            <div style="background: white; padding: 1rem; border-radius: 12px; margin-bottom: 1.5rem; box-shadow: var(--shadow-sm);">
+                <input type="text" id="search" placeholder="Search Dates, Rice, Milk..." style="width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 16px; margin-bottom: 15px;" onkeyup="filterProducts()">
+                
+                <div style="display: flex; gap: 10px; overflow-x: auto; padding-bottom: 5px;">
+                    <div class="filter-chip" onclick="applyFilter('All')" style="padding: 6px 12px; background: var(--dark-green); color: white; border-radius: 20px; font-size: 13px; cursor: pointer; white-space: nowrap;">All</div>
+                    <div class="filter-chip" onclick="applyFilter('Dates')" style="padding: 6px 12px; border: 1px solid #ddd; border-radius: 20px; font-size: 13px; cursor: pointer; white-space: nowrap;">Dates</div>
+                    <div class="filter-chip" onclick="applyFilter('Grains')" style="padding: 6px 12px; border: 1px solid #ddd; border-radius: 20px; font-size: 13px; cursor: pointer; white-space: nowrap;">Grains</div>
+                    <div class="filter-chip" onclick="applyFilter('Dairy')" style="padding: 6px 12px; border: 1px solid #ddd; border-radius: 20px; font-size: 13px; cursor: pointer; white-space: nowrap;">Dairy</div>
+                </div>
             </div>
             <div class="product-grid" id="fullGrid"></div>
         </div>
     </div>
 
     <div id="pdp" class="page">
-        <div class="container" style="padding-top: 2rem;">
-            <button onclick="showPage('products')" style="background:none; border:none; color:var(--text-gray); margin-bottom: 1rem;">← Back to Marketplace</button>
+        <div class="container" style="padding-top: 1.5rem;">
+            <div style="margin-bottom: 10px; cursor: pointer; color: var(--text-gray);" onclick="showPage('products')">← Back to Search</div>
             <div class="pdp-layout">
-                <img id="pdpImg" src="" class="pdp-img">
+                <div>
+                    <img id="pdpImg" src="" class="pdp-img">
+                </div>
                 <div class="pdp-info">
                     <h2 id="pdpTitle">Product Name</h2>
+                    <div style="color: #F08804; margin-bottom: 10px; font-size: 14px;">★★★★☆ <span style="color: #007185;">482 ratings</span></div>
                     <div class="pdp-price" id="pdpPrice">₹000</div>
-                    <p class="pdp-desc" id="pdpDesc">Description</p>
+                    <p id="pdpDesc" style="color: var(--text-gray); line-height: 1.6; margin-bottom: 20px;">Description</p>
                     
-                    <div class="pdp-actions">
-                        <label style="display:block; margin-bottom:5px; font-weight:600;">Quantity:</label>
-                        <select id="pdpQty" class="qty-selector">
-                            <option value="1">1 kg</option>
-                            <option value="5">5 kg</option>
-                            <option value="10">10 kg</option>
-                        </select>
-                        <button class="btn-pdp-add" onclick="addToCartFromPDP()">Add to Cart</button>
-                        <button class="btn-pdp-buy" onclick="buyNowPDP()">Buy Now</button>
+                    <div style="background: #f9f9f9; padding: 20px; border-radius: 12px; border: 1px solid #eee;">
+                        <button onclick="addToCartFromPDP()" style="width: 100%; background: var(--primary-green); color: white; padding: 12px; border: none; border-radius: 8px; font-weight: 700; margin-bottom: 10px;">Add to Cart</button>
+                        <button onclick="buyNowPDP()" style="width: 100%; background: var(--primary-gold); color: white; padding: 12px; border: none; border-radius: 8px; font-weight: 700;">Buy Now</button>
+                    </div>
+
+                    <div class="review-section">
+                        <h4 style="margin-bottom: 15px;">Customer Reviews</h4>
+                        <div class="review-row"><a href="#" class="star-link">5 star</a> <div class="bar-bg"><div class="bar-fill" style="width: 78%"></div></div> <span>78%</span></div>
+                        <div class="review-row"><a href="#" class="star-link">4 star</a> <div class="bar-bg"><div class="bar-fill" style="width: 12%"></div></div> <span>12%</span></div>
+                        <div class="review-row"><a href="#" class="star-link">3 star</a> <div class="bar-bg"><div class="bar-fill" style="width: 6%"></div></div> <span>6%</span></div>
+                        <div class="review-row"><a href="#" class="star-link">2 star</a> <div class="bar-bg"><div class="bar-fill" style="width: 2%"></div></div> <span>2%</span></div>
+                        <div class="review-row"><a href="#" class="star-link">1 star</a> <div class="bar-bg"><div class="bar-fill" style="width: 2%"></div></div> <span>2%</span></div>
                     </div>
                 </div>
             </div>
@@ -254,16 +284,12 @@
 
     <div id="cart" class="page">
         <div class="container" style="padding-top: 2rem;">
-            <h2 style="margin-bottom: 1.5rem;">Your Cart</h2>
-            <div class="cart-layout">
+            <h2>Shopping Cart</h2>
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; margin-top: 1rem;">
                 <div id="cartList"></div>
-                <div class="cart-summary">
-                    <div style="font-size: 20px; font-weight: 700; margin-bottom: 1rem;">Order Summary</div>
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
-                        <span>Subtotal</span>
-                        <span id="cartTotalAmount" style="font-weight: 700;">₹0</span>
-                    </div>
-                    <button class="btn-pdp-buy" onclick="showToast('Checkout', 'Proceeding to payment gateway...')">Checkout</button>
+                <div style="background: white; padding: 20px; border-radius: 12px; height: fit-content; box-shadow: var(--shadow-sm);">
+                    <div style="font-size: 18px; font-weight: 700; margin-bottom: 15px;">Subtotal: <span id="cartTotalAmount">₹0</span></div>
+                    <button onclick="openCheckout()" style="width: 100%; background: var(--primary-gold); color: white; padding: 12px; border: none; border-radius: 8px; font-weight: 700;">Proceed to Buy</button>
                 </div>
             </div>
         </div>
@@ -271,109 +297,171 @@
 
     <div id="account" class="page">
         <div class="container" style="padding-top: 2rem;">
-            <div class="profile-header">
-                <div class="avatar">R</div>
+            <div style="background: white; padding: 20px; border-radius: 12px; display: flex; align-items: center; gap: 20px; box-shadow: var(--shadow-sm); margin-bottom: 2rem;">
+                <div style="width: 60px; height: 60px; background: var(--primary-green); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700;">R</div>
                 <div>
-                    <h2 style="margin-bottom: 5px;">Rahul Sharma</h2>
-                    <p style="color: var(--text-gray);">rahul.sharma@example.com | +91 98765 43210</p>
-                    <p style="color: var(--primary-green); font-weight: 600; margin-top: 5px;">Premium Member</p>
+                    <h3>Rahul Sharma</h3>
+                    <p style="font-size: 14px; color: var(--text-gray);">Premium Member</p>
                 </div>
             </div>
 
             <h3 style="margin-bottom: 1rem;">Recent Orders</h3>
             
-            <div class="order-card">
-                <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                    <span style="font-weight:700;">Order #TRV-8821</span>
-                    <span style="color:var(--text-gray);">Delivered Yesterday</span>
-                </div>
-                <div style="display:flex; gap:15px; align-items:center;">
-                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcToesPYypZnN6hgoqf1hAXzlAcHkfaeotEcmA&s" style="width:60px; height:60px; border-radius:6px; object-fit:cover;">
+            <div style="background: white; padding: 20px; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 1.5rem;">
+                <div style="display: flex; gap: 15px; margin-bottom: 20px;">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcToesPYypZnN6hgoqf1hAXzlAcHkfaeotEcmA&s" style="width: 80px; height: 80px; border-radius: 8px; object-fit: cover;">
                     <div>
-                        <div style="font-weight:600;">Royal Medjool Dates (2kg)</div>
-                        <div style="font-size:14px;">Total: ₹1,700</div>
+                        <div style="font-weight: 700; font-size: 15px;">Royal Medjool Dates (2kg)</div>
+                        <div style="font-size: 13px; color: var(--text-gray); margin-bottom: 5px;">Order #TRV-8821</div>
+                        <div style="font-weight: 700; color: var(--primary-green);">Delivered Today</div>
                     </div>
                 </div>
-                <div style="margin-top:15px; display:flex; gap:10px;">
-                    <button onclick="showPage('products')" style="padding:8px 15px; border:1px solid var(--border-color); background:white; border-radius:6px;">Buy Again</button>
-                    <button style="padding:8px 15px; border:1px solid var(--border-color); background:white; border-radius:6px;">View Invoice</button>
+                
+                <div class="track-container">
+                    <div class="track-line-bg"></div>
+                    <div class="track-line-fill" style="width: 100%;"></div> <div class="track-step active">
+                        <div class="track-dot"></div>
+                        <div class="track-label">Ordered</div>
+                    </div>
+                    <div class="track-step active">
+                        <div class="track-dot"></div>
+                        <div class="track-label">Shipped</div>
+                    </div>
+                    <div class="track-step active">
+                        <div class="track-dot"></div>
+                        <div class="track-label">Out for Delivery</div>
+                    </div>
+                    <div class="track-step active">
+                        <div class="track-dot"></div>
+                        <div class="track-label">Delivered</div>
+                    </div>
                 </div>
             </div>
 
-            <div class="order-card">
-                <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                    <span style="font-weight:700;">Order #TRV-5510</span>
-                    <span style="color:var(--text-gray);">Oct 12, 2025</span>
-                </div>
-                <div style="display:flex; gap:15px; align-items:center;">
-                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcToesPYypZnN6hgoqf1hAXzlAcHkfaeotEcmA&s" style="width:60px; height:60px; border-radius:6px; object-fit:cover;">
+            <div style="background: white; padding: 20px; border-radius: 12px; border: 1px solid var(--border-color);">
+                <div style="display: flex; gap: 15px; margin-bottom: 20px;">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcToesPYypZnN6hgoqf1hAXzlAcHkfaeotEcmA&s" style="width: 80px; height: 80px; border-radius: 8px; object-fit: cover;">
                     <div>
-                        <div style="font-weight:600;">Organic Quinoa (1kg)</div>
-                        <div style="font-size:14px;">Total: ₹450</div>
+                        <div style="font-weight: 700; font-size: 15px;">Organic Quinoa (1kg)</div>
+                        <div style="font-size: 13px; color: var(--text-gray); margin-bottom: 5px;">Order #TRV-9941</div>
+                        <div style="font-weight: 700; color: #DE7921;">Arriving Tomorrow</div>
+                    </div>
+                </div>
+                
+                <div class="track-container">
+                    <div class="track-line-bg"></div>
+                    <div class="track-line-fill" style="width: 50%;"></div> <div class="track-step active">
+                        <div class="track-dot"></div>
+                        <div class="track-label">Ordered</div>
+                    </div>
+                    <div class="track-step active">
+                        <div class="track-dot"></div>
+                        <div class="track-label">Shipped</div>
+                    </div>
+                    <div class="track-step">
+                        <div class="track-dot"></div>
+                        <div class="track-label">Out for Delivery</div>
+                    </div>
+                    <div class="track-step">
+                        <div class="track-dot"></div>
+                        <div class="track-label">Delivered</div>
                     </div>
                 </div>
             </div>
-            
-            <div style="margin-top: 2rem;">
-                <h3 style="margin-bottom: 1rem;">Saved Addresses</h3>
-                <div style="background:white; padding:1.5rem; border-radius:12px; border:1px solid var(--primary-green);">
-                    <div style="font-weight:700; margin-bottom:5px;">Home (Default)</div>
-                    <p>123, Palm Residency, MG Road</p>
-                    <p>Kochi, Kerala - 682001</p>
-                </div>
-            </div>
+
         </div>
     </div>
 
     <script>
-        // GLOBAL IMAGE
+        // GLOBAL DATA
         const GLOBAL_IMG = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcToesPYypZnN6hgoqf1hAXzlAcHkfaeotEcmA&s";
-
         const products = [
-            { id: 1, name: 'Royal Medjool Dates (1kg)', price: 850, cat: 'Dates', desc: 'Premium, naturally sweet Medjool dates sourced from Jordan. Rich in fiber.', image: GLOBAL_IMG },
-            { id: 2, name: 'Ajwa Al-Madina (500g)', price: 1200, cat: 'Dates', desc: 'Authentic Ajwa dates from Madina. Known for their healing properties.', image: GLOBAL_IMG },
-            { id: 3, name: 'Basmati Rice (5kg)', price: 900, cat: 'Grains', desc: 'Extra long grain, aged Basmati rice. Aromatic and fluffy.', image: GLOBAL_IMG },
-            { id: 4, name: 'Organic Quinoa (1kg)', price: 450, cat: 'Grains', desc: 'High-protein, gluten-free organic quinoa.', image: GLOBAL_IMG },
-            { id: 5, name: 'Farm Fresh Milk (1L)', price: 65, cat: 'Dairy', desc: 'Pasteurized, homogenized whole milk.', image: GLOBAL_IMG },
+            { id: 1, name: 'Royal Medjool Dates (1kg)', price: 850, cat: 'Dates', desc: 'Premium dates sourced from Jordan. Natural caramel flavor.', image: GLOBAL_IMG },
+            { id: 2, name: 'Ajwa Al-Madina (500g)', price: 1200, cat: 'Dates', desc: 'Authentic Ajwa dates. Known for health benefits.', image: GLOBAL_IMG },
+            { id: 3, name: 'Basmati Rice (5kg)', price: 900, cat: 'Grains', desc: 'Extra long grain aged Basmati rice.', image: GLOBAL_IMG },
+            { id: 4, name: 'Organic Quinoa (1kg)', price: 450, cat: 'Grains', desc: 'Protein-rich organic white quinoa.', image: GLOBAL_IMG },
+            { id: 5, name: 'Farm Fresh Milk (1L)', price: 65, cat: 'Dairy', desc: 'Pasteurized whole milk from grass-fed cows.', image: GLOBAL_IMG },
             { id: 6, name: 'Cheddar Cheese (200g)', price: 450, cat: 'Dairy', desc: 'Aged sharp cheddar cheese block.', image: GLOBAL_IMG },
-            { id: 7, name: 'Chicken Breast (1kg)', price: 280, cat: 'Meat', desc: 'Fresh chilled, skinless boneless chicken breast.', image: GLOBAL_IMG },
-            { id: 8, name: 'Roasted Almonds (500g)', price: 900, cat: 'Snack', desc: 'Crunchy, lightly salted roasted almonds.', image: GLOBAL_IMG },
         ];
 
         let cart = [];
         let currentPdpId = null;
 
         window.onload = function() {
-            renderProducts();
+            filterProducts(); // Initial Render
             updateCartUI();
             startTimer();
         }
 
-        // --- RENDER ---
-        function renderProducts() {
+        // --- FILTER & SEARCH ---
+        function filterProducts() {
+            const term = document.getElementById('search').value.toLowerCase();
+            // In a real app, you'd track active category too. 
+            // For demo, we just search text against name or category.
+            const filtered = products.filter(p => p.name.toLowerCase().includes(term) || p.cat.toLowerCase().includes(term));
+            
             const createCard = (p) => `
                 <div class="product-card" onclick="openPDP(${p.id})">
-                    <div class="p-img-wrapper">
-                        <img src="${p.image}" class="p-img">
-                    </div>
+                    <div class="p-img-wrapper"><img src="${p.image}" class="p-img"></div>
                     <div class="p-info">
-                        <div class="p-cat">${p.cat}</div>
                         <div class="p-title">${p.name}</div>
                         <div class="p-price">₹${p.price}</div>
-                        <button class="btn-card-add" onclick="event.stopPropagation(); addToCart(${p.id})">
-                            Add to Cart <span>+</span>
-                        </button>
+                        <button class="btn-card-add" onclick="event.stopPropagation(); addToCart(${p.id})">Add to Cart</button>
                     </div>
                 </div>`;
             
-            document.getElementById('featuredGrid').innerHTML = products.slice(0, 4).map(createCard).join('');
-            document.getElementById('fullGrid').innerHTML = products.map(createCard).join('');
+            document.getElementById('fullGrid').innerHTML = filtered.map(createCard).join('');
+            // Also update featured if on home page (simplified for demo)
+            if(document.getElementById('featuredGrid')) {
+                document.getElementById('featuredGrid').innerHTML = products.slice(0,4).map(createCard).join('');
+            }
+        }
+        
+        function applyFilter(cat) {
+            document.getElementById('search').value = cat === 'All' ? '' : cat;
+            filterProducts();
         }
 
-        // --- PDP LOGIC ---
+        // --- CART LOGIC ---
+        function addToCart(id, qty = 1) {
+            const existing = cart.find(x => x.id === id);
+            if(existing) existing.qty += qty; else cart.push({id, qty});
+            showToast('Added to Cart', 'Item added successfully');
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            const list = document.getElementById('cartList');
+            const totalEl = document.getElementById('cartTotalAmount');
+            const badge = document.getElementById('cartBadge');
+            let total = 0; let count = 0;
+            
+            list.innerHTML = cart.length ? '' : '<div style="padding:20px; color:#888;">Cart is empty</div>';
+            
+            cart.forEach(item => {
+                const p = products.find(x => x.id === item.id);
+                total += p.price * item.qty;
+                count += item.qty;
+                list.innerHTML += `
+                    <div class="cart-item">
+                        <img src="${p.image}" class="cart-img-thumb">
+                        <div class="cart-details">
+                            <div style="font-weight:600">${p.name}</div>
+                            <div style="color:var(--primary-gold); font-weight:700;">₹${p.price}</div>
+                            <div style="margin-top:5px; font-size:13px;">Qty: ${item.qty}</div>
+                        </div>
+                    </div>`;
+            });
+            totalEl.innerText = '₹' + total.toLocaleString();
+            badge.innerText = count;
+            // Update Modal Total too
+            if(document.getElementById('modalTotal')) document.getElementById('modalTotal').innerText = '₹' + total.toLocaleString();
+        }
+
+        // --- PDP ---
         function openPDP(id) {
-            const p = products.find(x => x.id === id);
             currentPdpId = id;
+            const p = products.find(x => x.id === id);
             document.getElementById('pdpImg').src = p.image;
             document.getElementById('pdpTitle').innerText = p.name;
             document.getElementById('pdpPrice').innerText = '₹' + p.price;
@@ -391,104 +479,64 @@
             showPage('cart');
         }
 
-        // --- CART LOGIC ---
-        function addToCart(id, qty = 1) {
-            const existing = cart.find(x => x.id === id);
-            if(existing) existing.qty += qty;
-            else cart.push({ id: id, qty: qty });
+        // --- CHECKOUT SIMULATION (The "Musk" Feature) ---
+        function openCheckout() {
+            if(cart.length === 0) return showToast('Error', 'Cart is empty');
+            document.getElementById('checkoutModal').style.display = 'flex';
+        }
+
+        function closeCheckout() {
+            document.getElementById('checkoutModal').style.display = 'none';
+            // Reset state
+            document.getElementById('payBtn').style.display = 'block';
+            document.getElementById('paySpinner').style.display = 'none';
+        }
+
+        function selectPayment(el) {
+            document.querySelectorAll('.pay-option').forEach(d => {
+                d.classList.remove('selected');
+                d.querySelector('input').checked = false;
+            });
+            el.classList.add('selected');
+            el.querySelector('input').checked = true;
+        }
+
+        function processPayment() {
+            const btn = document.getElementById('payBtn');
+            const spin = document.getElementById('paySpinner');
             
-            const p = products.find(x => x.id === id);
-            showToast('Added to Cart', `${p.name} x${qty}`);
-            updateCartUI();
-        }
-
-        function updateQty(id, val) {
-            const item = cart.find(x => x.id === id);
-            if(item) { item.qty = parseInt(val); updateCartUI(); }
-        }
-
-        function removeItem(id) {
-            cart = cart.filter(x => x.id !== id);
-            updateCartUI();
-        }
-
-        function updateCartUI() {
-            const list = document.getElementById('cartList');
-            const totalEl = document.getElementById('cartTotalAmount');
-            const badge = document.getElementById('cartBadge');
+            // 1. Hide Button, Show Spinner
+            btn.style.display = 'none';
+            spin.style.display = 'block';
             
-            list.innerHTML = '';
-            let total = 0;
-            let count = 0;
-
-            if(cart.length === 0) {
-                list.innerHTML = '<div style="padding:20px; text-align:center; color:#888;">Your cart is empty.</div>';
-            } else {
-                cart.forEach(item => {
-                    const p = products.find(x => x.id === item.id);
-                    total += p.price * item.qty;
-                    count += item.qty;
-                    
-                    // Generate Select Options
-                    let opts = '';
-                    for(let i=1; i<=10; i++) opts += `<option value="${i}" ${item.qty === i ? 'selected' : ''}>${i}</option>`;
-
-                    list.innerHTML += `
-                        <div class="cart-item">
-                            <img src="${p.image}" class="cart-img-thumb">
-                            <div class="cart-details">
-                                <div style="font-weight:600; margin-bottom:5px;">${p.name}</div>
-                                <div style="color:var(--primary-gold); font-weight:700; margin-bottom:10px;">₹${p.price}</div>
-                                <div style="display:flex; align-items:center;">
-                                    <select class="qty-select" onchange="updateQty(${p.id}, this.value)">${opts}</select>
-                                    <span class="cart-remove" onclick="removeItem(${p.id})">Remove</span>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                });
-            }
-            
-            totalEl.innerText = '₹' + total.toLocaleString();
-            badge.innerText = count;
+            // 2. Simulate Delay (2 seconds)
+            setTimeout(() => {
+                closeCheckout();
+                showToast('Success', 'Order Placed Successfully!');
+                cart = [];
+                updateCartUI();
+                showPage('account');
+            }, 2000);
         }
 
-        // --- UTILS ---
+        // --- NAVIGATION ---
         function showPage(pageId) {
             document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
             document.getElementById(pageId).classList.add('active');
             document.querySelectorAll('.mn-item').forEach(el => el.classList.remove('active'));
             
-            // Highlight Mobile Nav
             if(pageId === 'home') document.querySelector('.mn-item:nth-child(1)').classList.add('active');
             if(pageId === 'products') document.querySelector('.mn-item:nth-child(2)').classList.add('active');
             if(pageId === 'cart') document.querySelector('.mn-item:nth-child(3)').classList.add('active');
             if(pageId === 'account') document.querySelector('.mn-item:nth-child(4)').classList.add('active');
-            
             window.scrollTo(0,0);
         }
 
         function showToast(title, msg) {
-            const t = document.createElement('div');
-            t.className = 'toast';
-            t.innerHTML = `<div class="toast-icon">✓</div><div class="toast-content"><div>${title}</div><div>${msg}</div></div>`;
+            const t = document.createElement('div'); t.className = 'toast';
+            t.innerHTML = `<div class="toast-icon">✓</div><div><div style="font-weight:700">${title}</div><div style="font-size:13px; color:#666">${msg}</div></div>`;
             document.getElementById('toastContainer').appendChild(t);
             setTimeout(() => t.remove(), 3000);
-        }
-
-        function searchProducts() {
-            const term = document.getElementById('search').value.toLowerCase();
-            const filtered = products.filter(p => p.name.toLowerCase().includes(term));
-            const createCard = (p) => `
-                <div class="product-card" onclick="openPDP(${p.id})">
-                    <div class="p-img-wrapper"><img src="${p.image}" class="p-img"></div>
-                    <div class="p-info">
-                        <div class="p-title">${p.name}</div>
-                        <div class="p-price">₹${p.price}</div>
-                        <button class="btn-card-add" onclick="event.stopPropagation(); addToCart(${p.id})">Add</button>
-                    </div>
-                </div>`;
-            document.getElementById('fullGrid').innerHTML = filtered.map(createCard).join('');
         }
 
         function startTimer() {
