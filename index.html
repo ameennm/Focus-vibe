@@ -3,518 +3,926 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Responsive 2D Crush & Stack City</title>
+    <title>TROVDAW - Premium Food Trading</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        /* --- Base & Variables --- */
-        :root {
-            --bg-color: #1a1a2e;
-            --ui-color: #e94560;
-            --text-color: #f7f7f7;
-            --block-color: #337f7f;
-            --impact-color: #ff9900;
-            --mobile-font-size: 1em;
-            --mobile-heading-size: 1.8em;
-        }
-
-        /* Base Body and Container for Full Responsiveness */
-        body {
-            font-family: 'Arial', sans-serif;
+        * {
             margin: 0;
             padding: 0;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-
-        #game-container {
-            width: 100%;
-            max-width: 500px; /* Slightly wider max-width for tablets/desktop preview */
-            height: 100%;
-            max-height: 850px;
-            background-color: #2e3b5e;
-            position: relative;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        /* --- UI Elements --- */
-        #top-bar {
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            padding: 10px 5px; /* Reduced padding for smaller screens */
-            background-color: #0f3460;
-            z-index: 10;
-            border-bottom: 2px solid var(--ui-color);
-            font-size: 0.9em; /* Smaller font on top bar for small screens */
-        }
-        .currency {
-            font-weight: bold;
-        }
-        #top-bar button {
-            padding: 8px 12px !important;
-        }
-
-        #score-display {
-            position: absolute;
-            top: 60px;
-            width: 100%;
-            text-align: center;
-            font-size: 1.8em; /* Adjusted for responsive viewing */
-            font-weight: bold;
-            color: var(--impact-color);
-            z-index: 5;
-            text-shadow: 1px 1px 5px #000;
-        }
-
-        /* --- Game Area --- */
-        #game-area {
-            flex-grow: 1;
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column-reverse; 
-        }
-
-        .building-level {
-            position: absolute;
-            height: 40px;
-            width: 100%;
-            background-color: #4a5c9a;
-            border-top: 1px solid #2e3b5e;
-            display: flex;
-            justify-content: center;
-            align-items: center;
             box-sizing: border-box;
-            transition: bottom 0.2s ease-out;
         }
 
-        .building-block {
-            width: 80%;
-            height: 30px;
-            background-color: var(--block-color);
-            border: 2px solid #5a5a5a;
-            box-shadow: 0 4px 0 rgba(0, 0, 0, 0.2);
-            position: relative;
+        :root {
+            /* BRAND COLORS (Green & Gold) */
+            --primary-green: #2C7A62;
+            --dark-green: #1B4D3E;
+            --primary-gold: #C5A059;
+            --gold-hover: #b08d45;
+            
+            --dark-bg: #0a0a0a;
+            --light-bg: #f8f9fa;
+            --text-dark: #1a1a1a;
+            --text-gray: #6c757d;
+            --text-light: #fff;
+            --border-color: #e9ecef;
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.08);
+            --shadow-md: 0 4px 16px rgba(0,0,0,0.12);
+            --shadow-lg: 0 8px 32px rgba(0,0,0,0.16);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background: var(--light-bg);
+            padding-bottom: 70px; /* Space for mobile nav */
+        }
+
+        /* --- B2C "MUSK" UPGRADES CSS --- */
+
+        /* 1. Flash Sale Hero Badge */
+        .flash-sale-banner {
+            background: rgba(0,0,0,0.4);
+            backdrop-filter: blur(8px);
+            padding: 10px 24px;
+            border-radius: 50px;
+            display: inline-flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 24px;
+            border: 1px solid rgba(197, 160, 89, 0.5); /* Gold border */
+            animation: pulse 2s infinite;
         }
         
-        .target-block {
-            border-color: var(--impact-color);
-            border-width: 3px;
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(197, 160, 89, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(197, 160, 89, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(197, 160, 89, 0); }
         }
 
-        /* --- Pendulum / Wrecking Ball --- */
-        #pendulum-line {
-            position: absolute;
-            top: 0;
-            left: 50%;
-            width: 2px;
-            height: 100%;
-            background-color: #aaa;
-            transform-origin: top center;
-            transition: transform 0.02s linear;
+        .countdown {
+            font-family: 'Inter', monospace;
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--primary-gold);
+            letter-spacing: 1px;
         }
 
-        #wrecking-ball {
-            position: absolute;
-            width: 50px;
-            height: 50px;
+        /* 2. Floating WhatsApp Button */
+        .whatsapp-float {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            background: #25D366;
+            color: white;
+            width: 60px;
+            height: 60px;
             border-radius: 50%;
-            background-color: #cc0000;
-            border: 3px solid #ff0000;
-            transform-origin: center;
-            transition: transform 0.02s linear, background-color 0.1s;
-        }
-        
-        .perfect-impact {
-            background-color: var(--impact-color) !important;
-            box-shadow: 0 0 20px var(--impact-color);
-        }
-
-        /* --- Game Over / UI Panels --- */
-        #game-state-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            display: none;
-            flex-direction: column;
-            justify-content: center;
+            display: flex;
             align-items: center;
-            z-index: 20;
-            text-align: center;
-            padding: 20px;
-            box-sizing: border-box;
-        }
-
-        #game-state-overlay h1 {
-            font-size: var(--mobile-heading-size);
-        }
-
-        .button {
-            padding: 15px 30px;
-            margin-top: 20px;
-            font-size: var(--mobile-font-size);
-            font-weight: bold;
-            color: var(--text-color);
-            background-color: var(--ui-color);
-            border: none;
-            border-radius: 8px;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            z-index: 999;
             cursor: pointer;
-            box-shadow: 0 5px #a6263b;
-            transition: background-color 0.2s, transform 0.2s;
+            transition: transform 0.3s;
         }
-        .button:active {
-            box-shadow: 0 2px #a6263b;
-            transform: translateY(3px);
-        }
+        .whatsapp-float:hover { transform: scale(1.1); }
 
-        /* --- Hybrid-Casual Upgrade Shop --- */
-        #shop-panel {
-            position: absolute;
-            top: 0;
+        /* 3. Mobile Bottom Nav */
+        .mobile-nav {
+            display: none;
+            position: fixed;
+            bottom: 0;
             left: 0;
             width: 100%;
-            height: 100%;
-            background-color: rgba(46, 59, 94, 0.95);
-            z-index: 30;
-            display: none;
-            padding: 20px;
-            box-sizing: border-box;
-            overflow-y: auto;
+            background: white;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+            padding: 12px 24px;
+            justify-content: space-between;
+            z-index: 1000;
+            border-top: 1px solid var(--border-color);
         }
-        
-        .upgrade-item {
+
+        .mobile-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 11px;
+            color: var(--text-gray);
+            gap: 4px;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .mobile-nav-item.active { color: var(--primary-green); font-weight: 700; }
+        .mobile-nav-icon { font-size: 22px; }
+
+        /* --- END UPGRADES --- */
+
+        /* Toast Notification */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast {
+            background: white;
+            padding: 16px 20px;
+            border-radius: 12px;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 320px;
+            animation: slideIn 0.3s ease-out;
+            border-left: 4px solid var(--primary-green);
+        }
+
+        .toast-icon { font-size: 24px; flex-shrink: 0; }
+        .toast-content { flex: 1; }
+        .toast-title { font-weight: 600; font-size: 14px; margin-bottom: 4px; }
+        .toast-message { font-size: 13px; color: var(--text-gray); }
+        .toast-close { background: none; border: none; font-size: 20px; cursor: pointer; color: var(--text-gray); }
+
+        @keyframes slideIn { from { transform: translateX(400px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes slideOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(400px); opacity: 0; } }
+
+        /* Header */
+        header {
+            background: white;
+            box-shadow: var(--shadow-sm);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        nav {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px 0;
-            border-bottom: 1px dashed #4a5c9a;
-            margin-bottom: 15px;
-            flex-wrap: wrap; /* Allows wrapping on very small screens */
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
         }
 
-        .upgrade-details {
-            flex-basis: 60%; /* Takes up most space */
-        }
-        .upgrade-details h4 { margin: 0; font-size: 1.1em; }
-        .upgrade-details p { margin: 5px 0 0; font-size: 0.8em; color: #aaa; }
-        .upgrade-item button {
-            flex-basis: 35%; /* Button takes remaining space */
-            margin-top: 5px; /* Space for wrap */
+        .logo-container { cursor: pointer; }
+        .logo-svg { height: 50px; width: auto; }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
         }
 
-        /* --- Media Queries for Tablets/Desktops --- */
-        @media (min-width: 450px) {
-            :root {
-                --mobile-font-size: 1.1em;
-                --mobile-heading-size: 2.2em;
-            }
-            #top-bar {
-                font-size: 1em;
-            }
-            .upgrade-item button {
-                margin-top: 0;
-                flex-basis: auto; /* Reset to auto-width */
-            }
-            .upgrade-details {
-                flex-basis: auto;
-            }
+        .nav-links a {
+            color: var(--text-dark);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 15px;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .nav-links a:hover { color: var(--primary-green); }
+
+        .cart-icon, .admin-icon {
+            position: relative;
+            cursor: pointer;
+            font-size: 24px;
+            transition: var(--transition);
+        }
+
+        .cart-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: var(--primary-gold);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, var(--dark-green) 0%, var(--primary-green) 50%, var(--primary-gold) 100%);
+            padding: 6rem 2rem;
+            text-align: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+            letter-spacing: -1px;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            margin-bottom: 2.5rem;
+            opacity: 0.95;
+            font-weight: 400;
+        }
+
+        .btn-primary {
+            background: white;
+            color: var(--primary-green);
+            padding: 16px 48px;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+            background: var(--light-bg);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            padding: 16px 48px;
+            border: 2px solid white;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-left: 12px;
+        }
+
+        .btn-secondary:hover { background: white; color: var(--primary-green); }
+
+        /* Container & Layout */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        .page { display: none; animation: fadeIn 0.3s ease-in; }
+        .page.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .section-header { text-align: center; margin-bottom: 3rem; }
+        .section-title { font-size: 2.5rem; font-weight: 800; color: var(--text-dark); margin-bottom: 0.5rem; letter-spacing: -0.5px; }
+        .section-subtitle { font-size: 1.1rem; color: var(--text-gray); }
+
+        /* Filter Bar */
+        .filter-bar {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 16px;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 2rem;
+        }
+
+        .search-box { position: relative; margin-bottom: 1.5rem; }
+        .search-box input {
+            width: 100%; padding: 14px 20px 14px 48px;
+            border: 2px solid var(--border-color); border-radius: 12px;
+            font-size: 15px; font-family: inherit; transition: var(--transition);
+        }
+        .search-box input:focus { outline: none; border-color: var(--primary-green); box-shadow: 0 0 0 4px rgba(44, 122, 98, 0.1); }
+        .search-icon { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--text-gray); }
+
+        .category-filter {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+            -webkit-overflow-scrolling: touch; /* smooth scroll on mobile */
+        }
+        
+        .category-filter::-webkit-scrollbar { height: 4px; }
+        .category-filter::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
+
+        .filter-chip {
+            padding: 8px 16px;
+            border: 1px solid var(--border-color);
+            background: white;
+            color: var(--text-dark);
+            border-radius: 24px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+            font-size: 13px;
+            white-space: nowrap; /* Prevent breaking lines */
+        }
+
+        .filter-chip:hover { border-color: var(--primary-green); background: rgba(44, 122, 98, 0.05); }
+        .filter-chip.active { background: var(--primary-green); color: white; border-color: var(--primary-green); }
+
+        /* Product Grid */
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+            position: relative;
+            cursor: pointer;
+            border: 1px solid transparent;
+        }
+
+        .product-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary-gold);
+        }
+
+        .product-image-wrapper {
+            position: relative;
+            width: 100%;
+            height: 220px;
+            overflow: hidden;
+            background: #f1f1f1;
+        }
+
+        .product-image { width: 100%; height: 100%; object-fit: cover; transition: var(--transition); }
+        .product-card:hover .product-image { transform: scale(1.05); }
+
+        .product-badge {
+            position: absolute;
+            top: 12px; left: 12px;
+            background: var(--primary-gold);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .product-wishlist {
+            position: absolute;
+            top: 12px; right: 12px;
+            background: white;
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+        }
+        .product-wishlist:hover { background: var(--primary-green); color: white; }
+
+        .product-info { padding: 1.5rem; }
+        
+        .product-category {
+            color: var(--primary-green);
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+        }
+
+        .product-name {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--text-dark);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .product-description {
+            font-size: 13px;
+            color: var(--text-gray);
+            margin-bottom: 16px;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            height: 36px;
+        }
+
+        .product-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 16px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .product-price { font-size: 20px; color: var(--text-dark); font-weight: 800; }
+        .product-price-old { font-size: 13px; color: var(--text-gray); text-decoration: line-through; margin-left: 6px; }
+
+        .btn-add-cart {
+            background: var(--primary-green);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 600;
+            font-size: 13px;
+            display: flex; align-items: center; gap: 6px;
+        }
+
+        .btn-add-cart:hover { background: var(--dark-green); }
+
+        /* Checkout Form */
+        .checkout-form {
+            background: white; padding: 2rem; border-radius: 16px; box-shadow: var(--shadow-sm);
+            max-width: 600px; margin: 0 auto;
+        }
+        .form-group { margin-bottom: 1.5rem; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px; }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%; padding: 12px; border: 2px solid var(--border-color); border-radius: 12px;
+            font-size: 15px; font-family: inherit;
+        }
+
+        /* Cart & Admin styles simplified for length */
+        .cart-container { background: white; padding: 2rem; border-radius: 16px; box-shadow: var(--shadow-sm); }
+        .cart-item { display: flex; gap: 1rem; padding: 1rem 0; border-bottom: 1px solid var(--border-color); align-items: center; }
+        .cart-item img { width: 60px; height: 60px; border-radius: 8px; object-fit: cover; }
+        
+        /* Footer */
+        footer { background: var(--text-dark); color: var(--text-light); padding: 4rem 2rem 2rem; margin-top: 4rem; }
+        .footer-content { max-width: 1400px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 3rem; }
+        .footer-section h3 { color: var(--primary-gold); margin-bottom: 1rem; }
+        .footer-section ul { list-style: none; }
+        .footer-section li { margin-bottom: 0.5rem; color: #aaa; cursor: pointer; }
+        .footer-section li:hover { color: white; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2rem; }
+            .nav-links { display: none; } /* Hide desktop nav */
+            .mobile-nav { display: flex; } /* Show mobile nav */
+            .whatsapp-float { bottom: 80px; }
+            .product-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            .product-card { border-radius: 12px; }
+            .btn-add-cart span { display: none; } /* Compact button on mobile */
+            .category-filter { padding-bottom: 15px; }
+        }
+        
+        @media (max-width: 480px) {
+            .product-grid { grid-template-columns: 1fr; }
+            .btn-add-cart span { display: inline; }
         }
     </style>
 </head>
 <body>
+    <div class="toast-container" id="toastContainer"></div>
 
-    <div id="game-container">
-        
-        <div id="top-bar">
-            <div class="currency">💰 Scrap: <span id="scrap-count">0</span></div>
-            <div class="currency">💎 Girders: <span id="girder-count">0</span></div>
-            <button class="button" onclick="toggleShop()">SHOP</button>
-        </div>
-
-        <div id="score-display">LEVEL: 0</div>
-
-        <div id="game-area" onclick="handleTap()">
-            <div id="pendulum-line"></div>
-            <div id="wrecking-ball"></div>
-        </div>
-
-        <div id="game-state-overlay">
-            <h1>CRUSH & STACK CITY</h1>
-            <p id="game-message">Tap to swing the ball and crush the targeted block!</p>
-            <button class="button" onclick="startGame()">START CRUSH</button>
-        </div>
-
-        <div id="shop-panel">
-            <h2>Upgrades & Blueprints</h2>
-            <button class="button" onclick="toggleShop()" style="float: right; margin-top: -5px; padding: 8px 15px;">Close</button>
-            <hr style="clear: both; margin-bottom: 20px;">
-
-            <div class="upgrade-item">
-                <div class="upgrade-details">
-                    <h4>Wrecking Ball Material</h4>
-                    <p>Increases impact area (makes timing easier). Current: Lvl <span id="ball-level">1</span></p>
-                </div>
-                <button class="button" onclick="buyUpgrade('ball')" style="padding: 10px 20px;">Buy (<span id="ball-cost">100</span> Scrap)</button>
-            </div>
-
-            <div class="upgrade-item">
-                <div class="upgrade-details">
-                    <h4>Crane Speed</h4>
-                    <p>Increases pendulum speed, making timing harder. Current: Lvl <span id="crane-level">1</span></p>
-                </div>
-                <button class="button" onclick="buyUpgrade('crane')" style="padding: 10px 20px;">Buy (<span id="crane-cost">250</span> Scrap)</button>
-            </div>
-            
-            <div class="upgrade-item">
-                <div class="upgrade-details">
-                    <h4>City Blueprint: Factory</h4>
-                    <p>Permanent: +10% Idle Scrap Income.</p>
-                </div>
-                <button class="button" onclick="buyUpgrade('blueprint')" style="padding: 10px 20px; background-color: #2b7d5e;">Buy (5 Girders)</button>
-            </div>
-        </div>
-
+    <div class="whatsapp-float" onclick="window.open('https://wa.me/919876543210', '_blank')">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.669-.699c1.009.617 2.077 1.012 3.483 1.019.537 0 1.066-.057 1.579-.166.495-.106.974-.265 1.428-.471.917-.417 1.706-1.049 2.278-1.832.559-.766.887-1.701.888-2.736 0-3.18-2.585-5.766-5.766-5.766zm11.233 5.766c0 6.206-5.033 11.238-11.235 11.238-.088 0-.176 0-.265-.003-5.795-.084-10.741-4.707-10.957-10.511-.005-.129-.007-.258-.007-.389 0-6.205 5.032-11.238 11.232-11.238 6.202 0 11.233 5.033 11.233 11.238z" fill-rule="evenodd" clip-rule="evenodd"/></svg>
     </div>
 
+    <div class="mobile-nav">
+        <a href="#" class="mobile-nav-item active" onclick="showPage('home')">
+            <span class="mobile-nav-icon">🏠</span>
+            <span>Home</span>
+        </a>
+        <a href="#" class="mobile-nav-item" onclick="showPage('products')">
+            <span class="mobile-nav-icon">🔍</span>
+            <span>Search</span>
+        </a>
+        <a href="#" class="mobile-nav-item" onclick="showPage('cart')">
+            <div style="position: relative;">
+                <span class="mobile-nav-icon">🛒</span>
+                <span class="cart-badge" id="mobileCartBadge" style="top: -5px; right: -5px;">0</span>
+            </div>
+            <span>Cart</span>
+        </a>
+        <a href="#" class="mobile-nav-item" onclick="showPage('admin-login')">
+            <span class="mobile-nav-icon">👤</span>
+            <span>Account</span>
+        </a>
+    </div>
+
+    <header>
+        <nav>
+            <div class="logo-container" onclick="showPage('home')">
+                <svg class="logo-svg" viewBox="0 0 300 80" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#1B4D3E;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#2C7A62;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <path d="M40,10 C20,10 10,30 10,40 C10,55 25,65 40,65 C55,65 70,55 70,40 C70,20 55,10 40,10 Z M40,65 L40,75" fill="none" stroke="#C5A059" stroke-width="4" stroke-linecap="round"/>
+                    <path d="M40,10 C40,10 55,25 55,40 C55,50 45,60 40,65" fill="#C5A059" opacity="0.8"/>
+                    <path d="M35,35 Q20,20 20,40 Q35,50 35,35" fill="#1B4D3E" />
+                    <text x="85" y="52" font-family="sans-serif" font-weight="800" font-size="42" fill="url(#grad1)">TROVDAW</text>
+                    <text x="86" y="70" font-family="sans-serif" font-weight="500" font-size="12" letter-spacing="3" fill="#C5A059">GLOBAL FOOD TRADING</text>
+                </svg>
+            </div>
+            <div class="nav-links">
+                <a href="#" onclick="showPage('home')">Home</a>
+                <a href="#" onclick="showPage('products')">Products</a>
+                <a href="#" onclick="showPage('about')">About</a>
+                <a href="#" onclick="showPage('contact')">Contact</a>
+                <div class="cart-icon" onclick="showPage('cart')">
+                    🛒
+                    <span class="cart-badge" id="cartBadge">0</span>
+                </div>
+                <div class="admin-icon" onclick="showPage('admin-login')">
+                    👤
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div id="home" class="page active">
+        <div class="hero">
+            <div class="hero-content">
+                <div class="flash-sale-banner">
+                    <span>⚡ FLASH DEAL ENDS IN:</span>
+                    <span class="countdown" id="heroTimer">04:23:15</span>
+                </div>
+
+                <h1>Premium Global Food Trading</h1>
+                <p>Authentic sourcing of Dates, Grains, Dairy, Meat, and Produce. Quality guaranteed from farm to table.</p>
+                <button class="btn-primary" onclick="showPage('products')">Explore Marketplace</button>
+                <button class="btn-secondary" onclick="showPage('about')">Partner With Us</button>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Trending This Week</h2>
+                <p class="section-subtitle">Top traded commodities available for immediate delivery</p>
+            </div>
+            
+            <div class="product-grid" id="featuredProducts"></div>
+
+            <div style="text-align: center; margin-top: 3rem;">
+                <button class="btn-primary" style="display: inline-block;" onclick="showPage('products')">
+                    View Complete Catalog →
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="products" class="page">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Our Products</h2>
+                <p class="section-subtitle">Browse our 21 premium categories</p>
+            </div>
+            
+            <div class="filter-bar">
+                <div class="search-box">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="searchInput" placeholder="Search for products, categories..." onkeyup="searchProducts()">
+                </div>
+                <div class="category-filter">
+                    <div class="filter-chip active" onclick="filterByCategory('All', event)">All</div>
+                    <div class="filter-chip" onclick="filterByCategory('Dates Trading', event)">Dates</div>
+                    <div class="filter-chip" onclick="filterByCategory('Grains, Cereals & Legumes Trading', event)">Grains/Cereals</div>
+                    <div class="filter-chip" onclick="filterByCategory('Food & Beverages Trading', event)">Food & Bev</div>
+                    <div class="filter-chip" onclick="filterByCategory('Baby Food Trading', event)">Baby Food</div>
+                    <div class="filter-chip" onclick="filterByCategory('Snack Food Trading', event)">Snacks</div>
+                    <div class="filter-chip" onclick="filterByCategory('Dairy Products Trading', event)">Dairy</div>
+                    <div class="filter-chip" onclick="filterByCategory('Canned & Preserved Food Trading', event)">Canned Food</div>
+                    <div class="filter-chip" onclick="filterByCategory('Fresh & Chilled & Frozen Meat Trading', event)">Meat</div>
+                    <div class="filter-chip" onclick="filterByCategory('Frozen Fish & Seafood Trading', event)">Seafood</div>
+                    <div class="filter-chip" onclick="filterByCategory('Egg Trading', event)">Eggs</div>
+                    <div class="filter-chip" onclick="filterByCategory('Honey & Apiary Accessories Trading', event)">Honey</div>
+                    <div class="filter-chip" onclick="filterByCategory('Bread & Bakery Products Trading', event)">Bakery</div>
+                    <div class="filter-chip" onclick="filterByCategory('Pastry Trading', event)">Pastry</div>
+                    <div class="filter-chip" onclick="filterByCategory('Ice Cream Trading', event)">Ice Cream</div>
+                    <div class="filter-chip" onclick="filterByCategory('Flour Trading', event)">Flour</div>
+                    <div class="filter-chip" onclick="filterByCategory('Ghee & Vegetable Oil Trading', event)">Ghee/Oil</div>
+                    <div class="filter-chip" onclick="filterByCategory('Juice Trading', event)">Juice</div>
+                    <div class="filter-chip" onclick="filterByCategory('Dried Vegetables & Fruit Trading', event)">Dried Fruit</div>
+                    <div class="filter-chip" onclick="filterByCategory('Flavours & Fragrances Trading', event)">Flavours</div>
+                    <div class="filter-chip" onclick="filterByCategory('Vegetables & Fruits Trading', event)">Fresh Produce</div>
+                    <div class="filter-chip" onclick="filterByCategory('Potatoes Trading', event)">Potatoes</div>
+                </div>
+            </div>
+
+            <div class="product-grid" id="productGrid"></div>
+        </div>
+    </div>
+
+    <div id="cart" class="page">
+        <div class="container">
+            <h2 class="section-title">Shopping Cart</h2>
+            <div class="cart-container">
+                <div id="cartItems"></div>
+                <div class="cart-summary" style="margin-top:2rem; padding-top:1rem; border-top:1px solid #eee;">
+                    <div style="display:flex; justify-content:space-between; font-size:1.5rem; font-weight:800; color:var(--primary-green);">
+                        <span>Total:</span>
+                        <span id="total">₹0.00</span>
+                    </div>
+                    <button class="btn-primary" style="width:100%; margin-top:1rem;" onclick="showPage('checkout')">Proceed to Checkout</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="checkout" class="page">
+        <div class="container">
+            <div class="checkout-form">
+                <h2 style="color:var(--primary-green); margin-bottom:1.5rem;">Secure Checkout</h2>
+                <form id="checkoutForm">
+                    <div class="form-group"><input type="text" required placeholder="Full Name"></div>
+                    <div class="form-group"><input type="text" required placeholder="Address"></div>
+                    <div class="form-group">
+                        <select>
+                            <option>Cash on Delivery</option>
+                            <option>UPI / GPay</option>
+                            <option>Bank Transfer</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn-primary" style="width:100%;">Confirm Order</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>TROVDAW</h3>
+                <p>Global Trading Partner for premium food commodities.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li onclick="showPage('home')">Home</li>
+                    <li onclick="showPage('products')">Marketplace</li>
+                    <li onclick="showPage('about')">Company</li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contact</h3>
+                <p>📞 +91 98765 43210</p>
+                <p>✉️ info@trovdaw.com</p>
+            </div>
+        </div>
+    </footer>
+
     <script>
-        // --- DOM Elements ---
-        const GAME_AREA = document.getElementById('game-area');
-        const PENDULUM_LINE = document.getElementById('pendulum-line');
-        const WRECKING_BALL = document.getElementById('wrecking-ball');
-        const SCRAP_COUNT_EL = document.getElementById('scrap-count');
-        const GIRDER_COUNT_EL = document.getElementById('girder-count');
-        const SCORE_DISPLAY_EL = document.getElementById('score-display');
-        const OVERLAY_EL = document.getElementById('game-state-overlay');
-        const MESSAGE_EL = document.getElementById('game-message');
-
-        // --- GAME STATE ---
-        let gameState = {
-            running: false,
-            level: 0,
-            score: 0,
-            pendulumTimer: 0,
-            pendulumSpeed: 0.05, 
-            currentBlock: null,
-            ballHitX: 0, 
-            blockWidthRatio: 0.8,
-        };
-
-        // --- HYBRID PROGRESSION STATE (PERSISTENT DATA) ---
-        let playerStats = {
-            scrap: 0,
-            girders: 0,
-            ballLevel: 1,
-            craneLevel: 1,
-            idleBonus: 0
-        };
-
-        // --- GAME LOGIC FUNCTIONS ---
-
-        function loadStats() {
-            SCRAP_COUNT_EL.textContent = playerStats.scrap;
-            GIRDER_COUNT_EL.textContent = playerStats.girders;
+        // Updated Data based on 21 Categories
+        const products = [
+            // Dates
+            { id: 1, name: 'Royal Medjool Dates', category: 'Dates Trading', price: 850, oldPrice: 950, description: 'Premium large size dates from Jordan.', image: 'https://images.unsplash.com/photo-1542442751-5b7d0e402c52?auto=format&fit=crop&w=600&q=80' },
+            { id: 2, name: 'Ajwa Al-Madina', category: 'Dates Trading', price: 1200, oldPrice: 1400, description: 'Authentic Ajwa dates for health.', image: 'https://images.unsplash.com/photo-1628771065205-09d57a409893?auto=format&fit=crop&w=600&q=80' },
             
-            // Apply upgrades to game state
-            gameState.pendulumSpeed = 0.05 * (1 + playerStats.craneLevel * 0.15);
-            gameState.blockWidthRatio = 0.8 * (1 + playerStats.ballLevel * 0.1); 
+            // Grains
+            { id: 3, name: 'Premium Basmati Rice', category: 'Grains, Cereals & Legumes Trading', price: 180, oldPrice: 220, description: 'Extra long grain aged rice.', image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=600&q=80' },
+            { id: 4, name: 'Organic Quinoa', category: 'Grains, Cereals & Legumes Trading', price: 450, oldPrice: 500, description: 'White organic quinoa.', image: 'https://images.unsplash.com/photo-1588833946439-d89758e578a1?auto=format&fit=crop&w=600&q=80' },
 
-            // Update shop UI
-            document.getElementById('ball-level').textContent = playerStats.ballLevel;
-            document.getElementById('crane-level').textContent = playerStats.craneLevel;
-            document.getElementById('ball-cost').textContent = 100 * playerStats.ballLevel;
-            document.getElementById('crane-cost').textContent = 250 * playerStats.craneLevel;
-        }
-
-        function saveStats() {
-            SCRAP_COUNT_EL.textContent = playerStats.scrap;
-            GIRDER_COUNT_EL.textContent = playerStats.girders;
-        }
-
-        function startGame() {
-            gameState.level = 0;
-            gameState.score = 0;
-            gameState.running = true;
-            OVERLAY_EL.style.display = 'none';
+            // Food & Bev
+            { id: 5, name: 'Sparkling Mineral Water', category: 'Food & Beverages Trading', price: 120, oldPrice: 150, description: 'Imported sparkling water.', image: 'https://images.unsplash.com/photo-1560023907-5f339617ea30?auto=format&fit=crop&w=600&q=80' },
             
-            // Ensure pendulum elements are in the game area after clearing
-            GAME_AREA.innerHTML = ''; 
-            GAME_AREA.appendChild(PENDULUM_LINE);
-            GAME_AREA.appendChild(WRECKING_BALL);
+            // Baby Food
+            { id: 6, name: 'Organic Fruit Puree', category: 'Baby Food Trading', price: 250, oldPrice: 300, description: 'Mixed fruit puree for infants.', image: 'https://images.unsplash.com/photo-1518843875459-f73f1db8b6ad?auto=format&fit=crop&w=600&q=80' },
             
-            createNewLevel(true); 
-            gameLoop();
-        }
-
-        function endGame(message) {
-            gameState.running = false;
+            // Snacks
+            { id: 7, name: 'Roasted Almonds', category: 'Snack Food Trading', price: 900, oldPrice: 1100, description: 'Salted California almonds.', image: 'https://images.unsplash.com/photo-1596238681240-6242a225330a?auto=format&fit=crop&w=600&q=80' },
             
-            const scrapEarned = gameState.level * 10;
-            playerStats.scrap += scrapEarned;
-            saveStats();
+            // Dairy
+            { id: 8, name: 'Farm Fresh Milk', category: 'Dairy Products Trading', price: 65, oldPrice: 70, description: 'Pasteurized whole milk.', image: 'https://images.unsplash.com/photo-1563636619-e9143da7973b?auto=format&fit=crop&w=600&q=80' },
+            { id: 9, name: 'Cheddar Cheese Block', category: 'Dairy Products Trading', price: 450, oldPrice: 500, description: 'Aged sharp cheddar.', image: 'https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?auto=format&fit=crop&w=600&q=80' },
+
+            // Canned
+            { id: 10, name: 'Canned Tuna Chunks', category: 'Canned & Preserved Food Trading', price: 180, oldPrice: 200, description: 'Tuna in olive oil.', image: 'https://images.unsplash.com/photo-1543158143-69335832a762?auto=format&fit=crop&w=600&q=80' },
             
-            MESSAGE_EL.textContent = `${message} You crushed ${gameState.level} blocks and earned ${scrapEarned} Scrap!`;
-            OVERLAY_EL.style.display = 'flex';
-        }
-
-        function createNewLevel(isFirstLevel = false) {
-            if (!isFirstLevel) {
-                gameState.level++;
-            }
-            SCORE_DISPLAY_EL.textContent = `LEVEL: ${gameState.level}`;
-
-            // 1. Move all existing blocks up
-            const allLevels = GAME_AREA.querySelectorAll('.building-level');
-            const blockHeight = 40; 
+            // Meat
+            { id: 11, name: 'Fresh Chicken Breast', category: 'Fresh & Chilled & Frozen Meat Trading', price: 280, oldPrice: 320, description: 'Skinless boneless chicken.', image: 'https://images.unsplash.com/photo-1604503468506-a8da13d82791?auto=format&fit=crop&w=600&q=80' },
             
-            allLevels.forEach((level, index) => {
-                const newBottom = parseInt(level.style.bottom || 0) + blockHeight;
-                level.style.bottom = `${newBottom}px`;
-                
-                if (newBottom > GAME_AREA.offsetHeight) {
-                    level.remove();
-                }
-            });
-
-            // 2. Create the container for the new block at the bottom (bottom: 0)
-            const levelDiv = document.createElement('div');
-            levelDiv.className = 'building-level';
-            levelDiv.style.bottom = '0px'; 
-            GAME_AREA.appendChild(levelDiv);
-
-            // 3. Create the block element inside
-            const blockDiv = document.createElement('div');
-            blockDiv.className = 'building-block target-block'; 
-            blockDiv.style.width = `${gameState.blockWidthRatio * 100}%`;
-            levelDiv.appendChild(blockDiv);
+            // Seafood
+            { id: 12, name: 'Atlantic Salmon Fillet', category: 'Frozen Fish & Seafood Trading', price: 1400, oldPrice: 1600, description: 'Premium frozen salmon.', image: 'https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?auto=format&fit=crop&w=600&q=80' },
             
-            gameState.currentBlock = blockDiv;
-        }
-
-        function handleTap() {
-            if (!gameState.running || !gameState.currentBlock) return;
-
-            const blockCenter = 0.5;
-            // Hit area increases with Ball Material upgrade
-            const hitArea = 0.25 / (1 + (playerStats.ballLevel * 0.1)); 
-
-            if (Math.abs(gameState.ballHitX - blockCenter) <= hitArea) {
-                // --- SUCCESSFUL CRUSH! ---
-                gameState.currentBlock.classList.remove('target-block');
-                
-                WRECKING_BALL.classList.add('perfect-impact');
-                setTimeout(() => WRECKING_BALL.classList.remove('perfect-impact'), 100);
-
-                gameState.currentBlock = null; 
-                setTimeout(createNewLevel, 100); 
-
-            } else {
-                // --- CRASH! ---
-                gameState.currentBlock.style.backgroundColor = 'red';
-                endGame(`CRASH! You missed the target.`);
-            }
-        }
-
-        // --- GAME LOOP & RENDERING ---
-
-        function updatePendulum() {
-            const maxAngle = 60; // Degrees
+            // Eggs
+            { id: 13, name: 'Free Range Eggs (Tray)', category: 'Egg Trading', price: 180, oldPrice: 200, description: 'Pack of 30 farm fresh eggs.', image: 'https://images.unsplash.com/photo-1582722872445-44dc5f7e3c8f?auto=format&fit=crop&w=600&q=80' },
             
-            const angle = maxAngle * Math.sin(Date.now() * gameState.pendulumSpeed);
-
-            PENDULUM_LINE.style.transform = `rotate(${angle}deg)`;
-
-            const gameAreaHeight = GAME_AREA.offsetHeight;
-            const lineLength = gameAreaHeight * 0.8; 
+            // Honey
+            { id: 14, name: 'Raw Organic Honey', category: 'Honey & Apiary Accessories Trading', price: 550, oldPrice: 650, description: 'Unprocessed forest honey.', image: 'https://images.unsplash.com/photo-1587049352846-4a222e784d38?auto=format&fit=crop&w=600&q=80' },
             
-            const angleRad = angle * (Math.PI / 180);
-            const ballXOffset = Math.sin(angleRad) * lineLength;
-            const ballY = Math.cos(angleRad) * lineLength;
+            // Bread
+            { id: 15, name: 'Whole Wheat Loaf', category: 'Bread & Bakery Products Trading', price: 55, oldPrice: 65, description: 'Freshly baked wheat bread.', image: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=600&q=80' },
             
-            WRECKING_BALL.style.transform = `translate(-50%, -50%) translate(0, ${ballY}px) rotate(${-angle}deg)`; 
-            WRECKING_BALL.style.left = `calc(50% + ${ballXOffset}px)`;
+            // Pastry
+            { id: 16, name: 'Butter Croissants', category: 'Pastry Trading', price: 120, oldPrice: 150, description: 'Pack of 4 butter croissants.', image: 'https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=600&q=80' },
             
-            // Calculate and store the normalized horizontal position of the ball
-            gameState.ballHitX = (ballXOffset + (GAME_AREA.offsetWidth / 2)) / GAME_AREA.offsetWidth;
-        }
-
-        function gameLoop() {
-            if (!gameState.running) return;
-
-            updatePendulum();
+            // Ice Cream
+            { id: 17, name: 'Vanilla Bean Tub', category: 'Ice Cream Trading', price: 350, oldPrice: 400, description: 'Premium vanilla ice cream.', image: 'https://images.unsplash.com/photo-1560008581-09826d1de69e?auto=format&fit=crop&w=600&q=80' },
             
-            requestAnimationFrame(gameLoop);
-        }
-        
-        // --- SHOP & UPGRADE LOGIC ---
-
-        function toggleShop() {
-            const shop = document.getElementById('shop-panel');
-            const isShopOpen = shop.style.display === 'flex';
+            // Flour
+            { id: 18, name: 'Whole Wheat Flour', category: 'Flour Trading', price: 60, oldPrice: 70, description: '5kg stone ground flour.', image: 'https://images.unsplash.com/photo-1508756477817-226488354673?auto=format&fit=crop&w=600&q=80' },
             
-            shop.style.display = isShopOpen ? 'none' : 'flex';
-            gameState.running = isShopOpen; 
+            // Ghee/Oil
+            { id: 19, name: 'Pure Cow Ghee', category: 'Ghee & Vegetable Oil Trading', price: 650, oldPrice: 750, description: 'Traditional aromatic ghee.', image: 'https://images.unsplash.com/photo-1631451095765-2c91616fc9e6?auto=format&fit=crop&w=600&q=80' },
             
-            if (gameState.running) {
-                gameLoop();
-            }
-        }
-
-        function buyUpgrade(type) {
-            let cost = 0;
-            let currency = 'scrap';
-            let success = false;
+            // Juice
+            { id: 20, name: 'Fresh Orange Juice', category: 'Juice Trading', price: 120, oldPrice: 150, description: '100% cold pressed juice.', image: 'https://images.unsplash.com/photo-1600271886742-f049cd451bba?auto=format&fit=crop&w=600&q=80' },
             
-            if (type === 'ball') {
-                cost = 100 * playerStats.ballLevel;
-                if (playerStats.scrap >= cost) {
-                    playerStats.scrap -= cost;
-                    playerStats.ballLevel++;
-                    success = true;
-                }
-            } else if (type === 'crane') {
-                cost = 250 * playerStats.craneLevel;
-                if (playerStats.scrap >= cost) {
-                    playerStats.scrap -= cost;
-                    playerStats.craneLevel++;
-                    success = true;
-                }
-            } else if (type === 'blueprint') {
-                cost = 5; 
-                currency = 'girders';
-                const btn = event.target;
-                if (!btn.disabled && playerStats.girders >= cost) {
-                    playerStats.girders -= cost;
-                    playerStats.idleBonus += 0.10; 
-                    success = true;
-                    btn.textContent = 'Purchased!';
-                    btn.disabled = true;
-                }
-            }
+            // Dried Fruit
+            { id: 21, name: 'Dried Apricots', category: 'Dried Vegetables & Fruit Trading', price: 400, oldPrice: 480, description: 'Sun dried sweet apricots.', image: 'https://images.unsplash.com/photo-1501595091296-3aa970afb3ff?auto=format&fit=crop&w=600&q=80' },
+            
+            // Flavours
+            { id: 22, name: 'Premium Saffron', category: 'Flavours & Fragrances Trading', price: 2500, oldPrice: 3000, description: '1g Finest grade saffron.', image: 'https://images.unsplash.com/photo-1590740941865-1ebf81db096e?auto=format&fit=crop&w=600&q=80' },
+            
+            // Veg/Fruit
+            { id: 23, name: 'Red Apples', category: 'Vegetables & Fruits Trading', price: 220, oldPrice: 280, description: 'Crisp and juicy apples.', image: 'https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?auto=format&fit=crop&w=600&q=80' },
+            
+            // Potatoes
+            { id: 24, name: 'Organic Potatoes', category: 'Potatoes Trading', price: 40, oldPrice: 50, description: 'Farm fresh potatoes.', image: 'https://images.unsplash.com/photo-1518977676601-b53f82aba655?auto=format&fit=crop&w=600&q=80' }
+        ];
 
-            if (success) {
-                loadStats(); 
-                alert(`Upgrade successful! ${type} is now improved.`);
-            } else {
-                alert(`Not enough ${currency}!`);
-            }
-        }
+        let cart = [];
+        let currentCategory = 'All';
 
-
-        // --- INITIALIZATION ---
-        document.addEventListener('DOMContentLoaded', () => {
-            loadStats();
-            OVERLAY_EL.style.display = 'flex';
+        document.addEventListener('DOMContentLoaded', function() {
+            loadFeaturedProducts();
+            loadProducts();
+            updateCartBadge();
+            startTimer();
         });
+
+        // --- TIMER LOGIC ---
+        function startTimer() {
+            let hours = 4, minutes = 23, seconds = 15;
+            setInterval(() => {
+                seconds--;
+                if(seconds < 0) { seconds = 59; minutes--; }
+                if(minutes < 0) { minutes = 59; hours--; }
+                
+                // Format with leading zeros
+                const h = String(hours).padStart(2,'0');
+                const m = String(minutes).padStart(2,'0');
+                const s = String(seconds).padStart(2,'0');
+                
+                const timerEl = document.getElementById('heroTimer');
+                if(timerEl) timerEl.innerText = `${h}:${m}:${s}`;
+            }, 1000);
+        }
+
+        function showToast(title, message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `<div class="toast-icon">✓</div><div class="toast-content"><div class="toast-title">${title}</div><div class="toast-message">${message}</div></div><button class="toast-close" onclick="this.parentElement.remove()">×</button>`;
+            container.appendChild(toast);
+            setTimeout(() => { toast.style.animation = 'slideOut 0.3s ease-out'; setTimeout(() => toast.remove(), 300); }, 3000);
+        }
+
+        function createProductCard(product) {
+            return `
+                <div class="product-card">
+                    <div class="product-image-wrapper">
+                        <img src="${product.image}" class="product-image" alt="${product.name}" onerror="this.src='https://via.placeholder.com/400x240/2C7A62/ffffff?text=TROVDAW'">
+                        <div class="product-badge">${product.category.split(' ')[0]}</div>
+                        <div class="product-wishlist" onclick="showToast('Added','Added to wishlist')">♡</div>
+                    </div>
+                    <div class="product-info">
+                        <div class="product-category">${product.category.split(' ').slice(0,2).join(' ')}</div>
+                        <div class="product-name">${product.name}</div>
+                        <div class="product-description">${product.description}</div>
+                        <div class="product-footer">
+                            <div>
+                                <span class="product-price">₹${product.price}</span>
+                                ${product.oldPrice ? `<span class="product-price-old">₹${product.oldPrice}</span>` : ''}
+                            </div>
+                            <button class="btn-add-cart" onclick="addToCart(${product.id})">
+                                <span>Add</span> 🛒
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function loadFeaturedProducts() {
+            document.getElementById('featuredProducts').innerHTML = products.slice(0, 8).map(createProductCard).join('');
+        }
+
+        function loadProducts() {
+            const filtered = currentCategory === 'All' ? products : products.filter(p => p.category === currentCategory);
+            document.getElementById('productGrid').innerHTML = filtered.map(createProductCard).join('');
+        }
+
+        function filterByCategory(cat, event) {
+            currentCategory = cat;
+            document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+            event.target.classList.add('active');
+            loadProducts();
+        }
+
+        function searchProducts() {
+            const term = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = products.filter(p => p.name.toLowerCase().includes(term) || p.category.toLowerCase().includes(term));
+            document.getElementById('productGrid').innerHTML = filtered.map(createProductCard).join('');
+        }
+
+        function addToCart(id) {
+            const product = products.find(p => p.id === id);
+            const item = cart.find(i => i.id === id);
+            if(item) item.qty++; else cart.push({...product, qty: 1});
+            updateCartBadge();
+            showToast('Added to Cart', `${product.name} added`);
+        }
+
+        function removeFromCart(id) {
+            cart = cart.filter(i => i.id !== id);
+            updateCartBadge();
+            loadCart();
+        }
+
+        function updateCartBadge() {
+            const count = cart.reduce((sum, i) => sum + i.qty, 0);
+            document.getElementById('cartBadge').textContent = count;
+            document.getElementById('mobileCartBadge').textContent = count;
+        }
+
+        function loadCart() {
+            const container = document.getElementById('cartItems');
+            if(cart.length === 0) {
+                container.innerHTML = '<p style="text-align:center; padding:2rem; color:#888;">Cart is empty.</p>';
+                document.getElementById('total').textContent = '₹0.00';
+                return;
+            }
+            let total = 0;
+            container.innerHTML = cart.map(item => {
+                total += item.price * item.qty;
+                return `
+                    <div class="cart-item">
+                        <img src="${item.image}">
+                        <div style="flex:1">
+                            <div style="font-weight:600">${item.name}</div>
+                            <div style="font-size:13px; color:#666;">₹${item.price} x ${item.qty}</div>
+                        </div>
+                        <button class="btn-secondary" style="padding:4px 10px; color:red; border-color:red;" onclick="removeFromCart(${item.id})">×</button>
+                    </div>
+                `;
+            }).join('');
+            document.getElementById('total').textContent = `₹${total.toFixed(2)}`;
+        }
+
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            document.querySelectorAll('.mobile-nav-item').forEach(i => i.classList.remove('active'));
+            
+            // Highlight mobile nav
+            if(pageId === 'home') document.querySelector('.mobile-nav-item:nth-child(1)').classList.add('active');
+            if(pageId === 'products') document.querySelector('.mobile-nav-item:nth-child(2)').classList.add('active');
+            if(pageId === 'cart') { loadCart(); document.querySelector('.mobile-nav-item:nth-child(3)').classList.add('active'); }
+            if(pageId === 'admin-login') document.querySelector('.mobile-nav-item:nth-child(4)').classList.add('active');
+            
+            window.scrollTo(0, 0);
+        }
+
+        document.getElementById('checkoutForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            showToast('Success', 'Order Placed Successfully!');
+            cart = []; updateCartBadge(); setTimeout(() => showPage('home'), 2000);
+        });
+
+        // Admin (Mock)
+        function adminLogin(e) { e.preventDefault(); showToast('Success','Logged in as Admin'); }
     </script>
 </body>
 </html>
