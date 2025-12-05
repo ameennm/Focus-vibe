@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TROVDAW - Premium Food Trading</title>
+    <title>TROVDAW - Premium Food Trading (UAE)</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -206,13 +206,13 @@
             
             <div style="margin-bottom: 20px;">
                 <div class="pay-option selected" onclick="selectPayment(this)">
-                    <input type="radio" name="pay" checked> <span>UPI / GPay / PhonePe</span>
+                    <input type="radio" name="pay" checked> <span>Card / Apple Pay / Google Pay</span>
                 </div>
                 <div class="pay-option" onclick="selectPayment(this)">
-                    <input type="radio" name="pay"> <span>Credit / Debit Card</span>
+                    <input type="radio" name="pay"> <span>Local Bank Transfer (IBAN)</span>
                 </div>
                 <div class="pay-option" onclick="selectPayment(this)">
-                    <input type="radio" name="pay"> <span>Net Banking</span>
+                    <input type="radio" name="pay"> <span>International Transfer</span>
                 </div>
                 <div class="pay-option" onclick="selectPayment(this)">
                     <input type="radio" name="pay"> <span>Cash on Delivery</span>
@@ -221,7 +221,7 @@
 
             <div style="display: flex; justify-content: space-between; margin-bottom: 20px; font-weight: 700; font-size: 18px;">
                 <span>Total</span>
-                <span id="modalTotal">₹0</span>
+                <span id="modalTotal">د.إ0</span>
             </div>
 
             <button id="payBtn" onclick="processPayment()" style="width: 100%; background: var(--primary-gold); color: white; border: none; padding: 14px; border-radius: 8px; font-weight: 700; font-size: 16px;">Place Order</button>
@@ -265,7 +265,7 @@
         <div class="hero">
             <div class="flash-badge">⚡ Deal Ends: <span id="timer">04:23:15</span></div>
             <h1>Premium Global Food Trading</h1>
-            <p style="opacity: 0.9;">Sourcing Authentic Dates, Grains & Dairy from Global Farms.</p>
+            <p style="opacity: 0.9;">Sourcing Authentic Dates, Grains & Dairy for the UAE Market.</p>
             <button class="hero-btn" onclick="showPage('products')">Explore Marketplace</button>
         </div>
         <div class="container" style="margin-top: 3rem;">
@@ -295,7 +295,7 @@
                 <div class="pdp-info">
                     <h2 id="pdpTitle">Product Name</h2>
                     <div style="color: var(--star-yellow); margin-bottom: 10px; font-weight: 600;">★★★★☆ <span style="color: #007185; margin-left:5px;">482 ratings</span></div>
-                    <div class="pdp-price" id="pdpPrice">₹000</div>
+                    <div class="pdp-price" id="pdpPrice">د.إ000</div>
                     <p id="pdpDesc" style="color: var(--text-gray); line-height: 1.6; margin-bottom: 20px;">Description</p>
                     
                     <div style="background: #f9f9f9; padding: 20px; border-radius: 12px; border: 1px solid #eee;">
@@ -322,7 +322,7 @@
             <div class="cart-layout">
                 <div id="cartList"></div>
                 <div class="cart-summary">
-                    <div style="font-size: 18px; font-weight: 700; margin-bottom: 15px;">Total: <span id="cartTotal">₹0</span></div>
+                    <div style="font-size: 18px; font-weight: 700; margin-bottom: 15px;">Total: <span id="cartTotal">د.إ0</span></div>
                     <button onclick="openModal()" style="width: 100%; background: var(--primary-gold); color: white; padding: 12px; border: none; border-radius: 8px; font-weight: 700;">Proceed to Checkout</button>
                 </div>
             </div>
@@ -334,7 +334,7 @@
             <div class="profile-header">
                 <div class="avatar">R</div>
                 <div>
-                    <h2>Rahul Sharma</h2>
+                    <h2>Rashed Al-Marzooqi</h2>
                     <p style="color: var(--text-gray);">Premium Member</p>
                 </div>
             </div>
@@ -402,21 +402,23 @@
         ];
 
         // PRODUCTS MAPPED TO CATEGORIES
+        // PRICES CONVERTED/ADJUSTED TO AED (Approximate/Illustrative)
         const products = [
-            { id: 1, name: 'Royal Medjool Dates', price: 850, cat: 'Dates Trading', image: GLOBAL_IMG },
-            { id: 2, name: 'Premium Basmati Rice', price: 180, cat: 'Grains, Cereals & Legumes Trading', image: GLOBAL_IMG },
-            { id: 3, name: 'Farm Fresh Milk', price: 65, cat: 'Dairy Products Trading', image: GLOBAL_IMG },
-            { id: 4, name: 'Chicken Breast', price: 280, cat: 'Fresh & Chilled & Frozen Meat Trading', image: GLOBAL_IMG },
-            { id: 5, name: 'Atlantic Salmon', price: 1200, cat: 'Frozen Fish & Seafood Trading', image: GLOBAL_IMG },
-            { id: 6, name: 'Roasted Almonds', price: 900, cat: 'Snack Food Trading', image: GLOBAL_IMG },
-            { id: 7, name: 'Organic Honey', price: 550, cat: 'Honey & Apiary Accessories Trading', image: GLOBAL_IMG },
-            { id: 8, name: 'Whole Wheat Bread', price: 55, cat: 'Bread & Bakery Products Trading', image: GLOBAL_IMG },
-            { id: 9, name: 'Fresh Potatoes', price: 40, cat: 'Potatoes Trading', image: GLOBAL_IMG },
-            { id: 10, name: 'Orange Juice', price: 120, cat: 'Juice Trading', image: GLOBAL_IMG },
+            { id: 1, name: 'Royal Medjool Dates', price: 42.50, cat: 'Dates Trading', image: GLOBAL_IMG }, // Approx 850 INR
+            { id: 2, name: 'Premium Basmati Rice', price: 9.00, cat: 'Grains, Cereals & Legumes Trading', image: GLOBAL_IMG },   // Approx 180 INR
+            { id: 3, name: 'Farm Fresh Milk (1L)', price: 3.25, cat: 'Dairy Products Trading', image: GLOBAL_IMG },      // Approx 65 INR
+            { id: 4, name: 'Chicken Breast (500g)', price: 14.00, cat: 'Fresh & Chilled & Frozen Meat Trading', image: GLOBAL_IMG },  // Approx 280 INR
+            { id: 5, name: 'Atlantic Salmon (500g)', price: 60.00, cat: 'Frozen Fish & Seafood Trading', image: GLOBAL_IMG },   // Approx 1200 INR
+            { id: 6, name: 'Roasted Almonds (1kg)', price: 45.00, cat: 'Snack Food Trading', image: GLOBAL_IMG },   // Approx 900 INR
+            { id: 7, name: 'Organic Honey', price: 27.50, cat: 'Honey & Apiary Accessories Trading', image: GLOBAL_IMG }, // Approx 550 INR
+            { id: 8, name: 'Whole Wheat Bread', price: 2.75, cat: 'Bread & Bakery Products Trading', image: GLOBAL_IMG }, // Approx 55 INR
+            { id: 9, name: 'Fresh Potatoes (1kg)', price: 2.00, cat: 'Potatoes Trading', image: GLOBAL_IMG },    // Approx 40 INR
+            { id: 10, name: 'Orange Juice (1L)', price: 6.00, cat: 'Juice Trading', image: GLOBAL_IMG },     // Approx 120 INR
         ];
 
         let cart = [];
         let currentPdpId = null;
+        const CURRENCY_SYMBOL = 'د.إ'; // UAE Dirham
 
         window.onload = function() {
             renderCategories();
@@ -456,13 +458,15 @@
                 return matchesSearch && matchesCat;
             });
             
+            const formatPrice = (price) => CURRENCY_SYMBOL + price.toFixed(2);
+
             const createCard = (p) => `
                 <div class="product-card" onclick="openPDP(${p.id})">
                     <div class="p-img-wrapper"><img src="${p.image}" class="p-img"></div>
                     <div class="p-info">
                         <div class="p-cat">${p.cat.split(' ')[0]}</div>
                         <div class="p-title">${p.name}</div>
-                        <div class="p-price">₹${p.price}</div>
+                        <div class="p-price">${formatPrice(p.price)}</div>
                         <button class="btn-card-add" onclick="event.stopPropagation(); addToCart(${p.id})">Add to Cart +</button>
                     </div>
                 </div>`;
@@ -481,10 +485,11 @@
         function openPDP(id) {
             currentPdpId = id;
             const p = products.find(x => x.id === id);
+            const formatPrice = (price) => CURRENCY_SYMBOL + price.toFixed(2);
             document.getElementById('pdpImg').src = p.image;
             document.getElementById('pdpTitle').innerText = p.name;
-            document.getElementById('pdpPrice').innerText = '₹' + p.price;
-            document.getElementById('pdpDesc').innerText = `Premium quality ${p.name} sourced directly from verified suppliers. Freshness guaranteed.`;
+            document.getElementById('pdpPrice').innerText = formatPrice(p.price);
+            document.getElementById('pdpDesc').innerText = `Premium quality ${p.name} sourced directly from verified suppliers for the Gulf region. Freshness guaranteed.`;
             showPage('pdp');
         }
 
@@ -503,6 +508,7 @@
             const totalEl = document.getElementById('cartTotal');
             const badge = document.getElementById('cartBadge');
             let total = 0; let count = 0;
+            const formatPrice = (price) => CURRENCY_SYMBOL + price.toFixed(2);
             
             list.innerHTML = cart.length ? '' : '<div style="padding:20px; color:#888;">Cart is empty</div>';
             
@@ -515,13 +521,13 @@
                         <img src="${p.image}" class="cart-img-thumb" style="width:60px; height:60px; border-radius:6px; object-fit:cover;">
                         <div>
                             <div style="font-weight:600">${p.name}</div>
-                            <div style="color:var(--primary-gold); font-weight:700;">₹${p.price}</div>
+                            <div style="color:var(--primary-gold); font-weight:700;">${formatPrice(p.price)}</div>
                             <div style="font-size:12px;">Qty: ${item.qty}</div>
                         </div>
                     </div>`;
             });
-            totalEl.innerText = '₹' + total.toLocaleString();
-            if(document.getElementById('modalTotal')) document.getElementById('modalTotal').innerText = '₹' + total.toLocaleString();
+            totalEl.innerText = formatPrice(total);
+            if(document.getElementById('modalTotal')) document.getElementById('modalTotal').innerText = formatPrice(total);
             badge.innerText = count;
         }
 
