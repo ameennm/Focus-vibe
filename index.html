@@ -6,504 +6,433 @@
     <title>TROVDAW - Premium Food Trading</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         :root {
-            /* BRAND COLORS (Green & Gold) */
+            /* BRAND COLORS */
             --primary-green: #2C7A62;
             --dark-green: #1B4D3E;
             --primary-gold: #C5A059;
-            
-            --dark-bg: #0a0a0a;
             --light-bg: #f2f4f8;
-            --text-dark: #1a1a1a;
-            --text-gray: #6c757d;
-            --border-color: #e9ecef;
-            --shadow-sm: 0 2px 8px rgba(0,0,0,0.08);
+            --text-dark: #0F1111; /* Amazon black */
+            --text-gray: #565959;
+            --border-color: #D5D9D9;
+            --link-blue: #007185;
+            --price-red: #B12704;
         }
 
         body {
             font-family: 'Inter', sans-serif;
             color: var(--text-dark);
-            background: var(--light-bg);
-            padding-bottom: 80px; /* Space for mobile nav */
-        }
-
-        /* --- HERO BUTTON FIX --- */
-        .hero-btn-container {
-            display: flex;
-            flex-direction: column;
-            gap: 16px; /* Fixes the alignment/touching issue */
-            align-items: center;
-            width: 100%;
-            max-width: 300px;
-            margin: 0 auto;
-        }
-
-        /* --- AMAZON STYLE PROFILE CSS --- */
-        .profile-header {
-            background: linear-gradient(to right, var(--primary-green), var(--dark-green));
-            padding: 2rem 1.5rem;
-            color: white;
-            border-bottom-left-radius: 20px;
-            border-bottom-right-radius: 20px;
-            margin-bottom: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .profile-avatar {
-            width: 60px; height: 60px;
             background: white;
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 24px; font-weight: bold; color: var(--primary-green);
+            padding-bottom: 80px;
         }
 
-        .profile-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 24px;
-        }
-
-        .profile-btn {
-            background: white;
-            border: 1px solid var(--border-color);
-            padding: 15px;
-            border-radius: 12px;
-            text-align: center;
-            font-size: 13px;
-            cursor: pointer;
-            box-shadow: var(--shadow-sm);
-        }
-
-        .section-label { font-size: 18px; font-weight: 700; margin-bottom: 12px; padding-left: 4px; }
-
-        .order-card {
-            background: white;
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 16px;
-            box-shadow: var(--shadow-sm);
-            border: 1px solid var(--border-color);
-        }
-
-        .order-header {
-            display: flex; justify-content: space-between;
-            font-size: 12px; color: var(--text-gray);
-            margin-bottom: 12px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid #f0f0f0;
-        }
-
-        .order-content { display: flex; gap: 12px; }
-        .order-img { width: 70px; height: 70px; object-fit: cover; border-radius: 8px; }
-        .order-info { flex: 1; }
-        .order-status { color: #27ae60; font-weight: 700; font-size: 14px; margin-bottom: 4px; }
-        .order-name { font-weight: 600; font-size: 14px; margin-bottom: 4px; }
-        .order-actions { margin-top: 12px; display: flex; gap: 10px; }
-        
-        .btn-small {
-            flex: 1;
-            padding: 8px;
-            border: 1px solid var(--border-color);
-            background: white;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            text-align: center;
-        }
-        
-        .address-card {
-            background: white;
-            border: 1px solid var(--primary-green);
-            padding: 15px;
-            border-radius: 8px;
-            font-size: 14px;
-            position: relative;
-        }
-        .default-badge {
-            position: absolute; top: 10px; right: 10px;
-            background: var(--light-bg); color: var(--text-gray);
-            font-size: 10px; padding: 2px 6px; border-radius: 4px;
-        }
-
-        /* --- EXISTING STYLES (Preserved) --- */
-        .flash-sale-banner {
-            background: rgba(0,0,0,0.4);
-            backdrop-filter: blur(8px);
-            padding: 10px 24px;
-            border-radius: 50px;
-            display: inline-flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 24px;
-            border: 1px solid rgba(197, 160, 89, 0.5);
-            animation: pulse 2s infinite;
-        }
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(197, 160, 89, 0.4); }
-            70% { box-shadow: 0 0 0 10px rgba(197, 160, 89, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(197, 160, 89, 0); }
-        }
-        .countdown { font-family: 'Inter', monospace; font-size: 1.2rem; font-weight: 800; color: var(--primary-gold); }
-        .whatsapp-float {
-            position: fixed; bottom: 90px; right: 20px; background: #25D366; color: white; width: 60px; height: 60px;
-            border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            z-index: 999; cursor: pointer; transition: transform 0.3s;
-        }
-        .mobile-nav {
-            display: none; position: fixed; bottom: 0; left: 0; width: 100%; background: white;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.05); padding: 12px 24px; justify-content: space-between; z-index: 1000;
-            border-top: 1px solid var(--border-color);
-        }
-        .mobile-nav-item { display: flex; flex-direction: column; align-items: center; font-size: 11px; color: var(--text-gray); gap: 4px; text-decoration: none; }
-        .mobile-nav-item.active { color: var(--primary-green); font-weight: 700; }
-        .mobile-nav-icon { font-size: 22px; }
-        .toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
-        .toast { background: white; padding: 16px 20px; border-radius: 12px; box-shadow: var(--shadow-sm); display: flex; gap: 12px; min-width: 300px; border-left: 4px solid var(--primary-green); }
-        .page { display: none; animation: fadeIn 0.3s ease-in; }
+        /* --- GLOBAL UTILS --- */
+        .page { display: none; animation: fadeIn 0.2s ease-in; }
         .page.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        header { background: white; box-shadow: var(--shadow-sm); position: sticky; top: 0; z-index: 1000; }
-        nav { display: flex; justify-content: space-between; align-items: center; max-width: 1400px; margin: 0 auto; padding: 1rem 2rem; }
-        .logo-svg { height: 50px; width: auto; }
-        .nav-links { display: flex; gap: 2rem; }
-        .nav-links a { text-decoration: none; color: var(--text-dark); font-weight: 500; }
-        .hero { background: linear-gradient(135deg, var(--dark-green) 0%, var(--primary-green) 50%, var(--primary-gold) 100%); padding: 6rem 2rem; text-align: center; color: white; }
-        .hero h1 { font-size: 3rem; font-weight: 800; margin-bottom: 1.5rem; line-height: 1.2; }
-        .btn-primary { background: white; color: var(--primary-green); padding: 16px 48px; border: none; border-radius: 50px; font-size: 16px; font-weight: 600; cursor: pointer; width: 100%; box-shadow: var(--shadow-sm); }
-        .btn-secondary { background: transparent; color: white; padding: 16px 48px; border: 2px solid white; border-radius: 50px; font-size: 16px; font-weight: 600; cursor: pointer; width: 100%; }
-        .container { max-width: 1400px; margin: 0 auto; padding: 3rem 2rem; }
-        .filter-bar { background: white; padding: 1rem; border-radius: 12px; margin-bottom: 2rem; }
-        .search-box input { width: 100%; padding: 12px 16px 12px 40px; border: 2px solid #eee; border-radius: 8px; }
-        .category-filter { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; }
-        .filter-chip { padding: 8px 16px; border: 1px solid #eee; border-radius: 20px; white-space: nowrap; font-size: 13px; cursor: pointer; background: white;}
-        .filter-chip.active { background: var(--primary-green); color: white; }
-        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 1rem; }
-        .product-card { background: white; border-radius: 12px; overflow: hidden; border: 1px solid #eee; }
-        .product-image { width: 100%; height: 180px; object-fit: cover; }
-        .product-info { padding: 12px; }
-        .product-name { font-weight: 700; font-size: 14px; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .product-price { font-weight: 800; font-size: 16px; }
-        .btn-add-cart { background: var(--primary-green); color: white; border: none; padding: 8px 16px; border-radius: 8px; float: right; cursor: pointer; }
-        .cart-container { background: white; padding: 1.5rem; border-radius: 12px; }
-        .cart-item { display: flex; gap: 10px; border-bottom: 1px solid #eee; padding: 10px 0; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
+        .container { max-width: 1400px; margin: 0 auto; padding: 1rem; }
+        .btn-primary { background: #FFD814; color: #0F1111; border: 1px solid #FCD200; border-radius: 20px; padding: 8px 16px; cursor: pointer; font-size: 13px; font-weight: 500; box-shadow: 0 2px 5px rgba(213,217,217,.5); }
+        .btn-primary:hover { background: #F7CA00; }
+        
+        /* --- HEADER --- */
+        header { background: #131921; color: white; position: sticky; top: 0; z-index: 1000; padding: 10px 0; }
+        nav { display: flex; align-items: center; justify-content: space-between; max-width: 1400px; margin: 0 auto; padding: 0 1rem; }
+        .logo-svg { height: 40px; width: auto; }
+        .cart-icon { position: relative; cursor: pointer; display: flex; align-items: flex-end; }
+        .cart-count { position: absolute; top: -5px; left: 10px; color: #F08804; font-weight: 700; font-size: 16px; }
+
+        /* --- HERO --- */
+        .hero { background: linear-gradient(135deg, var(--dark-green), var(--primary-green)); color: white; padding: 4rem 1rem; text-align: center; }
+        .hero h1 { font-size: 2.5rem; font-weight: 800; margin-bottom: 10px; }
+        .flash-sale-banner { background: rgba(0,0,0,0.3); display: inline-block; padding: 5px 15px; border-radius: 20px; border: 1px solid var(--primary-gold); margin-bottom: 15px; font-size: 14px; }
+        .hero-btn-group { display: flex; gap: 10px; justify-content: center; margin-top: 20px; }
+        
+        /* --- PRODUCT GRID --- */
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 1rem; padding: 1rem 0; }
+        .product-card { border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; background: white; cursor: pointer; transition: transform 0.2s; }
+        .product-card:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .p-img { width: 100%; height: 180px; object-fit: cover; background: #f8f8f8; }
+        .p-info { padding: 12px; }
+        .p-title { font-size: 14px; line-height: 1.4; height: 40px; overflow: hidden; margin-bottom: 4px; }
+        .p-price { font-size: 18px; font-weight: 700; }
+        .p-prime { color: #00a8e1; font-size: 11px; font-weight: 700; }
+
+        /* --- PRODUCT DETAIL PAGE (PDP) --- */
+        .pdp-container { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; padding-top: 1rem; }
+        .pdp-image-col { position: sticky; top: 80px; height: fit-content; }
+        .pdp-main-img { width: 100%; max-height: 500px; object-fit: contain; border-radius: 12px; }
+        .pdp-details h2 { font-size: 24px; font-weight: 500; line-height: 1.2; margin-bottom: 10px; }
+        .pdp-meta { font-size: 14px; color: var(--link-blue); margin-bottom: 10px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
+        .pdp-price-block { margin-bottom: 15px; }
+        .pdp-price { font-size: 28px; color: var(--text-dark); font-weight: 500; }
+        .pdp-desc { font-size: 14px; line-height: 1.6; color: var(--text-dark); margin-bottom: 20px; }
+        
+        /* Buy Box (Right Side on Desktop) */
+        .buy-box { border: 1px solid var(--border-color); border-radius: 8px; padding: 18px; background: white; }
+        .stock-status { color: #007600; font-size: 18px; font-weight: 500; margin-bottom: 10px; }
+        .btn-buy-now { background: #FA8900; border: 1px solid #CA6E00; width: 100%; border-radius: 20px; padding: 10px; cursor: pointer; margin-bottom: 10px; font-weight: 500; }
+        .btn-add-pdp { background: #FFD814; border: 1px solid #FCD200; width: 100%; border-radius: 20px; padding: 10px; cursor: pointer; margin-bottom: 10px; font-weight: 500; }
+
+        /* --- CART PAGE (Amazon Style) --- */
+        .cart-layout { display: grid; grid-template-columns: 3fr 1fr; gap: 20px; }
+        .cart-items-col { background: white; padding: 20px; }
+        .cart-header { font-size: 28px; font-weight: 500; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 20px; }
+        .cart-item { display: flex; gap: 15px; border-bottom: 1px solid var(--border-color); padding-bottom: 20px; margin-bottom: 20px; }
+        .cart-img { width: 150px; height: 150px; object-fit: cover; }
+        .cart-details { flex: 1; }
+        .cart-title { font-size: 18px; font-weight: 700; line-height: 1.3; margin-bottom: 5px; color: var(--text-dark); }
+        .cart-stock { font-size: 12px; color: #007600; margin-bottom: 10px; }
+        .cart-actions { display: flex; align-items: center; gap: 15px; font-size: 12px; color: var(--link-blue); }
+        .qty-select { padding: 4px; border-radius: 8px; background: #F0F2F2; border: 1px solid #D5D9D9; box-shadow: 0 2px 5px rgba(15,17,17,.15); cursor: pointer; }
+        .cart-action-link { cursor: pointer; padding-left: 10px; border-left: 1px solid #ddd; }
+        .cart-action-link:hover { text-decoration: underline; }
+        
+        .cart-summary-col { background: white; padding: 20px; height: fit-content; }
+        .subtotal { font-size: 18px; font-weight: 500; margin-bottom: 20px; }
+
+        /* --- MOBILE NAV --- */
+        .mobile-nav { display: none; position: fixed; bottom: 0; width: 100%; background: white; border-top: 1px solid #ddd; padding: 10px; justify-content: space-around; z-index: 999; }
+        .mn-item { display: flex; flex-direction: column; align-items: center; font-size: 10px; color: var(--text-dark); text-decoration: none; }
+
+        /* --- RESPONSIVE --- */
         @media (max-width: 768px) {
-            .nav-links { display: none; }
+            .pdp-container { grid-template-columns: 1fr; }
+            .pdp-image-col { position: static; }
+            .cart-layout { grid-template-columns: 1fr; }
             .mobile-nav { display: flex; }
-            .hero { padding: 4rem 1.5rem; }
-            .hero h1 { font-size: 2rem; }
-            .product-grid { grid-template-columns: 1fr 1fr; }
+            .cart-img { width: 100px; height: 100px; }
+            header nav div:nth-child(2) { display: none; } /* Hide desktop links */
+            .pdp-main-img { max-height: 300px; }
         }
     </style>
 </head>
 <body>
 
-    <div class="whatsapp-float" onclick="window.open('https://wa.me/919876543210', '_blank')">
-        <svg width="30" height="30" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.669-.699c1.009.617 2.077 1.012 3.483 1.019.537 0 1.066-.057 1.579-.166.495-.106.974-.265 1.428-.471.917-.417 1.706-1.049 2.278-1.832.559-.766.887-1.701.888-2.736 0-3.18-2.585-5.766-5.766-5.766zm11.233 5.766c0 6.206-5.033 11.238-11.235 11.238-.088 0-.176 0-.265-.003-5.795-.084-10.741-4.707-10.957-10.511-.005-.129-.007-.258-.007-.389 0-6.205 5.032-11.238 11.232-11.238 6.202 0 11.233 5.033 11.233 11.238z" fill-rule="evenodd" clip-rule="evenodd"/></svg>
-    </div>
-
-    <div class="mobile-nav">
-        <a href="#" class="mobile-nav-item active" onclick="showPage('home')">
-            <span class="mobile-nav-icon">🏠</span>
-            <span>Home</span>
-        </a>
-        <a href="#" class="mobile-nav-item" onclick="showPage('products')">
-            <span class="mobile-nav-icon">🔍</span>
-            <span>Search</span>
-        </a>
-        <a href="#" class="mobile-nav-item" onclick="showPage('cart')">
-            <div style="position: relative;">
-                <span class="mobile-nav-icon">🛒</span>
-                <span class="cart-badge" id="mobileCartBadge" style="top: -5px; right: -5px;">0</span>
-            </div>
-            <span>Cart</span>
-        </a>
-        <a href="#" class="mobile-nav-item" onclick="showPage('account-page')">
-            <span class="mobile-nav-icon">👤</span>
-            <span>Account</span>
-        </a>
-    </div>
-
     <header>
         <nav>
-            <div class="logo-container" onclick="showPage('home')">
-                <svg class="logo-svg" viewBox="0 0 300 80" xmlns="http://www.w3.org/2000/svg">
-                    <defs>
-                        <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="0%">
-                            <stop offset="0%" style="stop-color:#1B4D3E;stop-opacity:1" />
-                            <stop offset="100%" style="stop-color:#2C7A62;stop-opacity:1" />
-                        </linearGradient>
-                    </defs>
-                    <path d="M40,10 C20,10 10,30 10,40 C10,55 25,65 40,65 C55,65 70,55 70,40 C70,20 55,10 40,10 Z M40,65 L40,75" fill="none" stroke="#C5A059" stroke-width="4" stroke-linecap="round"/>
+            <div onclick="showPage('home')" style="cursor: pointer;">
+                 <svg class="logo-svg" viewBox="0 0 300 80" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M40,10 C20,10 10,30 10,40 C10,55 25,65 40,65 C55,65 70,55 70,40 C70,20 55,10 40,10 Z M40,65 L40,75" fill="none" stroke="#C5A059" stroke-width="4"/>
                     <path d="M40,10 C40,10 55,25 55,40 C55,50 45,60 40,65" fill="#C5A059" opacity="0.8"/>
                     <path d="M35,35 Q20,20 20,40 Q35,50 35,35" fill="#1B4D3E" />
-                    <text x="85" y="52" font-family="sans-serif" font-weight="800" font-size="42" fill="url(#grad1)">TROVDAW</text>
-                    <text x="86" y="70" font-family="sans-serif" font-weight="500" font-size="12" letter-spacing="3" fill="#C5A059">GLOBAL FOOD TRADING</text>
+                    <text x="85" y="52" font-family="sans-serif" font-weight="800" font-size="42" fill="white">TROVDAW</text>
                 </svg>
             </div>
-            <div class="nav-links">
-                <a href="#" onclick="showPage('home')">Home</a>
-                <a href="#" onclick="showPage('products')">Products</a>
-                <a href="#" onclick="showPage('account-page')">Account</a>
-                <div class="cart-icon" onclick="showPage('cart')">
-                    🛒 <span class="cart-badge" id="cartBadge">0</span>
-                </div>
+            <div style="display: flex; gap: 20px; font-size: 14px; font-weight: 500;">
+                <span onclick="showPage('home')" style="cursor:pointer">Home</span>
+                <span onclick="showPage('products')" style="cursor:pointer">Products</span>
+                <span onclick="showPage('account')" style="cursor:pointer">Account & Lists</span>
+            </div>
+            <div class="cart-icon" onclick="showPage('cart')">
+                <span style="font-size: 30px;">🛒</span>
+                <span class="cart-count" id="cartCount">0</span>
             </div>
         </nav>
     </header>
 
+    <div class="mobile-nav">
+        <a href="#" class="mn-item" onclick="showPage('home')"><span>🏠</span> Home</a>
+        <a href="#" class="mn-item" onclick="showPage('products')"><span>🔍</span> Browse</a>
+        <a href="#" class="mn-item" onclick="showPage('cart')"><span>🛒</span> Cart</a>
+        <a href="#" class="mn-item" onclick="showPage('account')"><span>👤</span> Account</a>
+    </div>
+
     <div id="home" class="page active">
         <div class="hero">
-            <div class="hero-content">
-                <div class="flash-sale-banner">
-                    <span>⚡ FLASH DEAL ENDS IN:</span>
-                    <span class="countdown" id="heroTimer">04:23:15</span>
-                </div>
-                <h1>Premium Global Food Trading</h1>
-                <p>Authentic sourcing of Dates, Grains, Dairy, Meat, and Produce. Quality guaranteed.</p>
-                
-                <div class="hero-btn-container">
-                    <button class="btn-primary" onclick="showPage('products')">Explore Marketplace</button>
-                    <button class="btn-secondary" onclick="showPage('account-page')">Partner With Us</button>
-                </div>
+            <div class="flash-sale-banner">⚡ Flash Deal Ends in: <span id="timer">04:23:15</span></div>
+            <h1>Premium Food Trading</h1>
+            <p>Authentic Dates, Grains & Dairy from Global Farms.</p>
+            <div class="hero-btn-group">
+                <button class="btn-primary" onclick="showPage('products')">Shop Now</button>
             </div>
         </div>
-
         <div class="container">
-            <h2 class="section-label" style="text-align: center;">Trending Products</h2>
-            <div class="product-grid" id="featuredProducts"></div>
+            <h3>Trending Now</h3>
+            <div class="product-grid" id="featuredGrid"></div>
         </div>
     </div>
 
     <div id="products" class="page">
         <div class="container">
-            <div class="filter-bar">
-                <div class="search-box">
-                    <input type="text" id="searchInput" placeholder="Search..." onkeyup="searchProducts()">
-                </div>
-                <div class="category-filter" style="margin-top: 15px;">
-                    <div class="filter-chip active" onclick="filterByCategory('All', event)">All</div>
-                    <div class="filter-chip" onclick="filterByCategory('Dates Trading', event)">Dates</div>
-                    <div class="filter-chip" onclick="filterByCategory('Grains', event)">Grains</div>
-                    <div class="filter-chip" onclick="filterByCategory('Dairy', event)">Dairy</div>
-                    <div class="filter-chip" onclick="filterByCategory('Meat', event)">Meat</div>
-                </div>
+            <div style="background: white; padding: 10px; margin-bottom: 10px; border-radius: 8px; border: 1px solid #ddd;">
+                <input type="text" id="search" placeholder="Search Trovdaw..." style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;" onkeyup="searchProducts()">
             </div>
-            <div class="product-grid" id="productGrid"></div>
+            <div class="product-grid" id="fullGrid"></div>
         </div>
     </div>
 
-    <div id="account-page" class="page">
-        <div class="profile-header">
-            <div class="profile-avatar">R</div>
-            <div>
-                <div style="font-size: 20px; font-weight: 700;">Hello, Rahul</div>
-                <div style="font-size: 13px; opacity: 0.9;">+91 98765 43210</div>
-            </div>
-        </div>
-
-        <div class="container" style="padding-top: 0;">
-            <div class="profile-grid">
-                <div class="profile-btn" onclick="showToast('Orders', 'Opening your orders...')">
-                    <div style="font-size: 24px; margin-bottom: 5px;">📦</div>
-                    Your Orders
-                </div>
-                <div class="profile-btn" onclick="showPage('products')">
-                    <div style="font-size: 24px; margin-bottom: 5px;">🔄</div>
-                    Buy Again
-                </div>
-                <div class="profile-btn">
-                    <div style="font-size: 24px; margin-bottom: 5px;">👤</div>
-                    Your Account
-                </div>
-                <div class="profile-btn">
-                    <div style="font-size: 24px; margin-bottom: 5px;">❤️</div>
-                    Your Lists
-                </div>
-            </div>
-
-            <div class="section-label">Your Recent Orders</div>
+    <div id="pdp" class="page">
+        <div class="container">
+            <div style="margin-bottom: 10px; font-size: 12px; color: #565959; cursor: pointer;" onclick="showPage('products')">‹ Back to results</div>
             
-            <div class="order-card">
-                <div class="order-header">
-                    <span>Order #404-9821</span>
-                    <span>Yesterday</span>
+            <div class="pdp-container">
+                <div class="pdp-image-col">
+                    <img id="pdpImg" src="" class="pdp-main-img">
                 </div>
-                <div class="order-content">
-                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcToesPYypZnN6hgoqf1hAXzlAcHkfaeotEcmA&s" class="order-img">
-                    <div class="order-info">
-                        <div class="order-status">Delivered Today</div>
-                        <div class="order-name">Premium Medjool Dates (1kg)</div>
-                        <div style="font-size: 12px; color: #666;">Rate your experience</div>
+                
+                <div class="pdp-details">
+                    <h2 id="pdpTitle">Product Title</h2>
+                    <div class="pdp-meta">Brand: Trovdaw Select | <span style="color: #F08804;">★★★★☆</span> 482 ratings</div>
+                    
+                    <div class="pdp-price-block">
+                        <span style="font-size: 14px; color: #565959;">Price:</span>
+                        <span class="pdp-price" id="pdpPrice">₹000</span>
+                        <span style="font-size: 12px; color: #565959;">(Inclusive of all taxes)</span>
+                    </div>
+
+                    <div style="margin-bottom: 15px;">
+                        <span style="background: #232f3e; color: white; padding: 4px 8px; font-size: 12px; font-weight: 700;">Amazon's Choice</span>
+                        <span style="font-size: 13px;">for "premium dates"</span>
+                    </div>
+
+                    <p class="pdp-desc" id="pdpDesc">Description goes here...</p>
+
+                    <div class="buy-box">
+                        <div class="pdp-price" id="pdpBuyBoxPrice">₹000</div>
+                        <div class="stock-status">In Stock.</div>
+                        <div style="font-size: 13px; margin-bottom: 10px;">Free delivery <b>Tomorrow, 8 AM - 12 PM</b>. Order within 4 hrs.</div>
+                        
+                        <div style="margin-bottom: 10px;">
+                            <label style="font-size: 12px;">Quantity:</label>
+                            <select id="pdpQty" style="padding: 5px; border-radius: 5px;">
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                            </select>
+                        </div>
+
+                        <button class="btn-add-pdp" onclick="addToCartFromPDP()">Add to Cart</button>
+                        <button class="btn-buy-now" onclick="buyNowPDP()">Buy Now</button>
+                        
+                        <div style="font-size: 12px; color: #565959; margin-top: 10px;">
+                            <div>Sold by <b>Trovdaw Global</b></div>
+                            <div>Secure transaction</div>
+                        </div>
                     </div>
                 </div>
-                <div class="order-actions">
-                    <div class="btn-small">Track Package</div>
-                    <div class="btn-small">Return Items</div>
-                </div>
             </div>
-
-            <div class="order-card">
-                <div class="order-header">
-                    <span>Order #404-5512</span>
-                    <span>12 Oct 2025</span>
-                </div>
-                <div class="order-content">
-                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcToesPYypZnN6hgoqf1hAXzlAcHkfaeotEcmA&s" class="order-img">
-                    <div class="order-info">
-                        <div class="order-status" style="color: #666;">Delivered 15 Oct</div>
-                        <div class="order-name">Organic Almonds (500g)</div>
-                    </div>
-                </div>
-                <div class="order-actions">
-                    <div class="btn-small" onclick="showPage('products')">Buy Again</div>
-                    <div class="btn-small">View Receipt</div>
-                </div>
-            </div>
-
-            <div class="section-label" style="margin-top: 25px;">Saved Addresses</div>
-            <div class="address-card">
-                <div class="default-badge">Default</div>
-                <div style="font-weight: 700; margin-bottom: 5px;">Rahul Sharma</div>
-                <div>123, Palm Jumeirah Residency</div>
-                <div>MG Road, Kochi, Kerala - 682001</div>
-                <div style="margin-top: 5px;">Phone: 98765 43210</div>
-                <div style="margin-top: 10px; color: var(--primary-green); font-weight: 600; font-size: 12px;">Edit Address | Remove</div>
-            </div>
-
-             <button class="btn-secondary" style="margin-top: 30px; border-color: #ddd; color: #666;" onclick="showToast('Logged Out', 'Redirecting...')">Sign Out</button>
         </div>
     </div>
 
     <div id="cart" class="page">
         <div class="container">
-            <h2 class="section-label">Shopping Cart</h2>
-            <div class="cart-container">
-                <div id="cartItems"></div>
-                <div style="margin-top: 20px; font-weight: 800; font-size: 1.5rem; text-align: right;">
-                    Total: <span id="total" style="color: var(--primary-green);">₹0.00</span>
+            <div class="cart-layout">
+                <div class="cart-items-col">
+                    <div class="cart-header">Shopping Cart</div>
+                    <div id="cartList">
+                        </div>
+                    <div id="emptyCartMsg" style="display:none; text-align:center; padding: 20px;">
+                        <h3>Your Amazon Cart is empty.</h3>
+                        <p style="font-size: 12px;">Shop today's deals</p>
+                    </div>
                 </div>
-                <button class="btn-primary" style="margin-top: 15px;">Proceed to Checkout</button>
+
+                <div class="cart-summary-col">
+                    <div class="subtotal">
+                        Subtotal (<span id="cartTotalItems">0</span> items): <span id="cartTotalAmount" style="font-weight: 700;">₹0.00</span>
+                    </div>
+                    <button class="btn-primary" style="width: 100%; border-radius: 8px; font-size: 14px; padding: 10px;" onclick="alert('Proceeding to Checkout...')">Proceed to Buy</button>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="toast-container" id="toastContainer"></div>
+    <div id="account" class="page">
+        <div class="container">
+            <h2>Your Account</h2>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px;">
+                <button style="padding: 20px; background: white; border: 1px solid #ddd; border-radius: 8px;">Your Orders</button>
+                <button style="padding: 20px; background: white; border: 1px solid #ddd; border-radius: 8px;">Login & Security</button>
+                <button style="padding: 20px; background: white; border: 1px solid #ddd; border-radius: 8px;">Your Addresses</button>
+                <button style="padding: 20px; background: white; border: 1px solid #ddd; border-radius: 8px;">Payment Options</button>
+            </div>
+        </div>
+    </div>
 
     <script>
-        // GLOBAL IMAGE URL (Requested Update)
+        // --- DATA & STATE ---
         const GLOBAL_IMG = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcToesPYypZnN6hgoqf1hAXzlAcHkfaeotEcmA&s";
-
-        // Updated Data with Global Image
+        
         const products = [
-            { id: 1, name: 'Royal Medjool Dates', category: 'Dates Trading', price: 850, image: GLOBAL_IMG },
-            { id: 2, name: 'Ajwa Al-Madina', category: 'Dates Trading', price: 1200, image: GLOBAL_IMG },
-            { id: 3, name: 'Premium Basmati Rice', category: 'Grains', price: 180, image: GLOBAL_IMG },
-            { id: 4, name: 'Organic Quinoa', category: 'Grains', price: 450, image: GLOBAL_IMG },
-            { id: 5, name: 'Farm Fresh Milk', category: 'Dairy', price: 65, image: GLOBAL_IMG },
-            { id: 6, name: 'Cheddar Cheese', category: 'Dairy', price: 450, image: GLOBAL_IMG },
-            { id: 7, name: 'Chicken Breast', category: 'Meat', price: 280, image: GLOBAL_IMG },
-            { id: 8, name: 'Roasted Almonds', category: 'Snack', price: 900, image: GLOBAL_IMG },
-            { id: 9, name: 'Raw Honey', category: 'Honey', price: 550, image: GLOBAL_IMG },
-            { id: 10, name: 'Fresh Apples', category: 'Fruit', price: 220, image: GLOBAL_IMG }
+            { id: 1, name: 'Royal Medjool Dates (1kg Box)', price: 850, category: 'Dates', desc: 'Premium, naturally sweet Medjool dates sourced from Jordan. Rich in fiber and antioxidants. Perfect for snacking or baking.', image: GLOBAL_IMG },
+            { id: 2, name: 'Ajwa Al-Madina Dates (500g)', price: 1200, category: 'Dates', desc: 'Authentic Ajwa dates from Madina. Known for their healing properties and soft, dark texture.', image: GLOBAL_IMG },
+            { id: 3, name: 'Premium Basmati Rice (5kg)', price: 900, category: 'Grains', desc: 'Extra long grain, aged Basmati rice. Aromatic and fluffy, ideal for Biryani and Pulao.', image: GLOBAL_IMG },
+            { id: 4, name: 'Organic Quinoa (1kg)', price: 450, category: 'Grains', desc: 'High-protein, gluten-free organic quinoa. A perfect healthy alternative to rice.', image: GLOBAL_IMG },
+            { id: 5, name: 'Farm Fresh Milk (1L)', price: 65, category: 'Dairy', desc: 'Pasteurized, homogenized whole milk. Sourced from local grass-fed cows.', image: GLOBAL_IMG },
+            { id: 6, name: 'Cheddar Cheese Block (200g)', price: 450, category: 'Dairy', desc: 'Aged sharp cheddar cheese. Perfect for melting, grating, or slicing.', image: GLOBAL_IMG },
+            { id: 7, name: 'Chicken Breast (1kg)', price: 280, category: 'Meat', desc: 'Skinless, boneless chicken breast. Antibiotic-free and fresh chilled.', image: GLOBAL_IMG },
+            { id: 8, name: 'Roasted Almonds (500g)', price: 900, category: 'Snack', desc: 'Crunchy, lightly salted roasted almonds. High in Vitamin E and protein.', image: GLOBAL_IMG },
         ];
 
-        let cart = [];
+        let cart = []; // { id, qty }
+        let currentPdpId = null;
 
-        document.addEventListener('DOMContentLoaded', function() {
-            loadFeaturedProducts();
-            loadProducts();
+        // --- INIT ---
+        window.onload = function() {
+            renderProducts();
+            updateCartUI();
             startTimer();
-        });
+        }
 
+        // --- NAVIGATION ---
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            window.scrollTo(0,0);
+        }
+
+        // --- RENDER PRODUCTS ---
+        function renderProducts() {
+            const createCard = (p) => `
+                <div class="product-card" onclick="openPDP(${p.id})">
+                    <img src="${p.image}" class="p-img">
+                    <div class="p-info">
+                        <div class="p-title">${p.name}</div>
+                        <div class="p-price">₹${p.price}</div>
+                        <div class="p-prime">✓ <span style="color: #00a8e1;">prime</span></div>
+                        <div style="font-size: 11px; color: #565959;">Free delivery by Tomorrow</div>
+                    </div>
+                </div>`;
+            
+            document.getElementById('featuredGrid').innerHTML = products.slice(0, 4).map(createCard).join('');
+            document.getElementById('fullGrid').innerHTML = products.map(createCard).join('');
+        }
+
+        // --- PRODUCT DETAIL PAGE LOGIC ---
+        function openPDP(id) {
+            const p = products.find(x => x.id === id);
+            if(!p) return;
+
+            currentPdpId = id;
+            document.getElementById('pdpImg').src = p.image;
+            document.getElementById('pdpTitle').innerText = p.name;
+            document.getElementById('pdpPrice').innerText = '₹' + p.price;
+            document.getElementById('pdpBuyBoxPrice').innerText = '₹' + p.price;
+            document.getElementById('pdpDesc').innerText = p.desc;
+            document.getElementById('pdpQty').value = "1"; // Reset qty
+
+            showPage('pdp');
+        }
+
+        function addToCartFromPDP() {
+            const qty = parseInt(document.getElementById('pdpQty').value);
+            addToCart(currentPdpId, qty);
+            alert('Added to Cart!');
+        }
+
+        function buyNowPDP() {
+            addToCartFromPDP();
+            showPage('cart');
+        }
+
+        // --- CART LOGIC ---
+        function addToCart(id, qty = 1) {
+            const existing = cart.find(x => x.id === id);
+            if(existing) {
+                existing.qty += qty;
+            } else {
+                cart.push({ id: id, qty: qty });
+            }
+            updateCartUI();
+        }
+
+        function updateCartQty(id, newQty) {
+            const item = cart.find(x => x.id === id);
+            if(item) {
+                item.qty = parseInt(newQty);
+                updateCartUI();
+            }
+        }
+
+        function removeCartItem(id) {
+            cart = cart.filter(x => x.id !== id);
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            const list = document.getElementById('cartList');
+            const countBadge = document.getElementById('cartCount');
+            const totalItemsEl = document.getElementById('cartTotalItems');
+            const totalAmountEl = document.getElementById('cartTotalAmount');
+            const emptyMsg = document.getElementById('emptyCartMsg');
+
+            list.innerHTML = '';
+            let totalQty = 0;
+            let totalPrice = 0;
+
+            if (cart.length === 0) {
+                emptyMsg.style.display = 'block';
+            } else {
+                emptyMsg.style.display = 'none';
+                cart.forEach(item => {
+                    const p = products.find(x => x.id === item.id);
+                    totalQty += item.qty;
+                    totalPrice += p.price * item.qty;
+
+                    // Qty Dropdown Logic
+                    let qtyOptions = '';
+                    for(let i=1; i<=10; i++) {
+                        qtyOptions += `<option value="${i}" ${item.qty === i ? 'selected' : ''}>${i}</option>`;
+                    }
+
+                    list.innerHTML += `
+                        <div class="cart-item">
+                            <img src="${p.image}" class="cart-img" onclick="openPDP(${p.id})" style="cursor:pointer">
+                            <div class="cart-details">
+                                <div class="cart-title" onclick="openPDP(${p.id})" style="cursor:pointer">${p.name}</div>
+                                <div class="cart-stock">In Stock</div>
+                                <div style="font-weight: 700; color: #B12704; margin-bottom: 5px;">₹${p.price}</div>
+                                <div class="cart-prime" style="font-size: 11px; margin-bottom: 10px;">Eligible for FREE Shipping</div>
+                                
+                                <div class="cart-actions">
+                                    <select class="qty-select" onchange="updateCartQty(${p.id}, this.value)">
+                                        ${qtyOptions}
+                                    </select>
+                                    <span class="cart-action-link" onclick="removeCartItem(${p.id})">Delete</span>
+                                    <span class="cart-action-link">Save for later</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+
+            countBadge.innerText = totalQty;
+            totalItemsEl.innerText = totalQty;
+            totalAmountEl.innerText = '₹' + totalPrice.toLocaleString();
+        }
+
+        // --- SEARCH ---
+        function searchProducts() {
+            const term = document.getElementById('search').value.toLowerCase();
+            const filtered = products.filter(p => p.name.toLowerCase().includes(term));
+            
+            const createCard = (p) => `
+                <div class="product-card" onclick="openPDP(${p.id})">
+                    <img src="${p.image}" class="p-img">
+                    <div class="p-info">
+                        <div class="p-title">${p.name}</div>
+                        <div class="p-price">₹${p.price}</div>
+                    </div>
+                </div>`;
+            
+            document.getElementById('fullGrid').innerHTML = filtered.map(createCard).join('');
+        }
+
+        // --- TIMER ---
         function startTimer() {
             let hours = 4, minutes = 23, seconds = 15;
             setInterval(() => {
                 seconds--;
                 if(seconds < 0) { seconds = 59; minutes--; }
                 if(minutes < 0) { minutes = 59; hours--; }
-                document.getElementById('heroTimer').innerText = `${String(hours).padStart(2,'0')}:${String(minutes).padStart(2,'0')}:${String(seconds).padStart(2,'0')}`;
+                document.getElementById('timer').innerText = `${String(hours).padStart(2,'0')}:${String(minutes).padStart(2,'0')}:${String(seconds).padStart(2,'0')}`;
             }, 1000);
-        }
-
-        function createProductCard(product) {
-            return `
-                <div class="product-card">
-                    <img src="${product.image}" class="product-image">
-                    <div class="product-info">
-                        <div style="font-size:10px; color:var(--primary-green); font-weight:700;">${product.category.split(' ')[0]}</div>
-                        <div class="product-name">${product.name}</div>
-                        <div class="product-price">₹${product.price}</div>
-                        <button class="btn-add-cart" onclick="addToCart(${product.id})">Add +</button>
-                    </div>
-                </div>
-            `;
-        }
-
-        function loadFeaturedProducts() {
-            document.getElementById('featuredProducts').innerHTML = products.slice(0, 4).map(createProductCard).join('');
-        }
-
-        function loadProducts() {
-            document.getElementById('productGrid').innerHTML = products.map(createProductCard).join('');
-        }
-
-        function addToCart(id) {
-            const product = products.find(p => p.id === id);
-            const item = cart.find(i => i.id === id);
-            if(item) item.qty++; else cart.push({...product, qty: 1});
-            updateCartBadge();
-            showToast('Added to Cart', `${product.name} added`);
-        }
-
-        function updateCartBadge() {
-            const count = cart.reduce((sum, i) => sum + i.qty, 0);
-            document.getElementById('cartBadge').innerText = count;
-            document.getElementById('mobileCartBadge').innerText = count;
-        }
-
-        function loadCart() {
-            const container = document.getElementById('cartItems');
-            if(cart.length === 0) {
-                container.innerHTML = '<p style="text-align:center; padding:2rem; color:#888;">Cart is empty.</p>';
-                document.getElementById('total').innerText = '₹0.00';
-                return;
-            }
-            let total = 0;
-            container.innerHTML = cart.map(item => {
-                total += item.price * item.qty;
-                return `<div class="cart-item"><img src="${item.image}" style="width:50px; height:50px; border-radius:5px;"><div style="flex:1; margin-left:10px;"><b>${item.name}</b><br>₹${item.price} x ${item.qty}</div></div>`;
-            }).join('');
-            document.getElementById('total').innerText = `₹${total}`;
-        }
-
-        function showPage(pageId) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById(pageId).classList.add('active');
-            
-            document.querySelectorAll('.mobile-nav-item').forEach(i => i.classList.remove('active'));
-            if(pageId === 'home') document.querySelector('.mobile-nav-item:nth-child(1)').classList.add('active');
-            if(pageId === 'products') document.querySelector('.mobile-nav-item:nth-child(2)').classList.add('active');
-            if(pageId === 'cart') { loadCart(); document.querySelector('.mobile-nav-item:nth-child(3)').classList.add('active'); }
-            if(pageId === 'account-page') document.querySelector('.mobile-nav-item:nth-child(4)').classList.add('active');
-            
-            window.scrollTo(0,0);
-        }
-
-        function showToast(title, msg) {
-            const t = document.createElement('div'); t.className = 'toast';
-            t.innerHTML = `<div><b>${title}</b><br>${msg}</div>`;
-            document.getElementById('toastContainer').appendChild(t);
-            setTimeout(() => t.remove(), 3000);
         }
     </script>
 </body>
