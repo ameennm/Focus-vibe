@@ -13,7 +13,7 @@
             --primary-green: #2C7A62;
             --dark-green: #1B4D3E;
             --primary-gold: #C5A059;
-            --star-yellow: #DE7921; /* Amazon Star Color */
+            --star-yellow: #DE7921; 
             
             --bg-color: #f4f6f8;
             --white: #ffffff;
@@ -23,7 +23,6 @@
             
             --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
             --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
-            --transition: all 0.2s ease;
         }
 
         body {
@@ -50,6 +49,32 @@
             animation: slideIn 0.4s;
         }
         @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+
+        /* --- CHECKOUT MODAL --- */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); z-index: 2000; align-items: center; justify-content: center;
+            backdrop-filter: blur(4px);
+        }
+        .modal-content {
+            background: white; width: 90%; max-width: 450px; padding: 25px; border-radius: 16px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.25); animation: popUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes popUp { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        
+        .pay-option {
+            display: flex; align-items: center; gap: 12px; padding: 14px;
+            border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 10px; cursor: pointer;
+            transition: all 0.2s;
+        }
+        .pay-option:hover { background: #f9f9f9; }
+        .pay-option.selected { border-color: var(--primary-green); background: rgba(44, 122, 98, 0.05); }
+        
+        .spinner {
+            width: 24px; height: 24px; border: 3px solid #f3f3f3; border-top: 3px solid var(--primary-green);
+            border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto; display: none;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         /* --- HEADER --- */
         header { background: white; position: sticky; top: 0; z-index: 1000; box-shadow: var(--shadow-sm); padding: 12px 0; }
@@ -81,85 +106,90 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.2); 
         }
 
+        /* --- FILTERS & SEARCH --- */
+        .filter-section {
+            background: white; padding: 15px; border-radius: 12px; margin-bottom: 1.5rem; box-shadow: var(--shadow-sm);
+        }
+        .search-input {
+            width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 15px; margin-bottom: 15px;
+            background: #fcfcfc;
+        }
+        .search-input:focus { outline: none; border-color: var(--primary-green); }
+        
+        .category-scroll {
+            display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px;
+            -webkit-overflow-scrolling: touch;
+        }
+        .category-scroll::-webkit-scrollbar { height: 4px; }
+        .category-scroll::-webkit-scrollbar-thumb { background: #ddd; border-radius: 4px; }
+        
+        .filter-chip {
+            padding: 8px 16px; border: 1px solid var(--border-color); border-radius: 20px;
+            font-size: 12px; cursor: pointer; white-space: nowrap; font-weight: 500;
+            transition: all 0.2s;
+        }
+        .filter-chip:hover { border-color: var(--primary-green); color: var(--primary-green); }
+        .filter-chip.active { background: var(--primary-green); color: white; border-color: var(--primary-green); }
+
         /* --- PRODUCT CARD --- */
-        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1.5rem; padding: 2rem 0; }
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 1.5rem; padding: 1rem 0; }
         .product-card { 
             background: white; border-radius: 12px; overflow: hidden; border: 1px solid var(--border-color); 
             transition: transform 0.2s; cursor: pointer; display: flex; flex-direction: column;
         }
         .product-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-md); border-color: var(--primary-gold); }
-        .p-img-wrapper { height: 180px; position: relative; background: #f9f9f9; }
+        .p-img-wrapper { height: 160px; position: relative; background: #f9f9f9; }
         .p-img { width: 100%; height: 100%; object-fit: cover; }
         .p-info { padding: 12px; flex: 1; display: flex; flex-direction: column; }
-        .p-title { font-weight: 600; font-size: 14px; margin-bottom: 4px; line-height: 1.3; }
-        .p-price { font-weight: 800; font-size: 16px; color: var(--text-dark); margin-bottom: 10px; }
+        .p-cat { font-size: 10px; text-transform: uppercase; color: var(--text-gray); font-weight: 700; margin-bottom: 4px; }
+        .p-title { font-weight: 600; font-size: 14px; margin-bottom: 4px; line-height: 1.3; color: var(--text-dark); }
+        .p-price { font-weight: 800; font-size: 16px; color: var(--dark-green); margin-bottom: 10px; }
         .btn-card-add { 
-            margin-top: auto; width: 100%; padding: 8px; background: white; 
+            margin-top: auto; width: 100%; padding: 10px; background: white; 
             border: 1px solid var(--border-color); border-radius: 6px; font-weight: 600; font-size: 12px;
+            display: flex; align-items: center; justify-content: center; gap: 5px;
         }
         .btn-card-add:hover { background: var(--primary-green); color: white; border-color: var(--primary-green); }
 
-        /* --- VISUAL REVIEW BARS (Social Proof) --- */
-        .review-section { margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--border-color); }
-        .review-row { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; font-size: 13px; color: var(--text-link); }
-        .bar-bg { flex: 1; height: 18px; background: #F0F2F2; border-radius: 4px; box-shadow: inset 0 1px 2px rgba(0,0,0,0.1); overflow: hidden; }
-        .bar-fill { height: 100%; background: linear-gradient(to bottom, #FFCE00, #DE7921); border-radius: 4px; }
-        .star-link { color: #007185; text-decoration: none; min-width: 50px; }
-        .star-link:hover { text-decoration: underline; color: #C7511F; }
+        /* --- PDP & SOCIAL PROOF --- */
+        .pdp-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; background: white; padding: 2rem; border-radius: 12px; }
+        .pdp-img { width: 100%; border-radius: 8px; max-height: 400px; object-fit: cover; }
+        
+        .review-bars { margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--border-color); }
+        .bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; font-size: 13px; }
+        .bar-container { flex: 1; height: 16px; background: #eee; border-radius: 4px; overflow: hidden; }
+        .bar-fill { height: 100%; background: #FFCE00; border-radius: 4px; }
 
         /* --- VISUAL ORDER TRACKING (Anxiety Killer) --- */
-        .track-container { display: flex; align-items: center; margin-top: 15px; position: relative; padding: 0 10px; }
+        .track-container { display: flex; align-items: center; margin-top: 20px; position: relative; padding: 0 10px; }
+        .track-line-bg { position: absolute; top: 7px; left: 10px; right: 10px; height: 3px; background: #e0e0e0; z-index: 1; }
+        .track-line-fill { position: absolute; top: 7px; left: 10px; height: 3px; background: var(--primary-green); z-index: 1; transition: width 1s ease; }
+        
         .track-step { flex: 1; text-align: center; position: relative; z-index: 2; }
         .track-dot { 
-            width: 14px; height: 14px; background: #ddd; border-radius: 50%; margin: 0 auto 5px; 
-            border: 2px solid white; box-shadow: 0 0 0 1px #ddd;
+            width: 16px; height: 16px; background: #fff; border: 3px solid #ddd; 
+            border-radius: 50%; margin: 0 auto 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
-        .track-step.active .track-dot { background: var(--primary-green); box-shadow: 0 0 0 1px var(--primary-green); }
-        .track-label { font-size: 10px; color: var(--text-gray); font-weight: 500; }
-        .track-step.active .track-label { color: var(--primary-green); font-weight: 700; }
-        
-        .track-line-bg { position: absolute; top: 7px; left: 10%; right: 10%; height: 2px; background: #ddd; z-index: 1; }
-        .track-line-fill { position: absolute; top: 7px; left: 10%; height: 2px; background: var(--primary-green); z-index: 1; transition: width 1s ease; }
-
-        /* --- CHECKOUT MODAL (Simulation) --- */
-        .modal-overlay { 
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(0,0,0,0.5); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(3px);
-        }
-        .modal-content { 
-            background: white; width: 90%; max-width: 400px; padding: 25px; 
-            border-radius: 12px; box-shadow: 0 20px 50px rgba(0,0,0,0.2); animation: popIn 0.3s;
-        }
-        @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        
-        .pay-option { 
-            display: flex; align-items: center; gap: 10px; padding: 12px; 
-            border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 10px; cursor: pointer;
-        }
-        .pay-option.selected { border-color: var(--primary-green); background: rgba(44, 122, 98, 0.05); }
-        .spinner { 
-            width: 24px; height: 24px; border: 3px solid #f3f3f3; border-top: 3px solid var(--primary-green); 
-            border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto; display: none;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .track-step.active .track-dot { background: var(--primary-green); border-color: var(--primary-green); }
+        .track-label { font-size: 11px; color: var(--text-gray); font-weight: 500; }
+        .track-step.active .track-label { color: var(--text-dark); font-weight: 700; }
 
         /* --- MOBILE NAV --- */
-        .mobile-nav { 
-            display: none; position: fixed; bottom: 0; width: 100%; background: white; 
-            border-top: 1px solid var(--border-color); padding: 10px 0; justify-content: space-around; z-index: 999; 
-        }
-        .mn-item { display: flex; flex-direction: column; align-items: center; font-size: 10px; color: var(--text-gray); gap: 4px; }
+        .mobile-nav { display: none; position: fixed; bottom: 0; width: 100%; background: white; border-top: 1px solid var(--border-color); padding: 10px 0; justify-content: space-around; z-index: 999; }
+        .mn-item { display: flex; flex-direction: column; align-items: center; text-decoration: none; color: var(--text-gray); font-size: 10px; gap: 4px; }
         .mn-item.active { color: var(--primary-green); font-weight: 700; }
 
-        /* --- PDP LAYOUT --- */
-        .pdp-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; background: white; padding: 2rem; border-radius: 12px; margin-top: 1rem; }
-        .pdp-img { width: 100%; border-radius: 8px; }
+        /* --- CART & ACCOUNT --- */
+        .cart-layout { display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; }
+        .cart-item { background: white; padding: 1.5rem; border-radius: 12px; display: flex; gap: 15px; margin-bottom: 1rem; box-shadow: var(--shadow-sm); }
+        
+        .profile-header { background: white; padding: 2rem; border-radius: 12px; display: flex; gap: 20px; align-items: center; margin-bottom: 2rem; box-shadow: var(--shadow-sm); }
+        .avatar { width: 70px; height: 70px; background: var(--primary-gold); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 700; }
 
-        /* --- RESPONSIVE --- */
         @media (max-width: 768px) {
             .mobile-nav { display: flex; }
-            .nav-links { display: none; } /* Hide desktop links */
-            .pdp-layout { grid-template-columns: 1fr; padding: 1rem; }
+            .nav-links { display: none; }
+            .pdp-layout { grid-template-columns: 1fr; }
             .cart-layout { grid-template-columns: 1fr; }
             .product-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
         }
@@ -171,24 +201,33 @@
 
     <div class="modal-overlay" id="checkoutModal">
         <div class="modal-content">
-            <h2 style="margin-bottom: 15px;">Secure Checkout</h2>
-            <p style="margin-bottom: 20px; color: var(--text-gray); font-size: 14px;">Total to Pay: <strong id="modalTotal" style="color: var(--text-dark);">₹0</strong></p>
+            <h2 style="margin-bottom: 5px;">Secure Checkout</h2>
+            <div style="font-size: 14px; color: var(--text-gray); margin-bottom: 20px;">Complete your purchase securely</div>
             
-            <div class="pay-option selected" onclick="selectPayment(this)">
-                <input type="radio" name="payment" checked> <span>UPI / GPay / PhonePe</span>
-            </div>
-            <div class="pay-option" onclick="selectPayment(this)">
-                <input type="radio" name="payment"> <span>Credit / Debit Card</span>
-            </div>
-            <div class="pay-option" onclick="selectPayment(this)">
-                <input type="radio" name="payment"> <span>Cash on Delivery</span>
+            <div style="margin-bottom: 20px;">
+                <div class="pay-option selected" onclick="selectPayment(this)">
+                    <input type="radio" name="pay" checked> <span>UPI / GPay / PhonePe</span>
+                </div>
+                <div class="pay-option" onclick="selectPayment(this)">
+                    <input type="radio" name="pay"> <span>Credit / Debit Card</span>
+                </div>
+                <div class="pay-option" onclick="selectPayment(this)">
+                    <input type="radio" name="pay"> <span>Net Banking</span>
+                </div>
+                <div class="pay-option" onclick="selectPayment(this)">
+                    <input type="radio" name="pay"> <span>Cash on Delivery</span>
+                </div>
             </div>
 
-            <div style="margin-top: 20px;">
-                <button id="payBtn" onclick="processPayment()" style="width: 100%; background: var(--primary-gold); color: white; border: none; padding: 14px; border-radius: 8px; font-weight: 700; font-size: 16px;">Place Your Order</button>
-                <div id="paySpinner" class="spinner"></div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 20px; font-weight: 700; font-size: 18px;">
+                <span>Total</span>
+                <span id="modalTotal">₹0</span>
             </div>
-            <div style="text-align: center; margin-top: 15px; font-size: 12px; color: var(--text-gray); cursor: pointer;" onclick="closeCheckout()">Cancel</div>
+
+            <button id="payBtn" onclick="processPayment()" style="width: 100%; background: var(--primary-gold); color: white; border: none; padding: 14px; border-radius: 8px; font-weight: 700; font-size: 16px;">Place Order</button>
+            <div id="paySpinner" class="spinner"></div>
+            
+            <div onclick="closeModal()" style="text-align: center; margin-top: 15px; font-size: 13px; color: var(--text-gray); cursor: pointer;">Cancel</div>
         </div>
     </div>
 
@@ -205,10 +244,10 @@
                 </div>
                 <div class="nav-links">
                     <span onclick="showPage('home')">Home</span>
-                    <span onclick="showPage('products')">Products</span>
+                    <span onclick="showPage('products')">Marketplace</span>
                     <span onclick="showPage('account')">Account</span>
                     <div class="cart-icon" onclick="showPage('cart')">
-                        🛒 <div class="cart-badge" id="cartBadge">0</div>
+                        🛒 <span class="cart-badge" id="cartBadge">0</span>
                     </div>
                 </div>
             </nav>
@@ -219,63 +258,58 @@
         <div class="mn-item active" onclick="showPage('home')"><span style="font-size: 20px;">🏠</span>Home</div>
         <div class="mn-item" onclick="showPage('products')"><span style="font-size: 20px;">📦</span>Shop</div>
         <div class="mn-item" onclick="showPage('cart')"><span style="font-size: 20px;">🛒</span>Cart</div>
-        <div class="mn-item" onclick="showPage('account')"><span style="font-size: 20px;">👤</span>Me</div>
+        <div class="mn-item" onclick="showPage('account')"><span style="font-size: 20px;">👤</span>Profile</div>
     </div>
 
     <div id="home" class="page active">
         <div class="hero">
             <div class="flash-badge">⚡ Deal Ends: <span id="timer">04:23:15</span></div>
-            <h1>Premium Food Trading</h1>
-            <p style="opacity: 0.9; margin-bottom: 20px;">Sourcing Authentic Dates, Grains & Dairy.</p>
-            <button class="hero-btn" onclick="showPage('products')">Start Trading</button>
+            <h1>Premium Global Food Trading</h1>
+            <p style="opacity: 0.9;">Sourcing Authentic Dates, Grains & Dairy from Global Farms.</p>
+            <button class="hero-btn" onclick="showPage('products')">Explore Marketplace</button>
         </div>
-        <div class="container" style="padding-top: 2rem;">
-            <h2>Trending Now</h2>
+        <div class="container" style="margin-top: 3rem;">
+            <h2 style="margin-bottom: 1rem;">Trending Commodities</h2>
             <div class="product-grid" id="featuredGrid"></div>
         </div>
     </div>
 
     <div id="products" class="page">
-        <div class="container" style="padding-top: 1.5rem;">
-            <div style="background: white; padding: 1rem; border-radius: 12px; margin-bottom: 1.5rem; box-shadow: var(--shadow-sm);">
-                <input type="text" id="search" placeholder="Search Dates, Rice, Milk..." style="width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 16px; margin-bottom: 15px;" onkeyup="filterProducts()">
+        <div class="container" style="padding-top: 2rem;">
+            <div class="filter-section">
+                <input type="text" id="searchInput" class="search-input" placeholder="Search by product name or category..." onkeyup="filterProducts()">
                 
-                <div style="display: flex; gap: 10px; overflow-x: auto; padding-bottom: 5px;">
-                    <div class="filter-chip" onclick="applyFilter('All')" style="padding: 6px 12px; background: var(--dark-green); color: white; border-radius: 20px; font-size: 13px; cursor: pointer; white-space: nowrap;">All</div>
-                    <div class="filter-chip" onclick="applyFilter('Dates')" style="padding: 6px 12px; border: 1px solid #ddd; border-radius: 20px; font-size: 13px; cursor: pointer; white-space: nowrap;">Dates</div>
-                    <div class="filter-chip" onclick="applyFilter('Grains')" style="padding: 6px 12px; border: 1px solid #ddd; border-radius: 20px; font-size: 13px; cursor: pointer; white-space: nowrap;">Grains</div>
-                    <div class="filter-chip" onclick="applyFilter('Dairy')" style="padding: 6px 12px; border: 1px solid #ddd; border-radius: 20px; font-size: 13px; cursor: pointer; white-space: nowrap;">Dairy</div>
-                </div>
+                <div class="category-scroll" id="categoryList">
+                    </div>
             </div>
+            
             <div class="product-grid" id="fullGrid"></div>
         </div>
     </div>
 
     <div id="pdp" class="page">
-        <div class="container" style="padding-top: 1.5rem;">
-            <div style="margin-bottom: 10px; cursor: pointer; color: var(--text-gray);" onclick="showPage('products')">← Back to Search</div>
+        <div class="container" style="padding-top: 2rem;">
+            <button onclick="showPage('products')" style="background:none; border:none; color:var(--text-gray); margin-bottom: 1rem;">← Back to Marketplace</button>
             <div class="pdp-layout">
-                <div>
-                    <img id="pdpImg" src="" class="pdp-img">
-                </div>
+                <div><img id="pdpImg" src="" class="pdp-img"></div>
                 <div class="pdp-info">
                     <h2 id="pdpTitle">Product Name</h2>
-                    <div style="color: #F08804; margin-bottom: 10px; font-size: 14px;">★★★★☆ <span style="color: #007185;">482 ratings</span></div>
+                    <div style="color: var(--star-yellow); margin-bottom: 10px; font-weight: 600;">★★★★☆ <span style="color: #007185; margin-left:5px;">482 ratings</span></div>
                     <div class="pdp-price" id="pdpPrice">₹000</div>
                     <p id="pdpDesc" style="color: var(--text-gray); line-height: 1.6; margin-bottom: 20px;">Description</p>
                     
                     <div style="background: #f9f9f9; padding: 20px; border-radius: 12px; border: 1px solid #eee;">
                         <button onclick="addToCartFromPDP()" style="width: 100%; background: var(--primary-green); color: white; padding: 12px; border: none; border-radius: 8px; font-weight: 700; margin-bottom: 10px;">Add to Cart</button>
-                        <button onclick="buyNowPDP()" style="width: 100%; background: var(--primary-gold); color: white; padding: 12px; border: none; border-radius: 8px; font-weight: 700;">Buy Now</button>
+                        <button onclick="openModal()" style="width: 100%; background: var(--primary-gold); color: white; padding: 12px; border: none; border-radius: 8px; font-weight: 700;">Buy Now</button>
                     </div>
 
-                    <div class="review-section">
+                    <div class="review-bars">
                         <h4 style="margin-bottom: 15px;">Customer Reviews</h4>
-                        <div class="review-row"><a href="#" class="star-link">5 star</a> <div class="bar-bg"><div class="bar-fill" style="width: 78%"></div></div> <span>78%</span></div>
-                        <div class="review-row"><a href="#" class="star-link">4 star</a> <div class="bar-bg"><div class="bar-fill" style="width: 12%"></div></div> <span>12%</span></div>
-                        <div class="review-row"><a href="#" class="star-link">3 star</a> <div class="bar-bg"><div class="bar-fill" style="width: 6%"></div></div> <span>6%</span></div>
-                        <div class="review-row"><a href="#" class="star-link">2 star</a> <div class="bar-bg"><div class="bar-fill" style="width: 2%"></div></div> <span>2%</span></div>
-                        <div class="review-row"><a href="#" class="star-link">1 star</a> <div class="bar-bg"><div class="bar-fill" style="width: 2%"></div></div> <span>2%</span></div>
+                        <div class="bar-row"><span>5 star</span> <div class="bar-container"><div class="bar-fill" style="width: 78%"></div></div> <span>78%</span></div>
+                        <div class="bar-row"><span>4 star</span> <div class="bar-container"><div class="bar-fill" style="width: 12%"></div></div> <span>12%</span></div>
+                        <div class="bar-row"><span>3 star</span> <div class="bar-container"><div class="bar-fill" style="width: 6%"></div></div> <span>6%</span></div>
+                        <div class="bar-row"><span>2 star</span> <div class="bar-container"><div class="bar-fill" style="width: 2%"></div></div> <span>2%</span></div>
+                        <div class="bar-row"><span>1 star</span> <div class="bar-container"><div class="bar-fill" style="width: 2%"></div></div> <span>2%</span></div>
                     </div>
                 </div>
             </div>
@@ -284,12 +318,12 @@
 
     <div id="cart" class="page">
         <div class="container" style="padding-top: 2rem;">
-            <h2>Shopping Cart</h2>
-            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; margin-top: 1rem;">
+            <h2>Your Cart</h2>
+            <div class="cart-layout">
                 <div id="cartList"></div>
-                <div style="background: white; padding: 20px; border-radius: 12px; height: fit-content; box-shadow: var(--shadow-sm);">
-                    <div style="font-size: 18px; font-weight: 700; margin-bottom: 15px;">Subtotal: <span id="cartTotalAmount">₹0</span></div>
-                    <button onclick="openCheckout()" style="width: 100%; background: var(--primary-gold); color: white; padding: 12px; border: none; border-radius: 8px; font-weight: 700;">Proceed to Buy</button>
+                <div class="cart-summary">
+                    <div style="font-size: 18px; font-weight: 700; margin-bottom: 15px;">Total: <span id="cartTotal">₹0</span></div>
+                    <button onclick="openModal()" style="width: 100%; background: var(--primary-gold); color: white; padding: 12px; border: none; border-radius: 8px; font-weight: 700;">Proceed to Checkout</button>
                 </div>
             </div>
         </div>
@@ -297,142 +331,176 @@
 
     <div id="account" class="page">
         <div class="container" style="padding-top: 2rem;">
-            <div style="background: white; padding: 20px; border-radius: 12px; display: flex; align-items: center; gap: 20px; box-shadow: var(--shadow-sm); margin-bottom: 2rem;">
-                <div style="width: 60px; height: 60px; background: var(--primary-green); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700;">R</div>
+            <div class="profile-header">
+                <div class="avatar">R</div>
                 <div>
-                    <h3>Rahul Sharma</h3>
-                    <p style="font-size: 14px; color: var(--text-gray);">Premium Member</p>
+                    <h2>Rahul Sharma</h2>
+                    <p style="color: var(--text-gray);">Premium Member</p>
                 </div>
             </div>
 
             <h3 style="margin-bottom: 1rem;">Recent Orders</h3>
             
-            <div style="background: white; padding: 20px; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 1.5rem;">
-                <div style="display: flex; gap: 15px; margin-bottom: 20px;">
-                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcToesPYypZnN6hgoqf1hAXzlAcHkfaeotEcmA&s" style="width: 80px; height: 80px; border-radius: 8px; object-fit: cover;">
+            <div class="order-card" style="background: white; padding: 20px; border-radius: 12px; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm);">
+                <div style="display:flex; gap:15px; margin-bottom:20px;">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcToesPYypZnN6hgoqf1hAXzlAcHkfaeotEcmA&s" style="width:80px; height:80px; border-radius:8px; object-fit:cover;">
                     <div>
-                        <div style="font-weight: 700; font-size: 15px;">Royal Medjool Dates (2kg)</div>
-                        <div style="font-size: 13px; color: var(--text-gray); margin-bottom: 5px;">Order #TRV-8821</div>
-                        <div style="font-weight: 700; color: var(--primary-green);">Delivered Today</div>
+                        <div style="font-weight:700;">Royal Medjool Dates (2kg)</div>
+                        <div style="font-size:13px; color:var(--text-gray);">Order #TRV-8821</div>
+                        <div style="font-weight:700; color:var(--primary-green);">Delivered Today</div>
                     </div>
                 </div>
-                
+
                 <div class="track-container">
                     <div class="track-line-bg"></div>
-                    <div class="track-line-fill" style="width: 100%;"></div> <div class="track-step active">
-                        <div class="track-dot"></div>
-                        <div class="track-label">Ordered</div>
-                    </div>
-                    <div class="track-step active">
-                        <div class="track-dot"></div>
-                        <div class="track-label">Shipped</div>
-                    </div>
-                    <div class="track-step active">
-                        <div class="track-dot"></div>
-                        <div class="track-label">Out for Delivery</div>
-                    </div>
-                    <div class="track-step active">
-                        <div class="track-dot"></div>
-                        <div class="track-label">Delivered</div>
-                    </div>
+                    <div class="track-line-fill" style="width: 100%;"></div>
+                    
+                    <div class="track-step active"><div class="track-dot"></div><div class="track-label">Ordered</div></div>
+                    <div class="track-step active"><div class="track-dot"></div><div class="track-label">Shipped</div></div>
+                    <div class="track-step active"><div class="track-dot"></div><div class="track-label">Out for Delivery</div></div>
+                    <div class="track-step active"><div class="track-dot"></div><div class="track-label">Delivered</div></div>
                 </div>
             </div>
 
-            <div style="background: white; padding: 20px; border-radius: 12px; border: 1px solid var(--border-color);">
-                <div style="display: flex; gap: 15px; margin-bottom: 20px;">
-                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcToesPYypZnN6hgoqf1hAXzlAcHkfaeotEcmA&s" style="width: 80px; height: 80px; border-radius: 8px; object-fit: cover;">
+             <div class="order-card" style="background: white; padding: 20px; border-radius: 12px; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); margin-top: 15px;">
+                <div style="display:flex; gap:15px; margin-bottom:20px;">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcToesPYypZnN6hgoqf1hAXzlAcHkfaeotEcmA&s" style="width:80px; height:80px; border-radius:8px; object-fit:cover;">
                     <div>
-                        <div style="font-weight: 700; font-size: 15px;">Organic Quinoa (1kg)</div>
-                        <div style="font-size: 13px; color: var(--text-gray); margin-bottom: 5px;">Order #TRV-9941</div>
-                        <div style="font-weight: 700; color: #DE7921;">Arriving Tomorrow</div>
+                        <div style="font-weight:700;">Basmati Rice (5kg)</div>
+                        <div style="font-size:13px; color:var(--text-gray);">Order #TRV-9912</div>
+                        <div style="font-weight:700; color:#DE7921;">Arriving Tomorrow</div>
                     </div>
                 </div>
-                
+
                 <div class="track-container">
                     <div class="track-line-bg"></div>
-                    <div class="track-line-fill" style="width: 50%;"></div> <div class="track-step active">
-                        <div class="track-dot"></div>
-                        <div class="track-label">Ordered</div>
-                    </div>
-                    <div class="track-step active">
-                        <div class="track-dot"></div>
-                        <div class="track-label">Shipped</div>
-                    </div>
-                    <div class="track-step">
-                        <div class="track-dot"></div>
-                        <div class="track-label">Out for Delivery</div>
-                    </div>
-                    <div class="track-step">
-                        <div class="track-dot"></div>
-                        <div class="track-label">Delivered</div>
-                    </div>
+                    <div class="track-line-fill" style="width: 50%;"></div>
+                    
+                    <div class="track-step active"><div class="track-dot"></div><div class="track-label">Ordered</div></div>
+                    <div class="track-step active"><div class="track-dot"></div><div class="track-label">Shipped</div></div>
+                    <div class="track-step"><div class="track-dot"></div><div class="track-label">Out for Delivery</div></div>
+                    <div class="track-step"><div class="track-dot"></div><div class="track-label">Delivered</div></div>
                 </div>
             </div>
-
         </div>
     </div>
 
     <script>
-        // GLOBAL DATA
+        // GLOBAL IMAGE (Used for consistency)
         const GLOBAL_IMG = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcToesPYypZnN6hgoqf1hAXzlAcHkfaeotEcmA&s";
+
+        // ALL 21 CATEGORIES
+        const categories = [
+            "Dates Trading", "Grains, Cereals & Legumes Trading", "Food & Beverages Trading", 
+            "Baby Food Trading", "Snack Food Trading", "Dairy Products Trading", 
+            "Canned & Preserved Food Trading", "Fresh & Chilled & Frozen Meat Trading", 
+            "Frozen Fish & Seafood Trading", "Egg Trading", "Honey & Apiary Accessories Trading", 
+            "Bread & Bakery Products Trading", "Pastry Trading", "Ice Cream Trading", 
+            "Flour Trading", "Ghee & Vegetable Oil Trading", "Juice Trading", 
+            "Dried Vegetables & Fruit Trading", "Flavours & Fragrances Trading", 
+            "Vegetables & Fruits Trading", "Potatoes Trading"
+        ];
+
+        // PRODUCTS MAPPED TO CATEGORIES
         const products = [
-            { id: 1, name: 'Royal Medjool Dates (1kg)', price: 850, cat: 'Dates', desc: 'Premium dates sourced from Jordan. Natural caramel flavor.', image: GLOBAL_IMG },
-            { id: 2, name: 'Ajwa Al-Madina (500g)', price: 1200, cat: 'Dates', desc: 'Authentic Ajwa dates. Known for health benefits.', image: GLOBAL_IMG },
-            { id: 3, name: 'Basmati Rice (5kg)', price: 900, cat: 'Grains', desc: 'Extra long grain aged Basmati rice.', image: GLOBAL_IMG },
-            { id: 4, name: 'Organic Quinoa (1kg)', price: 450, cat: 'Grains', desc: 'Protein-rich organic white quinoa.', image: GLOBAL_IMG },
-            { id: 5, name: 'Farm Fresh Milk (1L)', price: 65, cat: 'Dairy', desc: 'Pasteurized whole milk from grass-fed cows.', image: GLOBAL_IMG },
-            { id: 6, name: 'Cheddar Cheese (200g)', price: 450, cat: 'Dairy', desc: 'Aged sharp cheddar cheese block.', image: GLOBAL_IMG },
+            { id: 1, name: 'Royal Medjool Dates', price: 850, cat: 'Dates Trading', image: GLOBAL_IMG },
+            { id: 2, name: 'Premium Basmati Rice', price: 180, cat: 'Grains, Cereals & Legumes Trading', image: GLOBAL_IMG },
+            { id: 3, name: 'Farm Fresh Milk', price: 65, cat: 'Dairy Products Trading', image: GLOBAL_IMG },
+            { id: 4, name: 'Chicken Breast', price: 280, cat: 'Fresh & Chilled & Frozen Meat Trading', image: GLOBAL_IMG },
+            { id: 5, name: 'Atlantic Salmon', price: 1200, cat: 'Frozen Fish & Seafood Trading', image: GLOBAL_IMG },
+            { id: 6, name: 'Roasted Almonds', price: 900, cat: 'Snack Food Trading', image: GLOBAL_IMG },
+            { id: 7, name: 'Organic Honey', price: 550, cat: 'Honey & Apiary Accessories Trading', image: GLOBAL_IMG },
+            { id: 8, name: 'Whole Wheat Bread', price: 55, cat: 'Bread & Bakery Products Trading', image: GLOBAL_IMG },
+            { id: 9, name: 'Fresh Potatoes', price: 40, cat: 'Potatoes Trading', image: GLOBAL_IMG },
+            { id: 10, name: 'Orange Juice', price: 120, cat: 'Juice Trading', image: GLOBAL_IMG },
         ];
 
         let cart = [];
         let currentPdpId = null;
 
         window.onload = function() {
+            renderCategories();
             filterProducts(); // Initial Render
             updateCartUI();
             startTimer();
         }
 
+        // --- RENDER CATEGORIES ---
+        function renderCategories() {
+            const list = document.getElementById('categoryList');
+            let html = `<div class="filter-chip active" onclick="setCategory('All', this)">All</div>`;
+            categories.forEach(cat => {
+                // Display shorter name if too long, or full name
+                const displayName = cat.replace(' Trading', '');
+                html += `<div class="filter-chip" onclick="setCategory('${cat}', this)">${displayName}</div>`;
+            });
+            list.innerHTML = html;
+        }
+
+        let activeCategory = 'All';
+
+        function setCategory(cat, el) {
+            activeCategory = cat;
+            document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+            el.classList.add('active');
+            filterProducts();
+        }
+
         // --- FILTER & SEARCH ---
         function filterProducts() {
-            const term = document.getElementById('search').value.toLowerCase();
-            // In a real app, you'd track active category too. 
-            // For demo, we just search text against name or category.
-            const filtered = products.filter(p => p.name.toLowerCase().includes(term) || p.cat.toLowerCase().includes(term));
+            const term = document.getElementById('searchInput').value.toLowerCase();
+            
+            const filtered = products.filter(p => {
+                const matchesSearch = p.name.toLowerCase().includes(term);
+                const matchesCat = activeCategory === 'All' || p.cat === activeCategory;
+                return matchesSearch && matchesCat;
+            });
             
             const createCard = (p) => `
                 <div class="product-card" onclick="openPDP(${p.id})">
                     <div class="p-img-wrapper"><img src="${p.image}" class="p-img"></div>
                     <div class="p-info">
+                        <div class="p-cat">${p.cat.split(' ')[0]}</div>
                         <div class="p-title">${p.name}</div>
                         <div class="p-price">₹${p.price}</div>
-                        <button class="btn-card-add" onclick="event.stopPropagation(); addToCart(${p.id})">Add to Cart</button>
+                        <button class="btn-card-add" onclick="event.stopPropagation(); addToCart(${p.id})">Add to Cart +</button>
                     </div>
                 </div>`;
             
-            document.getElementById('fullGrid').innerHTML = filtered.map(createCard).join('');
-            // Also update featured if on home page (simplified for demo)
+            const gridHtml = filtered.length ? filtered.map(createCard).join('') : '<div style="grid-column:1/-1; text-align:center; padding:20px; color:#888;">No products found</div>';
+            
+            document.getElementById('fullGrid').innerHTML = gridHtml;
+            
+            // Also update featured if on home
             if(document.getElementById('featuredGrid')) {
-                document.getElementById('featuredGrid').innerHTML = products.slice(0,4).map(createCard).join('');
+                document.getElementById('featuredGrid').innerHTML = products.slice(0, 4).map(createCard).join('');
             }
         }
-        
-        function applyFilter(cat) {
-            document.getElementById('search').value = cat === 'All' ? '' : cat;
-            filterProducts();
+
+        // --- PDP ---
+        function openPDP(id) {
+            currentPdpId = id;
+            const p = products.find(x => x.id === id);
+            document.getElementById('pdpImg').src = p.image;
+            document.getElementById('pdpTitle').innerText = p.name;
+            document.getElementById('pdpPrice').innerText = '₹' + p.price;
+            document.getElementById('pdpDesc').innerText = `Premium quality ${p.name} sourced directly from verified suppliers. Freshness guaranteed.`;
+            showPage('pdp');
         }
 
-        // --- CART LOGIC ---
-        function addToCart(id, qty = 1) {
+        function addToCartFromPDP() { addToCart(currentPdpId); }
+
+        // --- CART ---
+        function addToCart(id) {
             const existing = cart.find(x => x.id === id);
-            if(existing) existing.qty += qty; else cart.push({id, qty});
-            showToast('Added to Cart', 'Item added successfully');
+            if(existing) existing.qty++; else cart.push({id, qty:1});
+            showToast('Added', 'Item added to cart');
             updateCartUI();
         }
 
         function updateCartUI() {
             const list = document.getElementById('cartList');
-            const totalEl = document.getElementById('cartTotalAmount');
+            const totalEl = document.getElementById('cartTotal');
             const badge = document.getElementById('cartBadge');
             let total = 0; let count = 0;
             
@@ -444,50 +512,27 @@
                 count += item.qty;
                 list.innerHTML += `
                     <div class="cart-item">
-                        <img src="${p.image}" class="cart-img-thumb">
-                        <div class="cart-details">
+                        <img src="${p.image}" class="cart-img-thumb" style="width:60px; height:60px; border-radius:6px; object-fit:cover;">
+                        <div>
                             <div style="font-weight:600">${p.name}</div>
                             <div style="color:var(--primary-gold); font-weight:700;">₹${p.price}</div>
-                            <div style="margin-top:5px; font-size:13px;">Qty: ${item.qty}</div>
+                            <div style="font-size:12px;">Qty: ${item.qty}</div>
                         </div>
                     </div>`;
             });
             totalEl.innerText = '₹' + total.toLocaleString();
-            badge.innerText = count;
-            // Update Modal Total too
             if(document.getElementById('modalTotal')) document.getElementById('modalTotal').innerText = '₹' + total.toLocaleString();
+            badge.innerText = count;
         }
 
-        // --- PDP ---
-        function openPDP(id) {
-            currentPdpId = id;
-            const p = products.find(x => x.id === id);
-            document.getElementById('pdpImg').src = p.image;
-            document.getElementById('pdpTitle').innerText = p.name;
-            document.getElementById('pdpPrice').innerText = '₹' + p.price;
-            document.getElementById('pdpDesc').innerText = p.desc;
-            showPage('pdp');
-        }
-
-        function addToCartFromPDP() {
-            const qty = parseInt(document.getElementById('pdpQty').value);
-            addToCart(currentPdpId, qty);
-        }
-
-        function buyNowPDP() {
-            addToCartFromPDP();
-            showPage('cart');
-        }
-
-        // --- CHECKOUT SIMULATION (The "Musk" Feature) ---
-        function openCheckout() {
+        // --- MODAL & CHECKOUT ---
+        function openModal() {
             if(cart.length === 0) return showToast('Error', 'Cart is empty');
             document.getElementById('checkoutModal').style.display = 'flex';
         }
 
-        function closeCheckout() {
+        function closeModal() {
             document.getElementById('checkoutModal').style.display = 'none';
-            // Reset state
             document.getElementById('payBtn').style.display = 'block';
             document.getElementById('paySpinner').style.display = 'none';
         }
@@ -504,14 +549,11 @@
         function processPayment() {
             const btn = document.getElementById('payBtn');
             const spin = document.getElementById('paySpinner');
-            
-            // 1. Hide Button, Show Spinner
             btn.style.display = 'none';
             spin.style.display = 'block';
             
-            // 2. Simulate Delay (2 seconds)
             setTimeout(() => {
-                closeCheckout();
+                closeModal();
                 showToast('Success', 'Order Placed Successfully!');
                 cart = [];
                 updateCartUI();
@@ -519,7 +561,7 @@
             }, 2000);
         }
 
-        // --- NAVIGATION ---
+        // --- UTILS ---
         function showPage(pageId) {
             document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
             document.getElementById(pageId).classList.add('active');
